@@ -105,3 +105,16 @@ details summary{cursor:pointer;font-size:.87rem;color:var(--sonuk)}
 .git-geri{display:inline-flex;align-items:center;min-height:48px;padding:.8rem 1.4rem;
   background:var(--vurgu);color:var(--vurgu-metin);border-radius:999px;
   text-decoration:none;font-weight:600}
+
+/* fiyat endeksi tablosu */
+.tablo-sar{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--bolum)}
+.endeks{border-collapse:collapse;width:100%;min-width:34rem;font-variant-numeric:tabular-nums}
+.endeks caption{text-align:left;color:var(--sonuk);font-size:.85rem;padding-bottom:.7rem}
+.endeks th,.endeks td{padding:.6rem .8rem;border-bottom:1px solid var(--kenar);text-align:right}
+.endeks thead th{text-align:right;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--sonuk);font-weight:600}
+.endeks th[scope=row],.endeks thead th:first-child{text-align:left}
+.endeks th[scope=row]{font-weight:600}
+.endeks th[scope=row] a{text-decoration:none}
+.endeks th[scope=row] a:hover{color:var(--vurgu)}
+.endeks tbody tr:hover{background:var(--yuzey)}

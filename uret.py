@@ -165,7 +165,7 @@ def uret():
             f"tam tarifesi ve yol tarifi. İlk saat medyan {tl(v['medyan'])} TL.",
             gv, kok="../../"))
 
-    yaz_gizlilik(); yaz_404()
+    yaz_gizlilik(); yaz_404(); yaz_endeks(d, g)
 
     # sitemap + robots
     url = "https://nereyeparkedicem.vercel.app"
@@ -173,7 +173,8 @@ def uret():
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
-        f'{sm}<url><loc>{url}/gizlilik/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
+        f'{sm}<url><loc>{url}/fiyat-endeksi/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>'
+        f'<url><loc>{url}/gizlilik/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
     open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
@@ -235,5 +236,82 @@ def yaz_404():
     open(f"{CIKTI}/404.html", "w", encoding="utf-8").write(sayfa(
         "Sayfa bulunamadı | nereyeparkedicem",
         "Aradığınız sayfa bulunamadı.", DORTYUZDORT))
+
+
+def yaz_endeks(d, g):
+    """Ilce bazinda otopark fiyat endeksi. Turkiye'de baska yerde yayinlanmiyor."""
+    import statistics as st
+    ilk = sorted(k["ilk_saat_tl"] for k in d if k["ilk_saat_tl"])
+    gun = sorted(t["tl"] for k in d for t in k["tarife"] if "Tam" in t["aralik"])
+    ay  = sorted(k["aylik_tl"] for k in d if k["aylik_tl"])
+
+    satir = []
+    for s_, v in sorted(g.items(), key=lambda kv: -(kv[1]["medyan"] or 0)):
+        kk = v["kayit"]
+        tg = sorted(t["tl"] for k in kk for t in k["tarife"] if "Tam" in t["aralik"])
+        aa = sorted(k["aylik_tl"] for k in kk if k["aylik_tl"])
+        satir.append(
+            f'<tr><th scope="row"><a href="../ilce/{s_}/">{v["ad"]}</a></th>'
+            f'<td>{len(kk)}</td><td>{tl(v["medyan"])}</td>'
+            f'<td>{tl(st.median(tg)) if tg else "—"}</td>'
+            f'<td>{tl(st.median(aa)) if aa else "—"}</td></tr>')
+
+    en = sorted(g.items(), key=lambda kv: -(kv[1]["medyan"] or 0))
+    pahali, ucuz = en[0][1], en[-1][1]
+    kat = pahali["medyan"] / ucuz["medyan"] if ucuz["medyan"] else 0
+
+    veri_ld = {"@context": "https://schema.org", "@type": "Dataset",
+      "name": "İstanbul İlçe Bazında Otopark Fiyat Endeksi",
+      "description": f"{len(d)} İSPARK otoparkının ilçe bazında saatlik, günlük ve aylık tarife medyanları.",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "isBasedOn": "https://data.ibb.gov.tr/", "temporalCoverage": datetime.now().strftime("%Y-%m-%d"),
+      "creator": {"@type": "Organization", "name": "nereyeparkedicem"}}
+
+    gv = f"""<nav class="iz"><a href="../index.html">Ana sayfa</a> › <span>Fiyat endeksi</span></nav>
+<section class="kahraman dar">
+ <h1>İstanbul otopark fiyat endeksi</h1>
+ <p class="alt-baslik">{len(d)} İSPARK otoparkının ilçe bazında tarife medyanı.
+ Kaynak İBB Açık Veri Portalı; hesaplama tarafımızca yapıldı.</p>
+</section>
+<section>
+ <div class="rakamlar">
+  <div><b>{tl(st.median(ilk))} ₺</b><span>ilk saat medyanı</span></div>
+  <div><b>{tl(st.median(gun))} ₺</b><span>tam gün medyanı</span></div>
+  <div><b>{tl(st.median(ay))} ₺</b><span>aylık abonelik medyanı</span></div>
+  <div><b>{kat:.1f}×</b><span>en pahalı / en ucuz ilçe</span></div>
+ </div>
+ <p class="alt-baslik">En pahalı <strong>{pahali["ad"]}</strong> ({tl(pahali["medyan"])} ₺) ·
+ en ucuz <strong>{ucuz["ad"]}</strong> ({tl(ucuz["medyan"])} ₺) ·
+ aralık {tl(ilk[0])}–{tl(ilk[-1])} ₺.</p>
+</section>
+<section class="tablo-sar">
+ <table class="endeks">
+  <caption>İlçelere göre tarife medyanları (₺)</caption>
+  <thead><tr><th scope="col">İlçe</th><th scope="col">Otopark</th><th scope="col">İlk saat</th>
+   <th scope="col">Tam gün</th><th scope="col">Aylık</th></tr></thead>
+  <tbody>{"".join(satir)}</tbody>
+ </table>
+</section>
+<section class="metin">
+ <h2>Yöntem</h2>
+ <p>Her ilçe için o ilçedeki İSPARK otoparklarının tarifelerinin <strong>medyanı</strong>
+ alınmıştır — ortalama değil, çünkü tek bir yüksek tarifeli otopark ortalamayı bozar.
+ Tam gün sütunu tarifesinde &quot;Tam Gün&quot; kalemi bulunan otoparklardan, aylık sütunu
+ abonelik ücreti tanımlı otoparklardan hesaplanır; tanımsızsa hücre boştur.</p>
+ <p>Veri İBB Açık Veri Portalı'ndan CC BY 4.0 ile alınır. Sayfa üretildiği anki tarifeyi
+ gösterir; İSPARK zam yaptığında sayfa yeniden üretilene kadar eski değer görünür.
+ <strong>Bağlayıcı değildir</strong>, bilgilendirme amaçlıdır.</p>
+ <p>Yalnız İSPARK otoparkları kapsanır. Özel otoparklar, AVM otoparkları ve sokak üstü
+ park bu endekste yoktur.</p>
+</section>
+<script type="application/ld+json">{json.dumps(veri_ld, ensure_ascii=False)}</script>"""
+
+    os.makedirs(f"{CIKTI}/fiyat-endeksi", exist_ok=True)
+    open(f"{CIKTI}/fiyat-endeksi/index.html", "w", encoding="utf-8").write(sayfa(
+        "İstanbul Otopark Fiyat Endeksi — İlçe İlçe Tarife | nereyeparkedicem",
+        f"İstanbul'da {len(d)} İSPARK otoparkının ilçe bazında tarife medyanı. "
+        f"İlk saat {tl(st.median(ilk))} ₺, tam gün {tl(st.median(gun))} ₺. "
+        f"En pahalı {pahali['ad']}, en ucuz {ucuz['ad']} — {kat:.1f} kat fark.",
+        gv, kok="../"))
 
 if __name__ == "__main__": uret()
