@@ -91,7 +91,7 @@ def sayfa(baslik, aciklama, govde, kok="", canonical=""):
  İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
  <p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile
  resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
- <p><a href="{kok}gizlilik.html">Gizlilik ve KVKK</a></p>
+ <p><a href="{kok}gizlilik/">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
 <script src="{kok}uygulama.js" defer></script>
@@ -173,7 +173,7 @@ def uret():
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
-        f'{sm}<url><loc>{url}/gizlilik.html</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
+        f'{sm}<url><loc>{url}/gizlilik/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
     open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
