@@ -20,6 +20,10 @@ ispark.py       → İBB Açık Veri API istemcisi (TLS: truststore, doğrulama 
 ispark_cek.py   → 247 otoparkın listesi + detayı → veri/ispark.json
 uret.py         → veri/ispark.json → site/ (1 ana sayfa + 34 ilçe sayfası)
 kontrol.py      → teslim öncesi tarayıcı ölçümü (hesaplanan değer, taşma, dokunma alanı)
+perf.py         → canlı performans ölçümü (LCP / CLS / TTFB / transfer)
+isit.py         → deploy sonrası edge cache ısıtma
+og_uret.py      → paylaşım görseli (1200x630), sayılar veriden üretilir
+test_uret.py    → 38 birim test, çerçeve yok
 osm_sayim.py    → OpenStreetMap otopark kapsam ölçümü (Overpass)
 osm_sehir.py    → il bazlı OSM kapsamı (resumable, önbellekli)
 ```
@@ -33,7 +37,11 @@ o yüzden sunucu tarafı gerekmiyor. Tarifeler üretim anındaki anlık görünt
 pip install truststore
 python ispark_cek.py    # veri/ispark.json tazelenir
 python uret.py          # site/ yeniden üretilir
+python test_uret.py     # 38 birim test
 python kontrol.py       # 375/768/1440 tarayıcı kontrolü, hata varsa exit 1
+python og_uret.py       # site/og.png
+python isit.py          # deploy sonrası cache ısıtma
+python perf.py          # canlı Core Web Vitals
 ```
 
 ## Veri kaynakları ve lisans
@@ -46,5 +54,14 @@ python kontrol.py       # 375/768/1440 tarayıcı kontrolü, hata varsa exit 1
 
 **Bağımsız uygulamadır.** İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile
 resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır.
+
+## Ölçülen performans (canlı)
+
+LCP 308-364 ms · CLS 0 · TTFB 61-66 ms · JS 2,3 KB · CSS 2,5 KB · 3 istek
+
+## Gizlilik
+
+Sunucu yok, hesap yok, çerez yok, izleme betiği yok. Konum izni verilirse mesafe
+hesabı **tarayıcıda** yapılır; konum hiçbir yere gönderilmez. Ayrıntı: `/gizlilik/`
 
 Google Maps kazınmaz — hizmet şartları ihlalidir. Tüm veri açık lisanslı kaynaklardan gelir.
