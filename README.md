@@ -3,7 +3,7 @@
 İstanbul'daki **247 İSPARK otoparkının** canlı doluluk oranını, tam tarifesini ve
 yol tarifini gösteren statik web uygulaması. Uygulama indirmeye gerek yok.
 
-**Canlı:** _(deploy sonrası eklenecek)_
+**Canlı:** https://nereyeparkedicem.vercel.app
 
 ## Neden
 

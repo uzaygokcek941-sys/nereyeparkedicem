@@ -20,3 +20,6 @@ veri/Mersin.json
 TODO.md
 osm_sehir.py.bak
 osm_turkiye.json
+
+.vercel
+.env*
