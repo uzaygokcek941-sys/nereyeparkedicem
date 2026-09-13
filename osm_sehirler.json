@@ -1,0 +1,123 @@
+{
+ "Istanbul": {
+  "toplam": 5007,
+  "name": 708,
+  "fee": 896,
+  "charge": 18,
+  "opening_hours": 76,
+  "capacity": 195,
+  "operator": 564,
+  "ucretli": 590,
+  "ispark": 1
+ },
+ "Ankara": {
+  "toplam": 2884,
+  "name": 109,
+  "fee": 316,
+  "charge": 3,
+  "opening_hours": 4,
+  "capacity": 106,
+  "operator": 73,
+  "ucretli": 33,
+  "ispark": 0
+ },
+ "Izmir": {
+  "toplam": 1552,
+  "name": 76,
+  "fee": 246,
+  "charge": 5,
+  "opening_hours": 5,
+  "capacity": 45,
+  "operator": 87,
+  "ucretli": 73,
+  "ispark": 0
+ },
+ "Bursa": {
+  "toplam": 534,
+  "name": 42,
+  "fee": 81,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 11,
+  "operator": 19,
+  "ucretli": 35,
+  "ispark": 0
+ },
+ "Antalya": {
+  "toplam": 1351,
+  "name": 42,
+  "fee": 244,
+  "charge": 6,
+  "opening_hours": 1,
+  "capacity": 60,
+  "operator": 29,
+  "ucretli": 37,
+  "ispark": 0
+ },
+ "Konya": {
+  "toplam": 714,
+  "name": 11,
+  "fee": 38,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 3,
+  "operator": 12,
+  "ucretli": 14,
+  "ispark": 0
+ },
+ "Adana": {
+  "toplam": 759,
+  "name": 13,
+  "fee": 46,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 12,
+  "operator": 13,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "Gaziantep": {
+  "toplam": 159,
+  "name": 6,
+  "fee": 9,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 2,
+  "operator": 5,
+  "ucretli": 4,
+  "ispark": 0
+ },
+ "Kocaeli": {
+  "toplam": 1315,
+  "name": 36,
+  "fee": 166,
+  "charge": 0,
+  "opening_hours": 6,
+  "capacity": 44,
+  "operator": 66,
+  "ucretli": 23,
+  "ispark": 0
+ },
+ "Mersin": {
+  "toplam": 268,
+  "name": 29,
+  "fee": 27,
+  "charge": 4,
+  "opening_hours": 1,
+  "capacity": 3,
+  "operator": 32,
+  "ucretli": 15,
+  "ispark": 0
+ },
+ "_TOPLAM": {
+  "toplam": 14543,
+  "name": 1072,
+  "fee": 2069,
+  "charge": 36,
+  "opening_hours": 94,
+  "capacity": 481,
+  "operator": 900,
+  "ucretli": 825,
+  "ispark": 1
+ }
+}

@@ -1,0 +1,174 @@
+# -*- coding: utf-8 -*-
+"""Statik site ureticisi. veri/ispark.json -> site/
+Canli doluluk tarayicida IBB API'sinden cekilir (CORS: *), sunucu yok."""
+import json, os, re, shutil, html
+from datetime import datetime, timezone, timedelta
+
+TR = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+CIKTI = "site"
+
+def tr_baslik(s):
+    """Turkce baslik harfi. Python .title() I/i ayrimini bilmez:
+    'KADIKOY'.title() -> 'Kadikoy' (yanlis), dogrusu 'Kadikoy' degil 'Kadıköy'."""
+    if not s: return ""
+    kucuk = s.replace("I", "ı").replace("İ", "i").lower()
+    return " ".join((k[0].replace("i", "İ").upper() + k[1:]) if k else k for k in kucuk.split())
+
+def slug(s):
+    s = (s or "").translate(TR).lower()
+    return re.sub(r"-+", "-", re.sub(r"[^a-z0-9]+", "-", s)).strip("-")
+
+def tl(x):
+    return f"{x:,.0f}".replace(",", ".") if isinstance(x, (int, float)) else "—"
+
+def kayitlar():
+    d = json.load(open("veri/ispark.json", encoding="utf-8"))
+    for k in d:
+        k["slug"] = slug(k["ilce"])
+        k["ad_tr"] = k["ad"].strip()
+    return d
+
+def ilce_grupla(d):
+    g = {}
+    for k in d: g.setdefault(k["slug"], {"ad": tr_baslik(k["ilce"]), "kayit": []})["kayit"].append(k)
+    for v in g.values():
+        v["kayit"].sort(key=lambda x: -(x["kapasite"] or 0))
+        f = [x["ilk_saat_tl"] for x in v["kayit"] if x["ilk_saat_tl"]]
+        f.sort()
+        v["medyan"] = f[len(f)//2] if f else None
+        v["kapasite"] = sum(x["kapasite"] or 0 for x in v["kayit"])
+    return dict(sorted(g.items(), key=lambda kv: -len(kv[1]["kayit"])))
+
+def kart(k):
+    tarife = "".join(
+        f'<li><span>{html.escape(t["aralik"])}</span><b>{tl(t["tl"])} ₺</b></li>'
+        for t in k["tarife"][:6])
+    return f'''<article class="otopark" data-id="{k['id']}" data-lat="{k['lat']}" data-lng="{k['lng']}">
+ <header>
+  <h3>{html.escape(k['ad_tr'])}</h3>
+  <p class="adres">{html.escape(tr_baslik(k['adres'] or ''))}</p>
+ </header>
+ <dl class="ozet">
+  <div><dt>Kapasite</dt><dd>{k['kapasite'] or '—'}</dd></div>
+  <div><dt>Boş</dt><dd class="bos" data-bos>{k['bos'] if k['bos'] is not None else '—'}</dd></div>
+  <div><dt>İlk saat</dt><dd>{tl(k['ilk_saat_tl'])} ₺</dd></div>
+  <div><dt>Ücretsiz</dt><dd>{k['ucretsiz_dk'] or 0} dk</dd></div>
+ </dl>
+ <p class="saat">{html.escape(k['saat'] or '')} · {html.escape(tr_baslik(k['tip'] or ''))}</p>
+ <details><summary>Tam tarife{f" · aylık {tl(k['aylik_tl'])} ₺" if k['aylik_tl'] else ""}</summary>
+  <ul class="tarife">{tarife}</ul></details>
+ <div class="git">
+  <a href="https://www.google.com/maps/dir/?api=1&destination={k['lat']},{k['lng']}" target="_blank" rel="noopener">Google Maps</a>
+  <a href="https://yandex.com.tr/harita/?rtext=~{k['lat']},{k['lng']}&rtt=auto" target="_blank" rel="noopener">Yandex</a>
+ </div>
+</article>'''
+
+def sayfa(baslik, aciklama, govde, kok="", canonical=""):
+    simdi = datetime.now(timezone(timedelta(hours=3))).strftime("%d.%m.%Y %H:%M")
+    return f'''<!doctype html>
+<html lang="tr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{html.escape(baslik)}</title>
+<meta name="description" content="{html.escape(aciklama)}">
+{f'<link rel="canonical" href="{canonical}">' if canonical else ''}
+<meta property="og:title" content="{html.escape(baslik)}">
+<meta property="og:description" content="{html.escape(aciklama)}">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="{kok}stil.css">
+</head><body>
+<a class="atla" href="#icerik">İçeriğe atla</a>
+<header class="ust">
+ <a class="marka" href="{kok}index.html">nereye<b>parkedicem</b></a>
+ <nav aria-label="Ana"><a href="{kok}index.html">Harita</a><a href="{kok}index.html#ilceler">İlçeler</a></nav>
+</header>
+<main id="icerik">{govde}</main>
+<footer class="alt">
+ <p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> —
+ İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
+ <p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile
+ resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
+ <p class="uretim">Sayfa üretimi: {simdi}</p>
+</footer>
+<script src="{kok}uygulama.js" defer></script>
+</body></html>'''
+
+def sss_schema(ilce, n, medyan):
+    sorular = [
+        (f"{ilce}'da kaç İSPARK otoparkı var?",
+         f"İBB Açık Veri Portalı'na göre {ilce} ilçesinde {n} İSPARK otoparkı kayıtlı."),
+        (f"{ilce}'da otopark ne kadar?",
+         f"İlk saat ücretinin medyanı {tl(medyan)} TL. Her otoparkın tam tarifesi sayfada listelidir." if medyan
+         else "Tarife bilgisi otopark kartlarında listelidir."),
+        ("Doluluk bilgisi canlı mı?",
+         "Evet. Boş kapasite sayfa açıldığında İBB Açık Veri Portalı'ndan doğrudan çekilir."),
+    ]
+    d = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": s, "acceptedAnswer": {"@type": "Answer", "text": c}}
+        for s, c in sorular]}
+    return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
+
+def uret():
+    d = kayitlar(); g = ilce_grupla(d)
+    os.makedirs(CIKTI, exist_ok=True)
+    toplam_kap = sum(k["kapasite"] or 0 for k in d)
+    fiyat = sorted(k["ilk_saat_tl"] for k in d if k["ilk_saat_tl"])
+    medyan = fiyat[len(fiyat)//2]
+
+    ilce_kart = "".join(
+        f'<a class="ilce" href="ilce/{s}/"><b>{v["ad"]}</b>'
+        f'<span>{len(v["kayit"])} otopark · {v["kapasite"]:,} yer</span>'.replace(",", ".") +
+        f'<span class="fiyat">ilk saat medyan {tl(v["medyan"])} ₺</span></a>'
+        for s, v in g.items())
+
+    govde = f'''<section class="kahraman">
+ <h1>En yakın otoparkı <em>saniyede</em> bul</h1>
+ <p class="alt-baslik">İstanbul'da {len(d)} İSPARK noktası, {len(g)} ilçe. Doluluk ve tarife
+ İBB Açık Veri Portalı'ndan canlı. Uygulama indirmene gerek yok.</p>
+ <div class="rakamlar">
+  <div><b>{len(d)}</b><span>otopark</span></div>
+  <div><b>{toplam_kap:,}</b><span>toplam yer</span></div>
+  <div><b data-doluluk>—</b><span>şehir geneli dolu</span></div>
+  <div><b>{tl(medyan)} ₺</b><span>ilk saat medyan</span></div>
+ </div>
+ <button id="yakin" class="birincil">📍 En yakın otoparkları göster</button>
+ <p id="konum-durum" class="durum" role="status"></p>
+</section>
+<section id="sonuc" hidden><h2>Sana en yakın 10 otopark</h2><div class="liste" id="yakin-liste"></div></section>
+<section id="ilceler"><h2>İlçeye göre</h2><div class="ilce-izgara">{ilce_kart}</div></section>'''.replace(
+        f"{toplam_kap:,}", f"{toplam_kap:,}".replace(",", "."))
+
+    open(f"{CIKTI}/index.html", "w", encoding="utf-8").write(sayfa(
+        "İstanbul Otopark — Canlı Doluluk ve Tarife | nereyeparkedicem",
+        f"İstanbul'da {len(d)} İSPARK otoparkının canlı doluluk oranı ve tam tarifesi. "
+        f"En yakın otoparkı bul, tek dokunuşla yol tarifi al.", govde))
+
+    for s, v in g.items():
+        os.makedirs(f"{CIKTI}/ilce/{s}", exist_ok=True)
+        kartlar = "".join(kart(k) for k in v["kayit"])
+        gv = f'''<nav class="iz"><a href="../../index.html">Ana sayfa</a> › <span>{v["ad"]}</span></nav>
+<section class="kahraman dar">
+ <h1>{v["ad"]} otoparkları — canlı doluluk ve fiyat</h1>
+ <p class="alt-baslik">{len(v["kayit"])} İSPARK noktası · {v["kapasite"]:,} yer ·
+ ilk saat medyan {tl(v["medyan"])} ₺</p>
+ <p class="durum" data-ilce-doluluk>Doluluk yükleniyor…</p>
+</section>
+<section class="liste">{kartlar}</section>
+{sss_schema(v["ad"], len(v["kayit"]), v["medyan"])}'''.replace(f'{v["kapasite"]:,}', f'{v["kapasite"]:,}'.replace(",", "."))
+        open(f"{CIKTI}/ilce/{s}/index.html", "w", encoding="utf-8").write(sayfa(
+            f"{v['ad']} Otopark — Canlı Doluluk ve Fiyat | nereyeparkedicem",
+            f"{v['ad']} ilçesindeki {len(v['kayit'])} İSPARK otoparkının canlı doluluk oranı, "
+            f"tam tarifesi ve yol tarifi. İlk saat medyan {tl(v['medyan'])} TL.",
+            gv, kok="../../"))
+
+    # sitemap + robots
+    url = "https://nereyeparkedicem.vercel.app"
+    sm = "".join(f"<url><loc>{url}/ilce/{s}/</loc><changefreq>daily</changefreq></url>" for s in g)
+    open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
+        f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        f'<url><loc>{url}/</loc><changefreq>hourly</changefreq></url>{sm}</urlset>')
+    open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
+    json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
+              open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
+    print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce sayfasi + sitemap")
+
+if __name__ == "__main__": uret()

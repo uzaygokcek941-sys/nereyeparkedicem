@@ -1,0 +1,97 @@
+/* nereyeparkedicem — tek stil dosyasi. Cerceve yok. */
+:root{
+  --zemin:#f7f6f3; --yuzey:#ffffff; --kenar:#e3e0d8; --metin:#16150f; --sonuk:#5f5c52;
+  --vurgu:#0b5c3f; --vurgu-metin:#ffffff; --uyari:#9a3412; --iyi:#166534;
+  --r:14px; --golge:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.18);
+  --olcu:clamp(1rem, 0.9rem + 0.5vw, 1.0625rem);
+  --h1:clamp(1.9rem, 1.2rem + 3.4vw, 3.6rem);
+  --h2:clamp(1.35rem, 1.1rem + 1.1vw, 1.9rem);
+  --bosluk:clamp(1rem, 0.7rem + 1.4vw, 2rem);
+  --bolum:clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --zemin:#111310; --yuzey:#1a1d19; --kenar:#2c302a; --metin:#eceade; --sonuk:#9c9a8e;
+         --vurgu:#4ade80; --vurgu-metin:#0a1f15; --uyari:#fb923c; --iyi:#4ade80;
+         --golge:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6); }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--zemin);color:var(--metin);font:var(--olcu)/1.55
+  ui-sans-serif,system-ui,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  overflow-x:hidden;text-rendering:optimizeLegibility}
+a{color:inherit}
+.atla{position:absolute;left:-9999px}
+.atla:focus{left:1rem;top:1rem;z-index:9;background:var(--vurgu);color:var(--vurgu-metin);padding:.6rem 1rem;border-radius:8px}
+
+.ust,main,.alt{max-width:74rem;margin-inline:auto;padding-inline:clamp(1rem, 0.6rem + 1.6vw, 2.5rem)}
+.ust{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding-block:clamp(1rem, 0.8rem + .6vw, 1.5rem);flex-wrap:wrap}
+.marka{font-weight:600;letter-spacing:-.02em;text-decoration:none;font-size:1.05rem;
+  display:inline-flex;align-items:center;min-height:44px}
+.marka b{color:var(--vurgu);font-weight:800}
+.ust nav{display:flex;gap:clamp(.8rem, .5rem + .8vw, 1.6rem);font-size:.95rem}
+.ust nav a{color:var(--sonuk);text-decoration:none;display:inline-flex;align-items:center;
+  min-height:44px;padding-inline:.2rem}
+.ust nav a:hover,.ust nav a:focus-visible{color:var(--metin)}
+
+.kahraman{padding-block:var(--bolum) clamp(1.5rem, 1rem + 2vw, 2.5rem)}
+.kahraman.dar{padding-block:clamp(1.5rem, 1rem + 2vw, 2.5rem) 1rem}
+h1{font-size:var(--h1);line-height:1.04;letter-spacing:-.035em;margin:0 0 .6em;
+   font-weight:700;max-width:16ch;text-wrap:balance}
+.kahraman.dar h1{max-width:22ch}
+h1 em{font-style:normal;color:var(--vurgu)}
+h2{font-size:var(--h2);letter-spacing:-.02em;margin:0 0 .8em}
+h3{font-size:1.02rem;margin:0;letter-spacing:-.01em;line-height:1.3}
+.alt-baslik{color:var(--sonuk);max-width:56ch;margin:0 0 var(--bosluk);font-size:1.02em}
+
+.rakamlar{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));
+  gap:1px;background:var(--kenar);border:1px solid var(--kenar);border-radius:var(--r);
+  overflow:hidden;margin-bottom:var(--bosluk)}
+.rakamlar div{background:var(--yuzey);padding:clamp(.9rem, .7rem + .6vw, 1.3rem)}
+.rakamlar b{display:block;font-size:clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem);
+  font-weight:700;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.rakamlar span{color:var(--sonuk);font-size:.82rem}
+
+button.birincil{font:inherit;font-weight:600;background:var(--vurgu);color:var(--vurgu-metin);
+  border:0;border-radius:999px;padding:.95rem 1.6rem;min-height:48px;cursor:pointer;
+  box-shadow:var(--golge);transition:transform .12s ease, filter .12s ease}
+button.birincil:hover{filter:brightness(1.08)}
+button.birincil:active{transform:translateY(1px)}
+button.birincil:disabled{opacity:.55;cursor:progress}
+.durum{color:var(--sonuk);font-size:.9rem;margin:.7rem 0 0;min-height:1.2em}
+
+.liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));
+  gap:clamp(.8rem, .6rem + .6vw, 1.2rem);padding-bottom:var(--bolum)}
+.otopark{background:var(--yuzey);border:1px solid var(--kenar);border-radius:var(--r);
+  padding:clamp(1rem, .85rem + .5vw, 1.3rem);display:flex;flex-direction:column;gap:.75rem}
+.otopark .adres{color:var(--sonuk);font-size:.82rem;margin:.3rem 0 0}
+.ozet{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:0}
+.ozet dt{color:var(--sonuk);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em}
+.ozet dd{margin:.15rem 0 0;font-weight:700;font-variant-numeric:tabular-nums;font-size:1.05rem}
+.ozet .bos[data-durum="bos"]{color:var(--iyi)} .ozet .bos[data-durum="dolu"]{color:var(--uyari)}
+.saat{color:var(--sonuk);font-size:.82rem;margin:0}
+details summary{cursor:pointer;font-size:.87rem;color:var(--sonuk)}
+.tarife{list-style:none;margin:.6rem 0 0;padding:0;font-size:.87rem}
+.tarife li{display:flex;justify-content:space-between;gap:1rem;padding:.28rem 0;border-bottom:1px dashed var(--kenar)}
+.git{display:flex;gap:.5rem;margin-top:auto;flex-wrap:wrap}
+.git a{flex:1 1 8rem;text-align:center;text-decoration:none;border:1px solid var(--kenar);
+  border-radius:10px;padding:.65rem .5rem;min-height:44px;display:flex;align-items:center;
+  justify-content:center;font-size:.88rem;font-weight:500}
+.git a:hover{border-color:var(--vurgu);color:var(--vurgu)}
+
+.ilce-izgara{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,14rem),1fr));
+  gap:.7rem;padding-bottom:var(--bolum)}
+.ilce{background:var(--yuzey);border:1px solid var(--kenar);border-radius:12px;
+  padding:.95rem 1.05rem;text-decoration:none;display:flex;flex-direction:column;gap:.15rem;
+  min-height:44px;transition:border-color .12s ease}
+.ilce:hover{border-color:var(--vurgu)}
+.ilce b{letter-spacing:-.01em} .ilce span{color:var(--sonuk);font-size:.8rem}
+.ilce .fiyat{font-variant-numeric:tabular-nums}
+.iz{font-size:.85rem;color:var(--sonuk);padding-top:.5rem}
+.iz a{color:var(--sonuk)}
+
+.alt{border-top:1px solid var(--kenar);padding-block:var(--bosluk) var(--bolum);
+  color:var(--sonuk);font-size:.84rem}
+.alt p{margin:0 0 .6rem;max-width:68ch}
+.uretim{opacity:.7;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}

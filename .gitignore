@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+*.log
+ekran/
+istpark.txt
+# OSM il onbellegi: yeniden uretilebilir, ~2 MB
+veri/il*.json
+veri/_iller.json
+veri/İ*.json
+veri/Istanbul.json
+veri/Ankara.json
+veri/Izmir.json
+veri/Bursa.json
+veri/Antalya.json
+veri/Konya.json
+veri/Adana.json
+veri/Gaziantep.json
+veri/Kocaeli.json
+veri/Mersin.json
+TODO.md
+osm_sehir.py.bak
+osm_turkiye.json
