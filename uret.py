@@ -74,6 +74,10 @@ def sayfa(baslik, aciklama, govde, kok="", canonical=""):
 <meta property="og:title" content="{html.escape(baslik)}">
 <meta property="og:description" content="{html.escape(aciklama)}">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://nereyeparkedicem.vercel.app/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="{kok}stil.css">
 </head><body>
 <a class="atla" href="#icerik">İçeriğe atla</a>
@@ -87,6 +91,7 @@ def sayfa(baslik, aciklama, govde, kok="", canonical=""):
  İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
  <p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile
  resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
+ <p><a href="{kok}gizlilik.html">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
 <script src="{kok}uygulama.js" defer></script>
@@ -160,15 +165,75 @@ def uret():
             f"tam tarifesi ve yol tarifi. İlk saat medyan {tl(v['medyan'])} TL.",
             gv, kok="../../"))
 
+    yaz_gizlilik(); yaz_404()
+
     # sitemap + robots
     url = "https://nereyeparkedicem.vercel.app"
     sm = "".join(f"<url><loc>{url}/ilce/{s}/</loc><changefreq>daily</changefreq></url>" for s in g)
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-        f'<url><loc>{url}/</loc><changefreq>hourly</changefreq></url>{sm}</urlset>')
+        f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
+        f'{sm}<url><loc>{url}/gizlilik.html</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
     open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
     print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce sayfasi + sitemap")
+
+
+GIZLILIK = """<section class="kahraman dar">
+<h1>Gizlilik ve KVKK</h1>
+<p class="alt-baslik">Kısa versiyon: sunucumuz yok, hesabınız yok, konumunuz bize gelmiyor.</p>
+</section>
+<section class="metin">
+<h2>Hangi veriyi topluyoruz</h2>
+<p><strong>Hiçbirini.</strong> Bu site statik dosyalardan oluşur. Kayıt, giriş, çerez veya
+izleme betiği yoktur. Sunucu tarafı kodu çalışmaz, veritabanı bulunmaz.</p>
+
+<h2>Konum bilgisi</h2>
+<p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
+Verilen konum <strong>yalnızca cihazınızın içinde</strong> kullanılır: mesafe hesabı tarayıcıda
+yapılır, sonuç ekranda gösterilir. Konum <strong>hiçbir sunucuya gönderilmez, kaydedilmez,
+üçüncü tarafla paylaşılmaz.</strong> Sayfayı kapattığınızda kaybolur. İzin vermek zorunda
+değilsiniz; ilçe listesinden de gezebilirsiniz.</p>
+
+<h2>Dışarıya giden tek istek</h2>
+<p>Canlı doluluk için tarayıcınız doğrudan İstanbul Büyükşehir Belediyesi Açık Veri
+Portalı'na (<code>api.ibb.gov.tr</code>) istek atar. Bu istekte konumunuz veya kimliğiniz yer
+almaz; yalnızca otopark listesi çekilir. İçerik Güvenliği Politikamız (CSP) başka hiçbir
+dış adrese bağlantı kurulmasına izin vermez.</p>
+
+<h2>Barındırma kayıtları</h2>
+<p>Site Vercel üzerinde barındırılır. Her web sunucusu gibi Vercel de teknik erişim kaydı
+(IP, tarayıcı bilgisi, istenen adres) tutabilir. Bu kayıtlar barındırma sağlayıcısına aittir
+ve tarafımızca okunmaz veya işlenmez.</p>
+
+<h2>KVKK</h2>
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca <strong>işlenen
+kişisel veri yoktur</strong>; bu nedenle veri sorumlusu sıfatıyla tutulan bir kayıt ortamı
+bulunmamaktadır. Yine de sorunuz olursa GitHub deposundan issue açabilirsiniz.</p>
+
+<h2>Verinin kaynağı ve doğruluğu</h2>
+<p>Otopark, doluluk ve tarife verisi İBB Açık Veri Portalı'ndan CC BY 4.0 lisansıyla gelir.
+Güncellik İBB'nin yenileme aralığına bağlıdır; aksama olursa veri birkaç dakika geride
+kalabilir. <strong>Bu site bağımsızdır</strong>; İBB, İSPARK A.Ş. veya İSTMOP ile resmî
+bağlantısı yoktur. Gösterilen fiyatlar bilgilendirme amaçlıdır, bağlayıcı değildir.</p>
+</section>"""
+
+DORTYUZDORT = """<section class="kahraman dar">
+<h1>Bu sayfa yok</h1>
+<p class="alt-baslik">Aradığın ilçe sayfası taşınmış veya hiç olmamış olabilir.</p>
+<p><a class="git-geri" href="/">Ana sayfaya dön ve ilçe seç</a></p>
+</section>"""
+
+def yaz_gizlilik():
+    open(f"{CIKTI}/gizlilik.html", "w", encoding="utf-8").write(sayfa(
+        "Gizlilik ve KVKK | nereyeparkedicem",
+        "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
+        "Toplanan kişisel veri bulunmuyor.", GIZLILIK))
+
+def yaz_404():
+    open(f"{CIKTI}/404.html", "w", encoding="utf-8").write(sayfa(
+        "Sayfa bulunamadı | nereyeparkedicem",
+        "Aradığınız sayfa bulunamadı.", DORTYUZDORT))
 
 if __name__ == "__main__": uret()
