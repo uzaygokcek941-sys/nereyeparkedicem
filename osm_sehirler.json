@@ -550,7 +550,7 @@
   "ispark": 0
  },
  "il51": {
-  "toplam": 34,
+  "toplam": 30,
   "name": 2,
   "fee": 2,
   "charge": 1,
@@ -726,14 +726,25 @@
   "ispark": 0
  },
  "il67": {
-  "toplam": 84,
-  "name": 13,
-  "fee": 29,
+  "toplam": 87,
+  "name": 14,
+  "fee": 34,
   "charge": 0,
   "opening_hours": 1,
-  "capacity": 13,
-  "operator": 5,
-  "ucretli": 3,
+  "capacity": 14,
+  "operator": 6,
+  "ucretli": 7,
+  "ispark": 0
+ },
+ "il68": {
+  "toplam": 97,
+  "name": 9,
+  "fee": 5,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 1,
+  "operator": 3,
+  "ucretli": 0,
   "ispark": 0
  },
  "il69": {
@@ -791,6 +802,17 @@
   "ucretli": 0,
   "ispark": 0
  },
+ "il74": {
+  "toplam": 36,
+  "name": 0,
+  "fee": 18,
+  "charge": 7,
+  "opening_hours": 1,
+  "capacity": 2,
+  "operator": 7,
+  "ucretli": 13,
+  "ispark": 0
+ },
  "il75": {
   "toplam": 11,
   "name": 0,
@@ -825,7 +847,7 @@
   "ispark": 0
  },
  "il78": {
-  "toplam": 35,
+  "toplam": 37,
   "name": 4,
   "fee": 2,
   "charge": 0,
@@ -869,14 +891,14 @@
   "ispark": 0
  },
  "_TOPLAM": {
-  "toplam": 23704,
-  "name": 1666,
-  "fee": 2968,
-  "charge": 42,
-  "opening_hours": 159,
-  "capacity": 766,
-  "operator": 1316,
-  "ucretli": 1118,
+  "toplam": 23838,
+  "name": 1676,
+  "fee": 2996,
+  "charge": 49,
+  "opening_hours": 161,
+  "capacity": 770,
+  "operator": 1327,
+  "ucretli": 1135,
   "ispark": 1
  }
 }

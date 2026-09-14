@@ -3,28 +3,28 @@
 Anahtar: **PARK** · 38-45 sn · 9:16 · veri görselleştirme ağırlıklı
 
 ## Kanca
-> "Ankara'da 2.884 otopark kayıtlı. Dördünün çalışma saati biliniyor.
+> "Ankara'da 2.954 otopark kayıtlı. Dördünün çalışma saati biliniyor.
 > Dördünün. Antalya'da bir tane."
 
 ## 6 parça
 
 | # | Sn | Ne | Ekranda |
 |---|---|---|---|
-| 1 | 0-5 | Kanca | Büyük sayı: **2.884** → yanına küçücük **4** |
+| 1 | 0-5 | Kanca | Büyük sayı: **2.954** → yanına küçücük **4** |
 | 2 | 5-11 | "Bu veri kimsenin sırrı değil, OpenStreetMap'te" | osm.org haritası, otopark ikonları |
 | 3 | 11-22 | Sorguyu çalıştır | Terminal: `python osm_sehir.py` → tablo satır satır akıyor |
-| 4 | 22-32 | Tabloyu göster | 10 şehir tablosu; **tarife eksik %99,8**, **saat eksik %99,4** vurgulu |
+| 4 | 22-32 | Tabloyu göster | 10 şehir tablosu; **tarife eksik %99,8**, **saat eksik %99,3** vurgulu |
 | 5 | 32-38 | "İstanbul'da bu boşluğu kapattım" | Site: Fatih sayfası, 28 otoparkta canlı doluluk + tam tarife |
 | 6 | 38-44 | CTA | "Kendi şehrinin verisini çıkarmak istersen — yoruma **PARK** yaz" |
 
 ## Caption
 ```
-Türkiye'de OpenStreetMap'te kayıtlı 24.418 otopark var.
-52'sinde fiyat bilgisi var. 163'ünde çalışma saati.
+Türkiye'de OpenStreetMap'te kayıtlı 23.838 otopark var.
+49'unda fiyat bilgisi var. 161'inde çalışma saati.
 
 Yani %99,8'inde "burada otopark var" yazıyor, "açık mı, kaça" yazmıyor.
 
-Ankara 2.884 otopark / 4 saat. Antalya 1.351 / 1. Konya 714 / 0.
+Ankara 2.954 otopark / 4 saat. Antalya 1.295 / 1. Konya 714 / 0.
 İstanbul'da İSPARK'ın açık verisi olduğu için orayı kapattım:
 247 otopark, canlı doluluk, tam tarife.
 
@@ -32,7 +32,8 @@ Sorguyu nasıl çalıştıracağını anlatan dosyayı göndereyim — yoruma PA
 ```
 
 ## Kaynak
-`osm_turkiye.json` · `osm_sehirler.json` — ikisi de bu makinede üretildi, Overpass API.
+`osm_sehirler.json` — 81 ilin tamamı, bu makinede üretildi (Overpass API, 2026-09-15).
+Eski `osm_turkiye.json` ölçümü farklı kapsamdaydı; bu senaryodaki sayılar 81 il ölçümünden gelir.
 
 ---
 
