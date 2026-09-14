@@ -115,6 +115,6 @@ details summary{cursor:pointer;font-size:.87rem;color:var(--sonuk)}
   letter-spacing:.05em;color:var(--sonuk);font-weight:600}
 .endeks th[scope=row],.endeks thead th:first-child{text-align:left}
 .endeks th[scope=row]{font-weight:600}
-.endeks th[scope=row] a{text-decoration:none}
+.endeks th[scope=row] a{text-decoration:none;display:flex;align-items:center;min-height:44px}   /* WCAG 2.5.8: hucre ici tek basina link, satir-ici istisnasi gecmez */
 .endeks th[scope=row] a:hover{color:var(--vurgu)}
 .endeks tbody tr:hover{background:var(--yuzey)}

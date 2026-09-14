@@ -6,7 +6,8 @@ from playwright.sync_api import sync_playwright
 
 PORT = 8731
 GENISLIK = [(375, 812, "mobil"), (768, 1024, "tablet"), (1440, 900, "masaustu")]
-SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/"]
+SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
+         "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/"]
 
 def sunucu():
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory="site")
@@ -50,9 +51,12 @@ def main():
         b = p.chromium.launch()
         for w, h, ad in GENISLIK:
             sf = b.new_page(viewport={"width": w, "height": h})
-            konsol = []
+            konsol, dis = [], []
             sf.on("console", lambda m: konsol.append(f"{m.type}: {m.text[:90]}") if m.type in ("error","warning") else None)
             sf.on("pageerror", lambda e: konsol.append(f"pageerror: {str(e)[:90]}"))
+            # Dis servis arizasi bizim kusurumuz degil: ayri topla, HATA sayma.
+            sf.on("response", lambda r: dis.append(f"{r.status} {r.url[:70]}")
+                  if r.status >= 500 and "127.0.0.1" not in r.url and "localhost" not in r.url else None)
             for yol in SAYFA:
                 sf.goto(f"http://127.0.0.1:{PORT}{yol}", wait_until="networkidle")
                 r = sf.evaluate(OLCUM)
@@ -65,6 +69,9 @@ def main():
                 if r["yer_tutucu"]: hata.append(f"{ad}{yol}: {r['yer_tutucu']} doldurulmamis yer tutucu")
                 if r.get("bosluk_px", 1) < 0: hata.append(f"{ad}{yol}: ust uste binme {r['bosluk_px']}px")
                 if r["kucuk_dokunma"]: uyari.append(f"{ad}{yol}: <44px dokunma -> {r['kucuk_dokunma']}")
+            if dis:
+                uyari.append(f"{ad}: DIS SERVIS 5xx (bizim kusurumuz degil) -> {sorted(set(dis))[:2]}")
+                konsol = [k for k in konsol if "Failed to load resource" not in k]
             if konsol: hata.append(f"{ad}: konsol -> {konsol[:3]}")
             sf.close()
         b.close()

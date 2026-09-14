@@ -63,8 +63,17 @@ def kart(k):
  </div>
 </article>'''
 
-def sayfa(baslik, aciklama, govde, kok="", canonical=""):
+def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=True):
     simdi = datetime.now(timezone(timedelta(hours=3))).strftime("%d.%m.%Y %H:%M")
+    js_etiket = f'<script src="{kok}uygulama.js" defer></script>' if js else ""
+    if kaynak_html is None:
+        kaynak_html = (
+            '<p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> — '
+            'İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" '
+            'target="_blank" rel="noopener">CC BY 4.0</a>.</p>'
+            '<p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile '
+            "resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; "
+            'aksama olursa birkaç dakika geride kalabilir.</p>')
     return f'''<!doctype html>
 <html lang="tr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -87,14 +96,11 @@ def sayfa(baslik, aciklama, govde, kok="", canonical=""):
 </header>
 <main id="icerik">{govde}</main>
 <footer class="alt">
- <p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> —
- İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p>
- <p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile
- resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
+ {kaynak_html}
  <p><a href="{kok}gizlilik/">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
-<script src="{kok}uygulama.js" defer></script>
+{js_etiket}
 </body></html>'''
 
 def sss_schema(ilce, n, medyan):
@@ -115,6 +121,13 @@ def sss_schema(ilce, n, medyan):
 def uret():
     d = kayitlar(); g = ilce_grupla(d)
     os.makedirs(CIKTI, exist_ok=True)
+    import sehir                                   # dongusel import: fonksiyon icinde
+    sg = sehir.uret_hepsi()
+    izd = sehir.yukle(sehir.SEHIR["izmir"]["dosya"])
+    andd = sehir.yukle(sehir.SEHIR["ankara"]["dosya"])
+    iz_n, iz_i = len(izd), len(sg["izmir"])
+    iz_t = sum(1 for k in izd if k["tarife"])
+    an_n, an_i = len(andd), len(sg["ankara"])
     toplam_kap = sum(k["kapasite"] or 0 for k in d)
     fiyat = sorted(k["ilk_saat_tl"] for k in d if k["ilk_saat_tl"])
     medyan = fiyat[len(fiyat)//2]
@@ -139,7 +152,14 @@ def uret():
  <p id="konum-durum" class="durum" role="status"></p>
 </section>
 <section id="sonuc" hidden><h2>Sana en yakın 10 otopark</h2><div class="liste" id="yakin-liste"></div></section>
-<section id="ilceler"><h2>İlçeye göre</h2><div class="ilce-izgara">{ilce_kart}</div></section>'''.replace(
+<section id="ilceler"><h2>İlçeye göre</h2><div class="ilce-izgara">{ilce_kart}</div></section>
+<section id="sehirler"><h2>Diğer şehirler</h2>
+ <div class="ilce-izgara">
+  <a class="ilce" href="izmir/"><b>İzmir</b><span>{iz_n} İZELMAN otoparkı · {iz_i} ilçe</span>
+   <span class="fiyat">{iz_t} otoparkın tarifesi</span></a>
+  <a class="ilce" href="ankara/"><b>Ankara</b><span>{an_n} ANPARK otoparkı · {an_i} ilçe</span>
+   <span class="fiyat">tarife yayınlanmıyor</span></a>
+ </div></section>'''.replace(
         f"{toplam_kap:,}", f"{toplam_kap:,}".replace(",", "."))
 
     open(f"{CIKTI}/index.html", "w", encoding="utf-8").write(sayfa(
@@ -170,6 +190,9 @@ def uret():
     # sitemap + robots
     url = "https://nereyeparkedicem.vercel.app"
     sm = "".join(f"<url><loc>{url}/ilce/{s}/</loc><changefreq>daily</changefreq></url>" for s in g)
+    for kod, gg in sg.items():
+        sm += f"<url><loc>{url}/{kod}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>"
+        sm += "".join(f"<url><loc>{url}/{kod}/ilce/{x}/</loc><changefreq>weekly</changefreq></url>" for x in gg)
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
@@ -178,7 +201,8 @@ def uret():
     open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
-    print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce sayfasi + sitemap")
+    ss = sum(len(x) for x in sg.values())
+    print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce + {len(sg)} sehir + {ss} sehir-ilce sayfasi + sitemap")
 
 
 GIZLILIK = """<section class="kahraman dar">

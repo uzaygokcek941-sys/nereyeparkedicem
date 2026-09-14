@@ -68,5 +68,38 @@ if os.path.exists("site/index.html"):
     es("index lang tr", 'lang="tr"' in h, True)
     es("index viewport var", "width=device-width" in h, True)
 
+# --- sehir katmani (Izmir / Ankara)
+import sehir_cek as sc
+es("anahtar: tip kelimeleri atilir",
+   sc.anahtar("KONAK KATLI OTOPARKI"), sc.anahtar("Konak Otopark"))
+es("anahtar: I/i Turkce katlama", sc.anahtar("İZMİR"), sc.anahtar("izmir"))
+es("anahtar: farkli otopark karismaz",
+   sc.anahtar("Bornova Pazaryeri") == sc.anahtar("Konak Pazaryeri"), False)
+es("sayi: TR ondalik", sc.sayi("1.250,50"), 1250.5)
+es("sayi: bos -> None", sc.sayi(""), None)
+
+for _ad, _yol, _kaynak in [("izmir", "veri/izmir.json", "izelman"),
+                           ("ankara", "veri/ankara.json", "anpark")]:
+    if os.path.exists(_yol):
+        _d = json.load(open(_yol, encoding="utf-8"))
+        es(f"{_ad}: kayit var", len(_d) > 0, True)
+        es(f"{_ad}: kaynak etiketi", {k["kaynak"] for k in _d}, {_kaynak})
+        es(f"{_ad}: koordinat tam", all(k["lat"] and k["lng"] for k in _d), True)
+        es(f"{_ad}: ispark ile ayni sema",
+           set(_d[0]) >= {"id","ad","lat","lng","ilce","kapasite","tarife","ilk_saat_tl"}, True)
+        es(f"{_ad}: canli bos yok (kaynak vermiyor)",
+           all(k["bos"] is None for k in _d), True)
+
+es("ankara: tarife yok, uydurulmuyor",
+   all(not k["tarife"] and k["ilk_saat_tl"] is None
+       for k in json.load(open("veri/ankara.json", encoding="utf-8"))), True)
+
+for _s in ["site/izmir/index.html", "site/ankara/index.html"]:
+    if os.path.exists(_s):
+        _h = open(_s, encoding="utf-8").read()
+        es(f"{_s}: uygulama.js yok", "uygulama.js" in _h, False)
+        es(f"{_s}: ISPARK atfi yok", "İSPARK otopark servisi" in _h, False)
+        es(f"{_s}: kendi kaynagini atfeder", "Açık Veri" in _h or "ANPARK" in _h, True)
+
 print(f"\n{gecti} gecti, {basarisiz} basarisiz")
 sys.exit(1 if basarisiz else 0)
