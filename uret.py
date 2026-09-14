@@ -241,6 +241,18 @@ def yaz_404():
 def yaz_endeks(d, g):
     """Ilce bazinda otopark fiyat endeksi. Turkiye'de baska yerde yayinlanmiyor."""
     import statistics as st
+    osm_p = ""
+    try:
+        o = json.load(open("veri/osm_ispark.json", encoding="utf-8"))
+        osm_p = (
+            f'<p>Bu tarifeler OpenStreetMap’te yok. 150 m yarıçapla yapılan '
+            f'eşleştirmede {o["ispark_toplam"]} İSPARK otoparkının '
+            f'{o["osm_yok"]}’ü OSM’de hiç kayıtlı değil; '
+            f'eşleşen {o["osm_var"]} otoparktan yalnız '
+            f'<strong>{o["eslesen_tarifeli"]}’ünde</strong> fiyat etiketi var. '
+            f'Bu sayfadaki {len(d)} otoparkın tamamında tarife bulunur.</p>')
+    except (OSError, ValueError, KeyError):
+        pass
     ilk = sorted(k["ilk_saat_tl"] for k in d if k["ilk_saat_tl"])
     gun = sorted(t["tl"] for k in d for t in k["tarife"] if "Tam" in t["aralik"])
     ay  = sorted(k["aylik_tl"] for k in d if k["aylik_tl"])
@@ -303,6 +315,7 @@ def yaz_endeks(d, g):
  <strong>Bağlayıcı değildir</strong>, bilgilendirme amaçlıdır.</p>
  <p>Yalnız İSPARK otoparkları kapsanır. Özel otoparklar, AVM otoparkları ve sokak üstü
  park bu endekste yoktur.</p>
+ {osm_p}
 </section>
 <script type="application/ld+json">{json.dumps(veri_ld, ensure_ascii=False)}</script>"""
 
