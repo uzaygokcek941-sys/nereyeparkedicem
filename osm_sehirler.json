@@ -21,6 +21,50 @@
   "ucretli": 0,
   "ispark": 0
  },
+ "il03": {
+  "toplam": 79,
+  "name": 2,
+  "fee": 1,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 0,
+  "operator": 2,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il04": {
+  "toplam": 23,
+  "name": 1,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 2,
+  "operator": 1,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "il05": {
+  "toplam": 97,
+  "name": 4,
+  "fee": 1,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 8,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "il06": {
+  "toplam": 2954,
+  "name": 110,
+  "fee": 335,
+  "charge": 3,
+  "opening_hours": 4,
+  "capacity": 113,
+  "operator": 77,
+  "ucretli": 34,
+  "ispark": 0
+ },
  "il07": {
   "toplam": 1295,
   "name": 42,
@@ -30,6 +74,17 @@
   "capacity": 55,
   "operator": 29,
   "ucretli": 36,
+  "ispark": 0
+ },
+ "il08": {
+  "toplam": 57,
+  "name": 1,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
   "ispark": 0
  },
  "il09": {
@@ -76,6 +131,17 @@
   "ucretli": 0,
   "ispark": 0
  },
+ "il13": {
+  "toplam": 87,
+  "name": 1,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 1,
+  "ucretli": 0,
+  "ispark": 0
+ },
  "il14": {
   "toplam": 94,
   "name": 13,
@@ -96,6 +162,17 @@
   "capacity": 0,
   "operator": 0,
   "ucretli": 1,
+  "ispark": 0
+ },
+ "il16": {
+  "toplam": 534,
+  "name": 42,
+  "fee": 81,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 11,
+  "operator": 19,
+  "ucretli": 35,
   "ispark": 0
  },
  "il17": {
@@ -164,6 +241,83 @@
   "ucretli": 8,
   "ispark": 0
  },
+ "il23": {
+  "toplam": 26,
+  "name": 0,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il24": {
+  "toplam": 22,
+  "name": 0,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il25": {
+  "toplam": 115,
+  "name": 4,
+  "fee": 3,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 4,
+  "operator": 2,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "il26": {
+  "toplam": 298,
+  "name": 5,
+  "fee": 67,
+  "charge": 2,
+  "opening_hours": 1,
+  "capacity": 24,
+  "operator": 11,
+  "ucretli": 10,
+  "ispark": 0
+ },
+ "il27": {
+  "toplam": 162,
+  "name": 6,
+  "fee": 9,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 2,
+  "operator": 5,
+  "ucretli": 4,
+  "ispark": 0
+ },
+ "il28": {
+  "toplam": 74,
+  "name": 4,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il29": {
+  "toplam": 16,
+  "name": 2,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 2,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
  "il30": {
   "toplam": 7,
   "name": 1,
@@ -172,6 +326,28 @@
   "opening_hours": 0,
   "capacity": 0,
   "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il31": {
+  "toplam": 76,
+  "name": 4,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 5,
+  "operator": 3,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "il32": {
+  "toplam": 347,
+  "name": 0,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 2,
   "ucretli": 0,
   "ispark": 0
  },
@@ -196,6 +372,28 @@
   "operator": 546,
   "ucretli": 574,
   "ispark": 1
+ },
+ "il35": {
+  "toplam": 1552,
+  "name": 76,
+  "fee": 246,
+  "charge": 5,
+  "opening_hours": 5,
+  "capacity": 45,
+  "operator": 87,
+  "ucretli": 73,
+  "ispark": 0
+ },
+ "il36": {
+  "toplam": 17,
+  "name": 0,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 1,
+  "ucretli": 0,
+  "ispark": 0
  },
  "il37": {
   "toplam": 73,
@@ -261,6 +459,17 @@
   "capacity": 3,
   "operator": 12,
   "ucretli": 14,
+  "ispark": 0
+ },
+ "il43": {
+  "toplam": 89,
+  "name": 5,
+  "fee": 7,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 10,
+  "operator": 13,
+  "ucretli": 1,
   "ispark": 0
  },
  "il44": {
@@ -340,6 +549,17 @@
   "ucretli": 16,
   "ispark": 0
  },
+ "il51": {
+  "toplam": 34,
+  "name": 2,
+  "fee": 2,
+  "charge": 1,
+  "opening_hours": 0,
+  "capacity": 2,
+  "operator": 0,
+  "ucretli": 1,
+  "ispark": 0
+ },
  "il52": {
   "toplam": 136,
   "name": 2,
@@ -349,6 +569,17 @@
   "capacity": 3,
   "operator": 5,
   "ucretli": 12,
+  "ispark": 0
+ },
+ "il53": {
+  "toplam": 40,
+  "name": 0,
+  "fee": 3,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 1,
+  "ucretli": 2,
   "ispark": 0
  },
  "il54": {
@@ -384,6 +615,17 @@
   "ucretli": 0,
   "ispark": 0
  },
+ "il57": {
+  "toplam": 35,
+  "name": 2,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 1,
+  "operator": 1,
+  "ucretli": 0,
+  "ispark": 0
+ },
  "il58": {
   "toplam": 260,
   "name": 32,
@@ -393,6 +635,39 @@
   "capacity": 2,
   "operator": 19,
   "ucretli": 0,
+  "ispark": 0
+ },
+ "il59": {
+  "toplam": 499,
+  "name": 102,
+  "fee": 95,
+  "charge": 0,
+  "opening_hours": 2,
+  "capacity": 11,
+  "operator": 51,
+  "ucretli": 20,
+  "ispark": 0
+ },
+ "il60": {
+  "toplam": 143,
+  "name": 0,
+  "fee": 1,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 1,
+  "operator": 1,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il61": {
+  "toplam": 269,
+  "name": 9,
+  "fee": 36,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 2,
+  "operator": 16,
+  "ucretli": 23,
   "ispark": 0
  },
  "il62": {
@@ -417,6 +692,17 @@
   "ucretli": 2,
   "ispark": 0
  },
+ "il64": {
+  "toplam": 64,
+  "name": 10,
+  "fee": 20,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 2,
+  "operator": 7,
+  "ucretli": 13,
+  "ispark": 0
+ },
  "il65": {
   "toplam": 130,
   "name": 1,
@@ -432,6 +718,39 @@
   "toplam": 67,
   "name": 0,
   "fee": 1,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il67": {
+  "toplam": 84,
+  "name": 13,
+  "fee": 29,
+  "charge": 0,
+  "opening_hours": 1,
+  "capacity": 13,
+  "operator": 5,
+  "ucretli": 3,
+  "ispark": 0
+ },
+ "il69": {
+  "toplam": 6,
+  "name": 0,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il70": {
+  "toplam": 32,
+  "name": 1,
+  "fee": 0,
   "charge": 0,
   "opening_hours": 0,
   "capacity": 0,
@@ -505,6 +824,39 @@
   "ucretli": 3,
   "ispark": 0
  },
+ "il78": {
+  "toplam": 35,
+  "name": 4,
+  "fee": 2,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 1,
+  "ucretli": 1,
+  "ispark": 0
+ },
+ "il79": {
+  "toplam": 12,
+  "name": 0,
+  "fee": 0,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 0,
+  "operator": 0,
+  "ucretli": 0,
+  "ispark": 0
+ },
+ "il80": {
+  "toplam": 83,
+  "name": 5,
+  "fee": 6,
+  "charge": 0,
+  "opening_hours": 0,
+  "capacity": 1,
+  "operator": 17,
+  "ucretli": 0,
+  "ispark": 0
+ },
  "il81": {
   "toplam": 198,
   "name": 55,
@@ -517,14 +869,14 @@
   "ispark": 0
  },
  "_TOPLAM": {
-  "toplam": 15743,
-  "name": 1251,
-  "fee": 2014,
-  "charge": 31,
-  "opening_hours": 140,
-  "capacity": 515,
-  "operator": 984,
-  "ucretli": 894,
+  "toplam": 23704,
+  "name": 1666,
+  "fee": 2968,
+  "charge": 42,
+  "opening_hours": 159,
+  "capacity": 766,
+  "operator": 1316,
+  "ucretli": 1118,
   "ispark": 1
  }
 }
