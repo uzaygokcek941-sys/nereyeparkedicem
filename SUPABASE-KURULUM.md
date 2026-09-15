@@ -115,9 +115,10 @@ tarayıcı ilk yüklemede hâlâ eski (yer tutucu) dosyayı görebilir, yani gir
 yenileme boyunca kapalı görünür. İkinci açılışta kendiliğinden düzelir —
 yanlış değil, bir tur gecikmeli.
 
-`test_uret.py` içinde iki test giriş **kapalı** olduğunu varsayar
-(`auth varsayilan KAPALI`, `gizlilik supabase demiyor`). Açtığında ikisi
-kırmızıya döner — beklenen davranış; o testleri açık duruma çevir.
+`test_uret.py` gizlilik testleri artık sabit durum beklemiyor: `auth_acik()`
+sonucuyla metnin **tutarlı** olduğunu doğruluyor. Açıkken anahtarın `anon`
+rolünde olduğunu ve JWT `ref` alanının url ile eşleştiğini de kontrol ediyor —
+`service_role` yapıştırılırsa test kırmızıya döner.
 
 ## Açtıktan sonra değişenler
 
