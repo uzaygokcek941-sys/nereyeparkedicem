@@ -1,19 +1,27 @@
 # Giriş sistemini açma — Supabase
 
-Kod tarafı **bitti ve test edildi**. Giriş özelliği şu an bilerek **kapalı**:
-`site/veri/auth.json` yer tutucu değer taşıyor, uygulama da bunu görüp
-"Giriş henüz açık değil" diyor. Aşağıdaki adımlar bitince kendiliğinden açılır.
+## Durum (2026-09-15)
 
-Asistan bu adımları yapamaz: hesap açma OAuth girişi gerektiriyor ve
-**API anahtarı girmek asistana yasak** — ikisi de senin adımın.
+| Adım | Durum |
+|---|---|
+| Proje `depnhkygxsqsyiomfbad` | **açık** |
+| `site/veri/auth.json` (anon anahtar) | **yazıldı, canlıda** — JWT `ref` url ile eşleşiyor, rol `anon` |
+| E-posta magic link sağlayıcısı | **açık** (`/auth/v1/settings` → `email: true`) |
+| Kayıt açık mı | **evet** (`disable_signup: false`) |
+| **`public.favoriler` tablosu** | **YOK** → adım 2, SENDE |
+| **Redirect URL listesi** | **doğrulanamadı** → adım 3, SENDE |
+| Google sağlayıcısı | **kapalı** (`google: false`) — düğme otomatik gizlendi, adım 4 isteğe bağlı |
 
-## 1 · Supabase projesi aç
+**Bu ikisi bitmeden giriş uçtan uca çalışmaz.** Panel adımlarını asistan
+yapamaz: bu oturumda tarayıcı aracı yok ve Supabase paneli OAuth girişi
+istiyor. SQL ve URL'ler aşağıda, kopyala-yapıştır.
 
-<https://supabase.com> → GitHub ile giriş → **New project**.
-Bölge olarak **Frankfurt (eu-central-1)** seç; Türkiye'ye en yakın olanı,
-gecikme düşer.
+## 2 · Tabloyu ve güvenlik kurallarını kur — **SENDE, ZORUNLU**
 
-## 2 · Tabloyu ve güvenlik kurallarını kur
+Şu an tablo yok, ölçüldü:
+`{"code":"PGRST205","message":"Could not find the table 'public.favoriler'"}`.
+Bu yüzden giriş yapılsa bile favoriler eşitlenmez — uygulama bunu sessizce
+yutmuyor, `/favoriler/` sayfasında hatayı aynen yazıyor.
 
 Supabase panelinde **SQL Editor** → aşağıdakini olduğu gibi çalıştır.
 
@@ -41,7 +49,7 @@ create policy "kendi satirini siler" on public.favoriler
 `on delete cascade` önemli: hesap silinince favori kaydı da silinir — KVKK
 m.11 silme talebini tek işlemle karşılar.
 
-## 3 · Dönüş adreslerini tanımla
+## 3 · Dönüş adreslerini tanımla — **SENDE, ZORUNLU**
 
 **Authentication → URL Configuration**:
 
@@ -52,7 +60,7 @@ m.11 silme talebini tek işlemle karşılar.
 
 Bu liste eksikse magic link "invalid redirect" hatası verir.
 
-## 4 · Google girişini aç (isteğe bağlı)
+## 4 · Google girişini aç — isteğe bağlı, şu an KAPALI
 
 E-posta bağlantısı (magic link) Supabase'de **varsayılan açıktır**, ek iş yok.
 Google istiyorsan: Google Cloud Console → OAuth client ID (Web) oluştur →
@@ -60,11 +68,11 @@ Supabase **Authentication → Providers → Google**'a Client ID + Secret gir.
 Google tarafındaki "Authorized redirect URI" alanına Supabase'in verdiği
 `https://<proje>.supabase.co/auth/v1/callback` adresini yapıştır.
 
-Google'ı açmazsan: giriş sayfasındaki "Google ile devam et" düğmesi kalır ama
-basıldığında Supabase hata döner. İstemiyorsan `uret.py` içindeki `GIRIS`
-sabitinden o iki satırı sil.
+**Açmazsan bir şey yapmana gerek yok:** `hesap.js` açılışta
+`/auth/v1/settings` okuyor ve `google: false` görünce düğmeyi **gizliyor**
+(canlıda doğrulandı). Panelden açtığın an düğme kendiliğinden geri gelir.
 
-## 5 · Anahtarları dosyaya yaz
+## 5 · Anahtarları dosyaya yaz — ✅ YAPILDI
 
 Supabase panelinde **Project Settings → API**:
 
@@ -75,7 +83,9 @@ Supabase panelinde **Project Settings → API**:
 }
 ```
 
-Bunu `site/veri/auth.json` dosyasına yaz.
+Bu **yazıldı ve canlıda**; tekrar yapmana gerek yok. Kayıtlı değerler:
+`url` = `https://depnhkygxsqsyiomfbad.supabase.co`, `anonKey` = anon rolünde
+(JWT `ref` alanı proje kimliğiyle eşleştiği doğrulandı).
 
 **`anon` anahtarını kullan, `service_role` anahtarını ASLA.** `anon` tasarım
 gereği açık metindir — tarayıcıda çalışır, koruma RLS'ten gelir, o yüzden
@@ -84,7 +94,7 @@ depoda durabilir. `service_role` RLS'i **atlar**; sızarsa bütün veri okunur.
 `uret.py` bu dosya varsa **üstüne yazmaz**, yani sonraki derlemelerde
 girdiğin değerler kalır.
 
-## 6 · Yeniden üret ve doğrula
+## 6 · Yeniden üret ve doğrula — ✅ YAPILDI (tablo kurulunca tekrarla)
 
 ```bash
 python uret.py            # gizlilik metni "hesap acik" haline gecer
