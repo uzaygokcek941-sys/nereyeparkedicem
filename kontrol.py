@@ -8,7 +8,11 @@ PORT = 8731
 GENISLIK = [(375, 812, "mobil"), (768, 1024, "tablet"), (1440, 900, "masaustu")]
 SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
          "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/",
-         "/harita/"]
+         "/harita/", "/gizlilik/", "/boyle-bir-sayfa-yok/"]
+# Bu yollar Vercel cleanUrls / 404 yonlendirmesi gerektiriyor; yerel
+# SimpleHTTPRequestHandler saglamaz, yalniz canli modda olculur.
+CANLI_YOL = {"/gizlilik/", "/boyle-bir-sayfa-yok/"}
+TABANAD = ""
 
 def sunucu():
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory="site")
@@ -44,11 +48,23 @@ OLCUM = """() => {
   const a=document.querySelector('.kahraman');
   const b=[...document.querySelectorAll('.liste,.ilce-izgara')].find(gorunur);
   if(a&&b){const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect(); r.bosluk_px=Math.round(rb.top-ra.bottom);}
+  // stil dosyasi GERCEKTEN geldi mi: cleanUrls goreli yolu kaydirinca
+  // sayfa 200 doner ama CSS 404 olur, markup saglam gorunur
+  r.css_kural = [...document.styleSheets].reduce((n,s)=>{
+      try { return n + s.cssRules.length } catch(e) { return n }}, 0);
+  r.css_adres = [...document.styleSheets].map(s=>s.href).filter(Boolean);
   return r;
 }"""
 
 def main():
-    s = sunucu(); time.sleep(0.6)
+    # argv[1] verilirse canli adres olculur. Yerel SimpleHTTPRequestHandler
+    # cleanUrls yapmadigi icin /gizlilik/ gibi yollar ve goreli-yol kaymasi
+    # YALNIZ canlida gorunur - o yuzden bu secenek sart.
+    canli = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else None
+    s = None if canli else sunucu()
+    if not canli: time.sleep(0.6)
+    global TABANAD
+    TABANAD = canli or f"http://127.0.0.1:{PORT}"
     hata, uyari = [], []
     with sync_playwright() as p:
         b = p.chromium.launch()
@@ -67,7 +83,9 @@ def main():
             sf.on("response", lambda r: dis.append(f"{r.status} {r.url[:70]}")
                   if r.status >= 500 and "127.0.0.1" not in r.url and "localhost" not in r.url else None)
             for yol in SAYFA:
-                sf.goto(f"http://127.0.0.1:{PORT}{yol}", wait_until="networkidle")
+                if yol in CANLI_YOL and TABANAD.startswith("http://127."):
+                    continue
+                sf.goto(f"{TABANAD}{yol}", wait_until="networkidle")
                 r = sf.evaluate(OLCUM)
                 print(f"\n--- {ad} {w}x{h} · {yol}")
                 for k, v in r.items(): print(f"    {k:<16} {v}")
@@ -75,6 +93,9 @@ def main():
                 if r["kahr_pt"] in ("0px", None): hata.append(f"{ad}{yol}: .kahraman padding-top 0px -> CSS dusmus")
                 if r["main_pl"] in ("0px", None): hata.append(f"{ad}{yol}: main yan bosluk 0px")
                 if r["h1_font"] in ("32px", None): hata.append(f"{ad}{yol}: h1 {r['h1_font']} = tarayici varsayilani -> CSS dusmus")
+                if r["css_kural"] == 0:
+                    hata.append(f"{ad}{yol}: stil dosyasi HIC yuklenmedi "
+                                f"(kural 0, adres {r['css_adres']}) -> goreli yol kaymasi")
                 if r["yer_tutucu"]: hata.append(f"{ad}{yol}: {r['yer_tutucu']} doldurulmamis yer tutucu")
                 if r.get("bosluk_px", 1) < 0: hata.append(f"{ad}{yol}: ust uste binme {r['bosluk_px']}px")
                 if r["kucuk_dokunma"]: uyari.append(f"{ad}{yol}: <44px dokunma -> {r['kucuk_dokunma']}")
@@ -87,7 +108,7 @@ def main():
             if konsol: hata.append(f"{ad}: konsol -> {konsol[:3]}")
             sf.close()
         b.close()
-    s.shutdown()
+    if s: s.shutdown()
     print("\n" + "="*54)
     print("HATA :", len(hata)); [print("  x", x) for x in hata]
     print("UYARI:", len(uyari)); [print("  !", x) for x in uyari]

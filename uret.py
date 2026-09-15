@@ -276,16 +276,20 @@ DORTYUZDORT = """<section class="kahraman dar">
 <p><a class="git-geri" href="/">Ana sayfaya dön ve ilçe seç</a></p>
 </section>"""
 
+# kok="/" ZORUNLU: Vercel cleanUrls gizlilik.html'i /gizlilik/ altinda servis
+# ediyor, 404.html'i de her derinlikte. Goreli yol bir dizin kayiyor ve
+# OLCULDU: /gizlilik/stil.css 404, /gizlilik/harita/ 404 - sayfa stilsiz,
+# menusu olu kaliyordu.
 def yaz_gizlilik():
     open(f"{CIKTI}/gizlilik.html", "w", encoding="utf-8").write(sayfa(
         "Gizlilik ve KVKK | nereyeparkedicem",
         "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
-        "Toplanan kişisel veri bulunmuyor.", GIZLILIK))
+        "Toplanan kişisel veri bulunmuyor.", GIZLILIK, kok="/"))
 
 def yaz_404():
     open(f"{CIKTI}/404.html", "w", encoding="utf-8").write(sayfa(
         "Sayfa bulunamadı | nereyeparkedicem",
-        "Aradığınız sayfa bulunamadı.", DORTYUZDORT))
+        "Aradığınız sayfa bulunamadı.", DORTYUZDORT, kok="/"))
 
 
 def yaz_endeks(d, g):
