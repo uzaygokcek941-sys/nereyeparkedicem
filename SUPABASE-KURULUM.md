@@ -99,6 +99,12 @@ açıkken farklı metin üretiyor (e-posta işleniyor, yurt dışına aktarım,
 KVKK m.11 hakları). Eski metin "işlenen kişisel veri yoktur" diyor ve
 giriş açıldığı anda bu **yanlış** olur.
 
+**Service worker gecikmesi:** `auth.json` önden önbelleğe alınıyor ve strateji
+stale-while-revalidate. Yayına aldıktan sonra **daha önce siteyi açmış** bir
+tarayıcı ilk yüklemede hâlâ eski (yer tutucu) dosyayı görebilir, yani giriş bir
+yenileme boyunca kapalı görünür. İkinci açılışta kendiliğinden düzelir —
+yanlış değil, bir tur gecikmeli.
+
 `test_uret.py` içinde iki test giriş **kapalı** olduğunu varsayar
 (`auth varsayilan KAPALI`, `gizlilik supabase demiyor`). Açtığında ikisi
 kırmızıya döner — beklenen davranış; o testleri açık duruma çevir.
