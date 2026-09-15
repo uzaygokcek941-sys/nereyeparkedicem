@@ -1,0 +1,52 @@
+# Doluluk ve tarife tazeleme. Denetimde olculdu: bos yer sayilari HTML'e
+# derleme aninda gomuluyor ve 2 gun eskimisti. Bu is akisi onu otomatiklestirir.
+#
+# Harita katmani (site/veri/*.json) YENIDEN CEKILMEZ: kaynagi Overpass ve
+# depoda takipli. Yalniz ISPARK tazelenir, sonra site yeniden uretilir.
+name: tazele
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # 6 saatte bir, :17 (tam saat kalabaligindan kacinmak icin)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tazele
+  cancel-in-progress: false
+
+jobs:
+  tazele:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: bagimliliklar
+        run: pip install --quiet truststore pillow
+
+      - name: ISPARK verisini cek
+        run: python ispark_cek.py
+        # API cokerse is akisi burada durur; eski veri commit edilmez.
+        # Gecici arizada sonraki cron denemesi duzeltir.
+
+      - name: siteyi uret
+        run: python uret.py
+
+      - name: degisiklik varsa commit
+        run: |
+          git config user.name  "tazele-botu"
+          git config user.email "actions@github.com"
+          git add veri/ispark.json site
+          if git diff --cached --quiet; then
+            echo "degisiklik yok, commit atlandi"
+            exit 0
+          fi
+          BOS=$(python -c "import json;d=json.load(open('veri/ispark.json',encoding='utf-8'));print(sum(x['bos'] or 0 for x in d))")
+          git commit -m "data: İSPARK doluluk tazelendi (boş ${BOS})"
+          git push

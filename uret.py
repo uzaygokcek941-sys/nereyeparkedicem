@@ -6,6 +6,15 @@ from datetime import datetime, timezone, timedelta
 
 TR = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
 CIKTI = "site"
+URL = "https://nereyeparkedicem.vercel.app"
+
+def iller():
+    """site/veri/iller.json - harita_veri.py uretir. Yoksa bos liste doner,
+    site harita katmani olmadan da uretilebilsin."""
+    try:
+        return json.load(open(f"{CIKTI}/veri/iller.json", encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"toplam": 0, "iller": []}
 
 def tr_baslik(s):
     """Turkce baslik harfi. Python .title() I/i ayrimini bilmez:
@@ -88,6 +97,10 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b3d2e">
+<link rel="icon" href="/simge.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/simge-180.png">
+<link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="{kok}stil.css">
 {ek_head}
 </head><body>
@@ -123,6 +136,42 @@ def sss_schema(ilce, n, medyan):
         for s, c in sorular]}
     return f'<script type="application/ld+json">{json.dumps(d, ensure_ascii=False)}</script>'
 
+def olcum_zamani(d):
+    """ISPARK kayitlarindaki en yeni guncelleme damgasi. Bos yer sayilari
+    HTML'e DERLEME ANINDA gomuluyor; tarih yazilmazsa kullanici onlari canli
+    sanar - denetimde 2 gun eski olduklari olculdu."""
+    en = None
+    for k in d:
+        g = k.get("guncelleme")
+        if not g: continue
+        for bicim in ("%d.%m.%Y %H:%M:%S", "%d.%m.%Y %H:%M"):
+            try:
+                t = datetime.strptime(g[:len("13.09.2026 12:20:17")
+                                        if bicim.endswith("%S") else 16], bicim)
+                break
+            except ValueError:
+                t = None
+        if t and (en is None or t > en): en = t
+    if en is None: return "bilinmiyor", ""
+    return en.strftime("%d.%m.%Y %H:%M"), en.strftime("%Y-%m-%dT%H:%M:00+03:00")
+
+def ana_schema(il_s, il_n):
+    """Denetimde olculdu: ana sayfada hic ld+json yoktu. WebSite + Organization
+    + SearchAction; arama hedefi harita sayfasi (il sorgusu ?il= ile)."""
+    d = [
+        {"@context": "https://schema.org", "@type": "WebSite", "name": "nereyeparkedicem",
+         "url": f"{URL}/", "inLanguage": "tr-TR",
+         "description": f"{il_s} ilde {il_n} otopark haritada.",
+         "potentialAction": {"@type": "SearchAction",
+                             "target": {"@type": "EntryPoint",
+                                        "urlTemplate": f"{URL}/harita/?q={{search_term_string}}"},
+                             "query-input": "required name=search_term_string"}},
+        {"@context": "https://schema.org", "@type": "Organization",
+         "name": "nereyeparkedicem", "url": f"{URL}/", "logo": f"{URL}/simge-512.png"},
+    ]
+    return "".join(f'<script type="application/ld+json">'
+                   f'{json.dumps(x, ensure_ascii=False)}</script>' for x in d)
+
 def uret():
     d = kayitlar(); g = ilce_grupla(d)
     os.makedirs(CIKTI, exist_ok=True)
@@ -133,6 +182,7 @@ def uret():
     iz_n, iz_i = len(izd), len(sg["izmir"])
     iz_t = sum(1 for k in izd if k["tarife"])
     an_n, an_i = len(andd), len(sg["ankara"])
+    olcum, olcum_iso = olcum_zamani(d)
     toplam_kap = sum(k["kapasite"] or 0 for k in d)
     fiyat = sorted(k["ilk_saat_tl"] for k in d if k["ilk_saat_tl"])
     medyan = fiyat[len(fiyat)//2]
@@ -143,34 +193,56 @@ def uret():
         f'<span class="fiyat">ilk saat medyan {tl(v["medyan"])} ₺</span></a>'
         for s, v in g.items())
 
+    o = iller()
+    il_n, il_s = o["toplam"], len(o["iller"])
+    uc_n = sum(x.get("uc", 0) for x in o["iller"])
+    # harita rozetleri: ana sayfada ilk 12, tamami /il/ dizininde
+    il_kart = "".join(
+        f'<a class="ilce" href="il/{slug(x["ad"])}/"><b>{x["ad"]}</b>'
+        f'<span>{tl(x["n"])} otopark</span>'
+        f'<span class="fiyat">{tl(x["uc"])} ücretsiz</span></a>'
+        for x in o["iller"][:12])
+
     govde = f'''<section class="kahraman">
  <h1>En yakın otoparkı <em>saniyede</em> bul</h1>
- <p class="alt-baslik">İstanbul'da {len(d)} İSPARK noktası, {len(g)} ilçe. Doluluk ve tarife
- İBB Açık Veri Portalı'ndan canlı. Uygulama indirmene gerek yok.</p>
+ <p class="alt-baslik">{il_s} ilde {tl(il_n)} otopark haritada. İstanbul&#8217;da canlı doluluk
+ ve tam tarife, İzmir&#8217;de tarife. Uygulama indirmene gerek yok.</p>
  <div class="rakamlar">
-  <div><b>{len(d)}</b><span>otopark</span></div>
-  <div><b>{toplam_kap:,}</b><span>toplam yer</span></div>
-  <div><b data-doluluk>—</b><span>şehir geneli dolu</span></div>
-  <div><b>{tl(medyan)} ₺</b><span>ilk saat medyan</span></div>
+  <div><b>{il_s}</b><span>il</span></div>
+  <div><b>{tl(il_n)}</b><span>otopark</span></div>
+  <div><b>{tl(uc_n)}</b><span>ücretsiz</span></div>
+  <div><b data-doluluk>—</b><span>İstanbul doluluk</span></div>
  </div>
  <button id="yakin" class="birincil">📍 En yakın otoparkları göster</button>
  <p id="konum-durum" class="durum" role="status"></p>
 </section>
 <section id="sonuc" hidden><h2>Sana en yakın otoparklar</h2><div class="liste" id="yakin-liste"></div></section>
-<section id="ilceler"><h2>İlçeye göre</h2><div class="ilce-izgara">{ilce_kart}</div></section>
-<section id="sehirler"><h2>Diğer şehirler</h2>
+<section id="turkiye"><h2>Türkiye haritası — {il_s} il</h2>
+ <p class="alt-baslik">Otoparkların tamamı tek haritada. İl balonuna dokun, yakınlaş.</p>
+ <p><a class="birincil" href="harita/">🗺️ Haritayı aç</a>
+    <a class="ikincil" href="ucretsiz-otopark/">Ücretsiz otoparklar ({tl(uc_n)})</a></p>
+ <div class="ilce-izgara">{il_kart}</div>
+ <p><a href="il/">{il_s} ilin tamamı →</a></p>
+</section>
+<section id="sehirler"><h2>Tarife yayınlanan şehirler</h2>
  <div class="ilce-izgara">
+  <a class="ilce" href="index.html#ilceler"><b>İstanbul</b><span>{len(d)} İSPARK · {len(g)} ilçe</span>
+   <span class="fiyat">canlı doluluk + tam tarife</span></a>
   <a class="ilce" href="izmir/"><b>İzmir</b><span>{iz_n} İZELMAN otoparkı · {iz_i} ilçe</span>
    <span class="fiyat">{iz_t} otoparkın tarifesi</span></a>
   <a class="ilce" href="ankara/"><b>Ankara</b><span>{an_n} ANPARK otoparkı · {an_i} ilçe</span>
    <span class="fiyat">tarife yayınlanmıyor</span></a>
- </div></section>'''.replace(
-        f"{toplam_kap:,}", f"{toplam_kap:,}".replace(",", "."))
+ </div></section>
+<section id="ilceler"><h2>İstanbul&#8217;da ilçeye göre</h2>
+ <p class="alt-baslik">{len(d)} İSPARK noktası · {tl(toplam_kap)} yer · ilk saat medyan {tl(medyan)} ₺
+ · doluluk İBB Açık Veri Portalı&#8217;ndan canlı</p>
+ <div class="ilce-izgara">{ilce_kart}</div></section>'''
 
     open(f"{CIKTI}/index.html", "w", encoding="utf-8").write(sayfa(
-        "İstanbul Otopark — Canlı Doluluk ve Tarife | nereyeparkedicem",
-        f"İstanbul'da {len(d)} İSPARK otoparkının canlı doluluk oranı ve tam tarifesi. "
-        f"En yakın otoparkı bul, tek dokunuşla yol tarifi al.", govde))
+        "Türkiye Otopark Haritası — 81 İlde En Yakın Otopark",
+        f"{il_s} ilde {tl(il_n)} otopark, {tl(uc_n)} tanesi ücretsiz. İstanbul'da {len(d)} İSPARK "
+        f"otoparkının canlı doluluğu ve tam tarifesi. En yakınını bul, yol tarifi al.",
+        govde, canonical=f"{URL}/", ek_head=ana_schema(il_s, il_n)))
 
     for s, v in g.items():
         os.makedirs(f"{CIKTI}/ilce/{s}", exist_ok=True)
@@ -182,18 +254,26 @@ def uret():
  ilk saat medyan {tl(v["medyan"])} ₺</p>
  <p class="durum" data-ilce-doluluk>Doluluk yükleniyor…</p>
 </section>
-<section class="liste">{kartlar}</section>
+<section class="liste-bolum">
+ <h2>{v["ad"]} otopark listesi</h2>
+ <p class="alt-baslik">Boş yer sayısı sayfa açılınca canlı güncellenir;
+ aşağıdaki değerler <time datetime="{olcum_iso}">{olcum}</time> ölçümüdür.</p>
+ <div class="liste">{kartlar}</div>
+</section>
 {sss_schema(v["ad"], len(v["kayit"]), v["medyan"])}'''.replace(f'{v["kapasite"]:,}', f'{v["kapasite"]:,}'.replace(",", "."))
         open(f"{CIKTI}/ilce/{s}/index.html", "w", encoding="utf-8").write(sayfa(
-            f"{v['ad']} Otopark — Canlı Doluluk ve Fiyat | nereyeparkedicem",
+            f"{v['ad']} Otopark — Canlı Doluluk ve Fiyat",
             f"{v['ad']} ilçesindeki {len(v['kayit'])} İSPARK otoparkının canlı doluluk oranı, "
             f"tam tarifesi ve yol tarifi. İlk saat medyan {tl(v['medyan'])} TL.",
-            gv, kok="../../"))
+            gv, kok="../../", canonical=f"{URL}/ilce/{s}/"))
 
+    import ikon_uret; ikon_uret.yaz()
     yaz_gizlilik(); yaz_404(); yaz_endeks(d, g)
     harita_var = os.path.exists(f"{CIKTI}/veri/iller.json")
+    il_sluglari = {}
     if harita_var:
         import harita_sayfa; harita_sayfa.yaz()
+        import il_sayfa; il_sluglari = il_sayfa.yaz()
     else:
         print("harita atlandi: site/veri/iller.json yok (once koord_cek.py + harita_veri.py)")
 
@@ -205,6 +285,10 @@ def uret():
         sm += "".join(f"<url><loc>{url}/{kod}/ilce/{x}/</loc><changefreq>weekly</changefreq></url>" for x in gg)
     if harita_var:
         sm += f"<url><loc>{url}/harita/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>"
+        sm += f"<url><loc>{url}/il/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>"
+        sm += f"<url><loc>{url}/ucretsiz-otopark/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>"
+        sm += "".join(f"<url><loc>{url}/il/{sl}/</loc><changefreq>weekly</changefreq>"
+                      f"<priority>0.7</priority></url>" for sl in il_sluglari.values())
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
@@ -214,7 +298,8 @@ def uret():
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
     ss = sum(len(x) for x in sg.values())
-    print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce + {len(sg)} sehir + {ss} sehir-ilce sayfasi + sitemap")
+    print(f"uretildi: {CIKTI}/ · 1 ana sayfa + {len(g)} ilce + {len(sg)} sehir + "
+          f"{ss} sehir-ilce + {len(il_sluglari)} il sayfasi + sitemap")
 
 
 GIZLILIK = """<section class="kahraman dar">
@@ -284,12 +369,14 @@ def yaz_gizlilik():
     open(f"{CIKTI}/gizlilik.html", "w", encoding="utf-8").write(sayfa(
         "Gizlilik ve KVKK | nereyeparkedicem",
         "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
-        "Toplanan kişisel veri bulunmuyor.", GIZLILIK, kok="/"))
+        "Toplanan kişisel veri bulunmuyor.", GIZLILIK, kok="/",
+        canonical=f"{URL}/gizlilik/"))
 
 def yaz_404():
     open(f"{CIKTI}/404.html", "w", encoding="utf-8").write(sayfa(
         "Sayfa bulunamadı | nereyeparkedicem",
-        "Aradığınız sayfa bulunamadı.", DORTYUZDORT, kok="/"))
+        "Aradığınız sayfa bulunamadı.", DORTYUZDORT, kok="/",
+        ek_head='<meta name="robots" content="noindex">'))
 
 
 def yaz_endeks(d, g):
@@ -375,10 +462,10 @@ def yaz_endeks(d, g):
 
     os.makedirs(f"{CIKTI}/fiyat-endeksi", exist_ok=True)
     open(f"{CIKTI}/fiyat-endeksi/index.html", "w", encoding="utf-8").write(sayfa(
-        "İstanbul Otopark Fiyat Endeksi — İlçe İlçe Tarife | nereyeparkedicem",
+        "İstanbul Otopark Fiyat Endeksi — İlçe İlçe Tarife",
         f"İstanbul'da {len(d)} İSPARK otoparkının ilçe bazında tarife medyanı. "
         f"İlk saat {tl(st.median(ilk))} ₺, tam gün {tl(st.median(gun))} ₺. "
         f"En pahalı {pahali['ad']}, en ucuz {ucuz['ad']} — {kat:.1f} kat fark.",
-        gv, kok="../"))
+        gv, kok="../", canonical=f"{URL}/fiyat-endeksi/"))
 
 if __name__ == "__main__": uret()

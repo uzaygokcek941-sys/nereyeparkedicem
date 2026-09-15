@@ -101,5 +101,48 @@ for _s in ["site/izmir/index.html", "site/ankara/index.html"]:
         es(f"{_s}: ISPARK atfi yok", "İSPARK otopark servisi" in _h, False)
         es(f"{_s}: kendi kaynagini atfeder", "Açık Veri" in _h or "ANPARK" in _h, True)
 
+
+# --- denetimde bulunan eksikler: canonical, ikon/manifest, il sayfalari ---
+_ana = "site/index.html"
+if os.path.exists(_ana):
+    _h = open(_ana, encoding="utf-8").read()
+    es("ana sayfa canonical", 'rel="canonical"' in _h, True)
+    es("ana sayfa ld+json WebSite", '"WebSite"' in _h, True)
+    es("ana sayfa manifest", 'rel="manifest"' in _h, True)
+    es("ana sayfa theme-color", 'name="theme-color"' in _h, True)
+    es("ana sayfa baslik <=60",
+       len(_h.split("<title>")[1].split("</title>")[0]) <= 60, True)
+
+for _f in ("site/simge.svg", "site/simge-192.png", "site/simge-512.png",
+           "site/manifest.json"):
+    es(f"{_f} var", os.path.exists(_f), True)
+
+if os.path.exists("site/manifest.json"):
+    _m = json.load(open("site/manifest.json", encoding="utf-8"))
+    es("manifest start_url", _m["start_url"], "/")
+    es("manifest ikon sayisi >=2", len(_m["icons"]) >= 2, True)
+
+if os.path.exists("site/veri/iller.json"):
+    _o = json.load(open("site/veri/iller.json", encoding="utf-8"))
+    _eksik = [x["ad"] for x in _o["iller"]
+              if not os.path.exists(f'site/il/{uret.slug(x["ad"])}/index.html')]
+    es("il sayfasi eksigi", _eksik, [])
+    es("il dizini var", os.path.exists("site/il/index.html"), True)
+    es("ucretsiz sayfasi var", os.path.exists("site/ucretsiz-otopark/index.html"), True)
+    _uc = sum(x.get("uc", 0) for x in _o["iller"])
+    _up = sum(x.get("up", 0) for x in _o["iller"])
+    es("ucretsiz+ucretli <= toplam", _uc + _up <= _o["toplam"], True)
+    if os.path.exists("site/ucretsiz-otopark/index.html"):
+        _uh = open("site/ucretsiz-otopark/index.html", encoding="utf-8").read()
+        es("ucretsiz sayfasi dogru sayiyi yaziyor", uret.tl(_uc) in _uh, True)
+        # eksik veriyi "ucretli" gibi sunmamak icin uyari sart
+        es("ucretsiz sayfasi bilinmiyor uyarisi", "bilinmiyor" in _uh, True)
+
+_f34 = "site/ilce/fatih/index.html"
+if os.path.exists(_f34):
+    _h = open(_f34, encoding="utf-8").read()
+    es("ilce sayfasi olcum tarihi", "<time datetime=" in _h, True)
+    es("ilce sayfasi h2 var (h1->h3 atlamasi yok)", "<h2>" in _h, True)
+    es("ilce canonical", 'rel="canonical"' in _h, True)
 print(f"\n{gecti} gecti, {basarisiz} basarisiz")
 sys.exit(1 if basarisiz else 0)

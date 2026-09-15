@@ -65,7 +65,12 @@ def il_uret(kod):
         if b: bilgi[str(i)] = b
     if not k: return None
     lat = k[0::2]; lng = k[1::2]
+    # fee=no olan noktalar: Turkiye'de baska yerde yayinlanmayan bir liste
+    ucretsiz = sum(1 for b in bilgi.values() if b.get("u") == 0)
+    ucretli = sum(1 for b in bilgi.values() if b.get("u") == 1)
+    isimli = sum(1 for b in bilgi.values() if b.get("a"))
     d = {"p": kod, "ad": PLAKA[kod], "n": len(lat),
+         "uc": ucretsiz, "up": ucretli, "ai": isimli,
          "c": [round(st.median(lat), 4), round(st.median(lng), 4)],
          "bb": [round(min(lat), 4), round(min(lng), 4), round(max(lat), 4), round(max(lng), 4)],
          "k": k, "b": bilgi}
@@ -83,7 +88,8 @@ if __name__ == "__main__":
         bo = os.path.getsize(f"{CIKTI}/il-{kod:02d}.json")
         top += d["n"]; boy += bo
         ozet.append({"p": kod, "ad": d["ad"], "c": d["c"], "bb": d["bb"],
-                     "n": d["n"], "b": len(d["b"])})
+                     "n": d["n"], "b": len(d["b"]),
+                     "uc": d["uc"], "up": d["up"], "ai": d["ai"]})
         print(f'il{kod:02d} {d["ad"]:<16}{d["n"]:>6,} nokta · {len(d["b"]):>5,} bilgili'
               f' · {bo/1024:>7.1f} KB', flush=True)
     ozet.sort(key=lambda x: -x["n"])

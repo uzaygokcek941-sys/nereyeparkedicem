@@ -6,7 +6,7 @@ ISPARK canli bos kapasite veriyor, IZELMAN ve ANPARK vermiyor. O yuzden bu
 sayfalarda uygulama.js yuklenmez (js=False) — yoksa Istanbul verisini cekip
 yanlis doluluk gosterir."""
 import json, os
-from uret import CIKTI, slug, tr_baslik, tl, kart, sayfa, ilce_grupla
+from uret import CIKTI, URL, slug, tr_baslik, tl, kart, sayfa, ilce_grupla
 
 SEHIR = {
     "izmir": {
@@ -70,10 +70,11 @@ def uret_sehir(kod, s):
 
     os.makedirs(f"{CIKTI}/{kod}", exist_ok=True)
     open(f"{CIKTI}/{kod}/index.html", "w", encoding="utf-8").write(sayfa(
-        f"{s['ad']} Otopark — Konum, Kapasite ve Tarife | nereyeparkedicem",
+        f"{s['ad']} Otopark — Konum, Kapasite ve Tarife",
         f"{s['ad']}'de {len(d)} {s['isletme']} otoparkının konumu, kapasitesi ve "
         f"{'tarifesi' if tarifeli else 'çalışma saatleri'}. İlçe ilçe liste, tek dokunuşla yol tarifi.",
-        govde, kok="../", kaynak_html=s["kaynak"], js=False))
+        govde, kok="../", kaynak_html=s["kaynak"], js=False,
+        canonical=f"{URL}/{kod}/"))
 
     for sl, v in g.items():
         os.makedirs(f"{CIKTI}/{kod}/ilce/{sl}", exist_ok=True)
@@ -87,10 +88,11 @@ def uret_sehir(kod, s):
 </section>
 <section class="liste">{"".join(kart(k) for k in v["kayit"])}</section>'''
         open(f"{CIKTI}/{kod}/ilce/{sl}/index.html", "w", encoding="utf-8").write(sayfa(
-            f"{v['ad']} Otopark — {s['ad']} | nereyeparkedicem",
+            f"{v['ad']} Otopark — {s['ad']}",
             f"{s['ad']} {v['ad']} ilçesindeki {len(v['kayit'])} {s['isletme']} otoparkı: "
             f"konum, kapasite, çalışma saati ve yol tarifi.",
-            gv, kok="../../../", kaynak_html=s["kaynak"], js=False))
+            gv, kok="../../../", kaynak_html=s["kaynak"], js=False,
+            canonical=f"{URL}/{kod}/ilce/{sl}/"))
 
     print(f"{s['ad']:<7} {len(d):>3} otopark · {len(g)} ilce sayfasi · tarifeli {tarifeli}")
     return g

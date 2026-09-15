@@ -1,0 +1,39 @@
+{
+ "name": "nereyeparkedicem — Türkiye otopark haritası",
+ "short_name": "parkedicem",
+ "description": "81 ilde otopark konumu, İstanbul'da canlı doluluk ve tarife.",
+ "start_url": "/",
+ "scope": "/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#0b3d2e",
+ "lang": "tr",
+ "icons": [
+  {
+   "src": "/simge-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/simge-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "/simge.svg",
+   "sizes": "any",
+   "type": "image/svg+xml"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "Harita",
+   "url": "/harita/"
+  },
+  {
+   "name": "Ücretsiz otoparklar",
+   "url": "/ucretsiz-otopark/"
+  }
+ ]
+}

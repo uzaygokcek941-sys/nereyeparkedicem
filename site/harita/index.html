@@ -1,16 +1,20 @@
 <!doctype html>
 <html lang="tr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Türkiye Otopark Haritası — 81 İl. 24.460 Nokta | nereyeparkedicem</title>
+<title>Türkiye Otopark Haritası — 81 İl. 24.460 Nokta</title>
 <meta name="description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.">
-
-<meta property="og:title" content="Türkiye Otopark Haritası — 81 İl. 24.460 Nokta | nereyeparkedicem">
+<link rel="canonical" href="https://nereyeparkedicem.vercel.app/harita/">
+<meta property="og:title" content="Türkiye Otopark Haritası — 81 İl. 24.460 Nokta">
 <meta property="og:description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nereyeparkedicem.vercel.app/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b3d2e">
+<link rel="icon" href="/simge.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/simge-180.png">
+<link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="../stil.css">
 <link rel="stylesheet" href="../vendor/leaflet.css">
 </head><body>
@@ -31,10 +35,19 @@
   <button id="harita-konum" class="birincil">📍 Konumuma git</button>
   <p id="harita-durum" class="durum" role="status"></p>
  </div>
+ <p id="harita-filtre" class="durum" hidden><strong>Filtre açık:</strong> yalnızca
+  OpenStreetMap&#8217;te ücretsiz işaretli otoparklar gösteriliyor ·
+  <a href="?">filtreyi kaldır</a></p>
 </section>
 <div id="harita" role="application" aria-label="Türkiye otopark haritası"></div>
 <section class="metin">
  <h2>81 ilin tamamı — otopark sayısına göre</h2>
+ <p class="il-ara-satir">
+  <label for="il-ara">İl ara</label>
+  <input id="il-ara" type="search" inputmode="search" autocomplete="off"
+   placeholder="Ankara, Bursa, Van…" aria-describedby="il-ara-sayac">
+  <span id="il-ara-sayac" class="durum" role="status"></span>
+ </p>
  <div class="rozetler"><button class="il-rozet" data-lat="41.0183" data-lng="29.0247">İstanbul <b>5.121</b></button><button class="il-rozet" data-lat="39.91" data-lng="32.7719">Ankara <b>2.986</b></button><button class="il-rozet" data-lat="38.4322" data-lng="27.1143">İzmir <b>1.630</b></button><button class="il-rozet" data-lat="36.8531" data-lng="30.7252">Antalya <b>1.351</b></button><button class="il-rozet" data-lat="40.7727" data-lng="29.9276">Kocaeli <b>1.315</b></button><button class="il-rozet" data-lat="39.6413" data-lng="27.8797">Balıkesir <b>1.106</b></button><button class="il-rozet" data-lat="37.0262" data-lng="35.3064">Adana <b>785</b></button><button class="il-rozet" data-lat="37.9201" data-lng="32.5002">Konya <b>722</b></button><button class="il-rozet" data-lat="36.8745" data-lng="28.2501">Muğla <b>669</b></button><button class="il-rozet" data-lat="40.2181" data-lng="29.0166">Bursa <b>579</b></button><button class="il-rozet" data-lat="41.2241" data-lng="27.8323">Tekirdağ <b>506</b></button><button class="il-rozet" data-lat="37.8138" data-lng="30.5378">Isparta <b>363</b></button><button class="il-rozet" data-lat="38.7385" data-lng="35.5214">Kayseri <b>321</b></button><button class="il-rozet" data-lat="39.7638" data-lng="30.4993">Eskişehir <b>307</b></button><button class="il-rozet" data-lat="40.9992" data-lng="39.7252">Trabzon <b>269</b></button><button class="il-rozet" data-lat="36.797" data-lng="34.5759">Mersin <b>268</b></button><button class="il-rozet" data-lat="39.7328" data-lng="36.9969">Sivas <b>266</b></button><button class="il-rozet" data-lat="40.1495" data-lng="26.4084">Çanakkale <b>250</b></button><button class="il-rozet" data-lat="37.7803" data-lng="29.0886">Denizli <b>249</b></button><button class="il-rozet" data-lat="37.9279" data-lng="40.1801">Diyarbakır <b>228</b></button><button class="il-rozet" data-lat="41.4489" data-lng="27.3449">Kırklareli <b>228</b></button><button class="il-rozet" data-lat="40.8532" data-lng="31.1653">Düzce <b>222</b></button><button class="il-rozet" data-lat="38.6172" data-lng="27.4282">Manisa <b>221</b></button><button class="il-rozet" data-lat="38.3407" data-lng="38.3203">Malatya <b>220</b></button><button class="il-rozet" data-lat="40.7614" data-lng="30.3657">Sakarya <b>217</b></button><button class="il-rozet" data-lat="37.8896" data-lng="41.1291">Batman <b>210</b></button><button class="il-rozet" data-lat="37.8377" data-lng="27.4188">Aydın <b>199</b></button><button class="il-rozet" data-lat="41.2839" data-lng="36.2603">Samsun <b>199</b></button><button class="il-rozet" data-lat="41.6367" data-lng="26.6146">Edirne <b>194</b></button><button class="il-rozet" data-lat="38.6553" data-lng="34.8261">Nevşehir <b>194</b></button><button class="il-rozet" data-lat="37.0608" data-lng="37.3462">Gaziantep <b>162</b></button><button class="il-rozet" data-lat="40.3353" data-lng="36.5483">Tokat <b>144</b></button><button class="il-rozet" data-lat="41.0263" data-lng="37.5609">Ordu <b>142</b></button><button class="il-rozet" data-lat="38.5042" data-lng="43.3924">Van <b>139</b></button><button class="il-rozet" data-lat="40.8049" data-lng="35.6611">Amasya <b>120</b></button><button class="il-rozet" data-lat="39.9025" data-lng="41.2447">Erzurum <b>115</b></button><button class="il-rozet" data-lat="37.1739" data-lng="38.8364">Şanlıurfa <b>104</b></button><button class="il-rozet" data-lat="41.4185" data-lng="33.7721">Kastamonu <b>99</b></button><button class="il-rozet" data-lat="38.3472" data-lng="33.993">Aksaray <b>97</b></button><button class="il-rozet" data-lat="37.5873" data-lng="36.9133">Kahramanmaraş <b>95</b></button><button class="il-rozet" data-lat="38.4948" data-lng="42.2792">Bitlis <b>94</b></button><button class="il-rozet" data-lat="40.7287" data-lng="31.5431">Bolu <b>94</b></button><button class="il-rozet" data-lat="37.3192" data-lng="40.7371">Mardin <b>90</b></button><button class="il-rozet" data-lat="39.4432" data-lng="29.9784">Kütahya <b>89</b></button><button class="il-rozet" data-lat="41.4129" data-lng="31.7051">Zonguldak <b>87</b></button><button class="il-rozet" data-lat="37.09" data-lng="36.2234">Osmaniye <b>86</b></button><button class="il-rozet" data-lat="39.8773" data-lng="33.4969">Kırıkkale <b>84</b></button><button class="il-rozet" data-lat="40.9352" data-lng="38.4217">Giresun <b>83</b></button><button class="il-rozet" data-lat="40.5416" data-lng="34.9251">Çorum <b>82</b></button><button class="il-rozet" data-lat="38.7919" data-lng="30.534">Afyonkarahisar <b>80</b></button><button class="il-rozet" data-lat="40.6516" data-lng="29.2682">Yalova <b>77</b></button><button class="il-rozet" data-lat="36.5839" data-lng="36.1829">Hatay <b>75</b></button><button class="il-rozet" data-lat="37.7612" data-lng="38.2428">Adıyaman <b>70</b></button><button class="il-rozet" data-lat="39.8133" data-lng="34.8595">Yozgat <b>68</b></button><button class="il-rozet" data-lat="38.6717" data-lng="29.4044">Uşak <b>63</b></button><button class="il-rozet" data-lat="41.3068" data-lng="41.7615">Artvin <b>59</b></button><button class="il-rozet" data-lat="40.1439" data-lng="29.9955">Bilecik <b>43</b></button><button class="il-rozet" data-lat="41.0351" data-lng="40.6979">Rize <b>42</b></button><button class="il-rozet" data-lat="41.2096" data-lng="32.6553">Karabük <b>41</b></button><button class="il-rozet" data-lat="41.6341" data-lng="32.3375">Bartın <b>36</b></button><button class="il-rozet" data-lat="42.0069" data-lng="35.089">Sinop <b>35</b></button><button class="il-rozet" data-lat="37.3143" data-lng="42.272">Şırnak <b>35</b></button><button class="il-rozet" data-lat="37.1767" data-lng="33.2527">Karaman <b>32</b></button><button class="il-rozet" data-lat="37.9277" data-lng="34.6751">Niğde <b>30</b></button><button class="il-rozet" data-lat="40.6227" data-lng="33.6158">Çankırı <b>27</b></button><button class="il-rozet" data-lat="38.6391" data-lng="39.2015">Elazığ <b>26</b></button><button class="il-rozet" data-lat="39.6852" data-lng="42.9983">Ağrı <b>24</b></button><button class="il-rozet" data-lat="39.7628" data-lng="39.438">Erzincan <b>22</b></button><button class="il-rozet" data-lat="39.1468" data-lng="34.1434">Kırşehir <b>22</b></button><button class="il-rozet" data-lat="37.6845" data-lng="30.3403">Burdur <b>20</b></button><button class="il-rozet" data-lat="40.5658" data-lng="43.1422">Kars <b>17</b></button><button class="il-rozet" data-lat="40.4124" data-lng="39.4194">Gümüşhane <b>16</b></button><button class="il-rozet" data-lat="39.0706" data-lng="39.5344">Tunceli <b>15</b></button><button class="il-rozet" data-lat="39.8119" data-lng="44.0744">Iğdır <b>15</b></button><button class="il-rozet" data-lat="38.9023" data-lng="40.5277">Bingöl <b>14</b></button><button class="il-rozet" data-lat="36.7075" data-lng="37.1217">Kilis <b>12</b></button><button class="il-rozet" data-lat="41.1272" data-lng="42.7797">Ardahan <b>11</b></button><button class="il-rozet" data-lat="37.9497" data-lng="41.9506">Siirt <b>10</b></button><button class="il-rozet" data-lat="38.7775" data-lng="41.4894">Muş <b>9</b></button><button class="il-rozet" data-lat="37.5673" data-lng="44.2285">Hakkari <b>7</b></button><button class="il-rozet" data-lat="40.3059" data-lng="40.2058">Bayburt <b>6</b></button></div>
  <h2>Bu harita ne gösteriyor</h2>
  <p>OpenStreetMap&#8217;te <code>amenity=parking</code> etiketiyle kayıtlı bütün noktalar —
@@ -46,7 +59,7 @@
 <footer class="alt">
  <p>Harita verisi: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları, lisans ODbL. Fayanslar OpenStreetMap Vakfı sunucularından gelir.</p><p><strong>Bağımsız uygulamadır.</strong> Noktalar OSM topluluğunun girdiği verilerdir; OSM otoparkların <strong>%99,8&#8217;inde fiyat, %99,3&#8217;ünde çalışma saati taşımıyor</strong> — bu yüzden ücret ve saat çoğu noktada boştur. İstanbul, İzmir ve Ankara için belediye açık verisiyle kurulan ayrıntılı sayfalar menüdedir.</p>
  <p><a href="../gizlilik/">Gizlilik ve KVKK</a></p>
- <p class="uretim">Sayfa üretimi: 15.09.2026 14:51</p>
+ <p class="uretim">Sayfa üretimi: 15.09.2026 15:38</p>
 </footer>
 <script src="../vendor/leaflet.js" defer></script><script src="../harita.js" defer></script>
 </body></html>

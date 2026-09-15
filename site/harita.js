@@ -38,10 +38,16 @@
       '<div class="kaynak">Kaynak: OpenStreetMap</div></div>';
   }
 
+  // ?ucretsiz=1 -> yalniz fee=no isaretli noktalar. OSM'de noktalarin %88'inde
+  // ucret bilgisi YOK; filtre "ucretsiz oldugu yazan" demek, "ucretsiz olan" degil.
+  var SORGU = new URLSearchParams(location.search);
+  var SADECE_UCRETSIZ = SORGU.get("ucretsiz") === "1";
+
   function ilCiz(d) {
     var g = L.layerGroup(), k = d.k, b = d.b;
     for (var i = 0; i < k.length; i += 2) {
       var idx = i / 2, bi = b[idx];
+      if (SADECE_UCRETSIZ && !(bi && bi.u === 0)) continue;
       var m = L.circleMarker([k[i], k[i + 1]], {
         renderer: tuval, radius: 5, weight: 1,
         color: "#0b3d2e", fillColor: bi && bi.u === 1 ? "#f0a500" : "#17a673",
@@ -50,6 +56,7 @@
       m.bindPopup(balon(k[i], k[i + 1], bi, d.ad));
       g.addLayer(m);
     }
+    g.nokta = g.getLayers().length;   // filtre sonrasi GERCEK sayi
     return g;
   }
 
@@ -85,11 +92,12 @@
       }
       if (ilKat[il.p]) {
         if (!harita.hasLayer(ilKat[il.p])) harita.addLayer(ilKat[il.p]);
-        gorunen += il.n;
+        gorunen += ilKat[il.p].nokta != null ? ilKat[il.p].nokta : il.n;
       } else { bekleyen++; ilYukle(il.p); }
     });
     durum(bekleyen ? "Yükleniyor…"
-                   : gorunen.toLocaleString("tr") + " otopark gösteriliyor");
+                   : gorunen.toLocaleString("tr") +
+                     (SADECE_UCRETSIZ ? " ücretsiz otopark" : " otopark") + " gösteriliyor");
   }
 
   function balonlar() {
@@ -124,6 +132,35 @@
     }, { enableHighAccuracy: true, timeout: 10000 });
   }
 
+  /** ?il=<plaka> ile gelindiginde o ile yakinlastir (il sayfalarindaki
+   *  "haritada ac" baglantisi bunu kullanir). */
+  function ilAc(kod) {
+    if (!kod || !ozet) return;
+    // "?il=06" -> 6: string karsilastirma "06"!=="6" yuzunden eslesmiyordu
+    var n = parseInt(kod, 10);
+    var il = ozet.iller.filter(function (x) { return x.p === n; })[0];
+    if (!il) return;
+    harita.setView(il.c, 11);
+  }
+
+  /** 81 rozet mobilde uzun liste; arama kutusu daraltir. */
+  function aramaKur() {
+    var i = $("#il-ara");
+    if (!i) return;
+    var rozet = [].slice.call(document.querySelectorAll(".il-rozet"));
+    var sayac = $("#il-ara-sayac");
+    i.addEventListener("input", function () {
+      var q = i.value.trim().toLocaleLowerCase("tr");
+      var n = 0;
+      rozet.forEach(function (b) {
+        var uy = !q || b.textContent.toLocaleLowerCase("tr").indexOf(q) > -1;
+        b.hidden = !uy;
+        if (uy) n++;
+      });
+      if (sayac) sayac.textContent = q ? n + " il" : "";
+    });
+  }
+
   function kur() {
     harita = L.map("harita", { zoomControl: true, preferCanvas: true })
       .setView([39.1, 35.2], 6);
@@ -141,11 +178,17 @@
         if (t) t.textContent = d.toplam.toLocaleString("tr");
         harita.on("moveend zoomend", yenile);
         yenile();
+        ilAc(SORGU.get("il"));
       })
       .catch(function (e) { durum("Harita verisi alınamadı: " + e.message); });
 
     var kb = $("#harita-konum");
     if (kb) kb.addEventListener("click", konumBul);
+    aramaKur();
+    if (SADECE_UCRETSIZ) {
+      var u = $("#harita-filtre");
+      if (u) u.hidden = false;
+    }
 
     Array.prototype.forEach.call(document.querySelectorAll(".il-rozet"), function (b) {
       b.addEventListener("click", function () {

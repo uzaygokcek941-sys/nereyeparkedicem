@@ -8,7 +8,8 @@ PORT = 8731
 GENISLIK = [(375, 812, "mobil"), (768, 1024, "tablet"), (1440, 900, "masaustu")]
 SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
          "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/",
-         "/harita/", "/gizlilik/", "/boyle-bir-sayfa-yok/"]
+         "/harita/", "/il/", "/il/ankara/", "/il/bayburt/", "/ucretsiz-otopark/",
+         "/gizlilik/", "/boyle-bir-sayfa-yok/"]
 # Bu yollar Vercel cleanUrls / 404 yonlendirmesi gerektiriyor; yerel
 # SimpleHTTPRequestHandler saglamaz, yalniz canli modda olculur.
 CANLI_YOL = {"/gizlilik/", "/boyle-bir-sayfa-yok/"}

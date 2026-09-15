@@ -2,7 +2,7 @@
 """/harita/ sayfasi. Leaflet kendi sunucumuzda (site/vendor), CDN yok -> CSP
 script-src 'self' bozulmuyor. Tek dis kaynak fayans gorselleri."""
 import json, os
-from uret import CIKTI, sayfa
+from uret import CIKTI, URL, sayfa
 
 KAYNAK = (
  '<p>Harita verisi: <a href="https://www.openstreetmap.org/copyright" target="_blank" '
@@ -31,10 +31,19 @@ def yaz():
   <button id="harita-konum" class="birincil">📍 Konumuma git</button>
   <p id="harita-durum" class="durum" role="status"></p>
  </div>
+ <p id="harita-filtre" class="durum" hidden><strong>Filtre açık:</strong> yalnızca
+  OpenStreetMap&#8217;te ücretsiz işaretli otoparklar gösteriliyor ·
+  <a href="?">filtreyi kaldır</a></p>
 </section>
 <div id="harita" role="application" aria-label="Türkiye otopark haritası"></div>
 <section class="metin">
  <h2>{il} ilin tamamı — otopark sayısına göre</h2>
+ <p class="il-ara-satir">
+  <label for="il-ara">İl ara</label>
+  <input id="il-ara" type="search" inputmode="search" autocomplete="off"
+   placeholder="Ankara, Bursa, Van…" aria-describedby="il-ara-sayac">
+  <span id="il-ara-sayac" class="durum" role="status"></span>
+ </p>
  <div class="rozetler">{rozet}</div>
  <h2>Bu harita ne gösteriyor</h2>
  <p>OpenStreetMap&#8217;te <code>amenity=parking</code> etiketiyle kayıtlı bütün noktalar —
@@ -50,11 +59,11 @@ def yaz():
 
     os.makedirs(f"{CIKTI}/harita", exist_ok=True)
     open(f"{CIKTI}/harita/index.html", "w", encoding="utf-8").write(sayfa(
-        f"Türkiye Otopark Haritası — {il} İl, {n:,} Nokta | nereyeparkedicem".replace(",", "."),
+        f"Türkiye Otopark Haritası — {il} İl, {n:,} Nokta".replace(",", "."),
         f"Türkiye genelinde {n:,} otopark noktası tek haritada. ".replace(",", ".") +
         f"{il} il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.",
         govde, kok="../", kaynak_html=KAYNAK, js=False,
-        ek_head=ek_head, ek_js=ek_js))
+        ek_head=ek_head, ek_js=ek_js, canonical=f"{URL}/harita/"))
     print(f"uretildi: {CIKTI}/harita/ · {il} il · {n:,} nokta")
     return o
 

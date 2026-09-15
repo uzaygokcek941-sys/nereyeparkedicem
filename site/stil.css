@@ -60,6 +60,26 @@ button.birincil:active{transform:translateY(1px)}
 button.birincil:disabled{opacity:.55;cursor:progress}
 .durum{color:var(--sonuk);font-size:.9rem;margin:.7rem 0 0;min-height:1.2em}
 
+/* ana sayfadaki harita/ucretsiz baglantilari: buton gorunumu ama <a>.
+   button.birincil kurali eleman secicili oldugu icin linke gecmiyordu */
+a.birincil,a.ikincil{display:inline-flex;align-items:center;justify-content:center;
+  font-weight:600;text-decoration:none;border-radius:999px;padding:.95rem 1.6rem;
+  min-height:48px;margin:0 .5rem .6rem 0}
+a.birincil{background:var(--vurgu);color:var(--vurgu-metin);box-shadow:var(--golge)}
+a.birincil:hover{filter:brightness(1.08)}
+a.ikincil{background:var(--yuzey);color:var(--metin);border:1px solid var(--kenar)}
+a.ikincil:hover{border-color:var(--vurgu)}
+.liste-bolum>.alt-baslik{margin-bottom:1.1rem}
+
+/* harita il arama: 81 rozet mobilde uzun liste, kutu daraltir */
+.il-ara-satir{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:0 0 .9rem}
+.il-ara-satir label{font-size:.8rem;color:var(--sonuk);text-transform:uppercase;
+  letter-spacing:.05em}
+#il-ara{font:inherit;padding:.7rem .9rem;min-height:44px;border:1px solid var(--kenar);
+  border-radius:var(--r);background:var(--yuzey);color:var(--metin);flex:1 1 12rem;max-width:22rem}
+#il-ara:focus-visible{outline:2px solid var(--vurgu);outline-offset:1px}
+#il-ara-satir span{min-height:0}
+
 .liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));
   gap:clamp(.8rem, .6rem + .6vw, 1.2rem);padding-bottom:var(--bolum)}
 .otopark{background:var(--yuzey);border:1px solid var(--kenar);border-radius:var(--r);
