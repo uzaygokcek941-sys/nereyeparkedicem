@@ -59,6 +59,33 @@ OLCUM = """() => {
   return r;
 }"""
 
+# Ana sayfadaki "en yakin otoparklar" bir sure YALNIZ ISPARK (Istanbul)
+# verisini kullaniyordu: Ankara'daki kullaniciya Tuzla'yi gosteriyordu ve
+# sessizce yanlis cevap veriyordu. Bu senaryo o hatanin nobetcisi.
+KONUM = [("Ankara Kızılay", 39.9208, 32.8541, "Ankara"),
+         ("İzmir Konak",    38.4192, 27.1287, "İzmir"),
+         ("İstanbul Kadıköy", 40.9903, 29.0270, "KADIKÖY")]
+
+def konum_testi(tarayici, taban):
+    sorun = []
+    for ad, la, lo, beklenen in KONUM:
+        ctx = tarayici.new_context(viewport={"width": 390, "height": 844},
+              geolocation={"latitude": la, "longitude": lo},
+              permissions=["geolocation"], locale="tr-TR")
+        sf = ctx.new_page()
+        sf.goto(f"{taban}/", wait_until="networkidle")
+        sf.click("#yakin"); sf.wait_for_timeout(4000)
+        n = sf.locator("#yakin-liste .otopark").count()
+        adres = sf.inner_text("#yakin-liste .otopark .adres") if n else ""
+        print(f"\n--- konum {ad}: {n} kart · ilk adres {adres!r}")
+        if not n:
+            sorun.append(f"konum {ad}: hic otopark listelenmedi")
+        elif beklenen.lower() not in adres.lower():
+            sorun.append(f"konum {ad}: en yakin otopark {adres!r} - "
+                         f"{beklenen!r} bekleniyordu (yanlis il)")
+        ctx.close()
+    return sorun
+
 def main():
     # argv[1] verilirse canli adres olculur. Yerel SimpleHTTPRequestHandler
     # cleanUrls yapmadigi icin /gizlilik/ gibi yollar ve goreli-yol kaymasi
@@ -113,6 +140,7 @@ def main():
                 uyari.append(f"{ad}: /_vercel/ 404 (yerelde beklenen, canlida kontrol et)")
             if konsol: hata.append(f"{ad}: konsol -> {konsol[:3]}")
             sf.close()
+        hata += konum_testi(b, TABANAD)
         b.close()
     if s: s.shutdown()
     print("\n" + "="*54)

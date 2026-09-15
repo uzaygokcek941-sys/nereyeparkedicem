@@ -156,7 +156,7 @@ def uret():
  <button id="yakin" class="birincil">📍 En yakın otoparkları göster</button>
  <p id="konum-durum" class="durum" role="status"></p>
 </section>
-<section id="sonuc" hidden><h2>Sana en yakın 10 otopark</h2><div class="liste" id="yakin-liste"></div></section>
+<section id="sonuc" hidden><h2>Sana en yakın otoparklar</h2><div class="liste" id="yakin-liste"></div></section>
 <section id="ilceler"><h2>İlçeye göre</h2><div class="ilce-izgara">{ilce_kart}</div></section>
 <section id="sehirler"><h2>Diğer şehirler</h2>
  <div class="ilce-izgara">

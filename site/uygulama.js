@@ -64,6 +64,36 @@ function kartHTML(p, km) {
    </div></article>`;
 }
 
+// OSM noktasi: fiyat ve canli doluluk YOK. Ayri kart, cunku ISPARK kartindaki
+// "Bos" ve "Ilk saat" alanlarini "—" ile doldurmak veri varmis gibi gosterir.
+function kartOSM(p, km, il) {
+  const ek = [p.kapasite ? `${p.kapasite} kapasite` : "", p.tip || "", p.saat || ""]
+    .filter(Boolean).join(" · ");
+  return `<article class="otopark">
+   <header><h3>${p.ad}</h3><p class="adres">${il} · ${km.toFixed(1)} km</p></header>
+   <dl class="ozet">
+    <div><dt>Mesafe</dt><dd>${km.toFixed(1)}<small> km</small></dd></div>
+    <div><dt>Ücret</dt><dd>${p.ucretli == null ? "bilinmiyor" : (p.ucretli ? "ücretli" : "ücretsiz")}</dd></div>
+   </dl>
+   ${ek ? `<p class="saat">${ek}</p>` : ""}
+   <p class="saat">Bu il için tarife ve canlı doluluk verisi yok.</p>
+   <div class="git">
+    <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">Google Maps</a>
+    <a href="https://yandex.com.tr/harita/?rtext=~${p.lat},${p.lng}&rtt=auto" target="_blank" rel="noopener">Yandex</a>
+   </div></article>`;
+}
+
+/** Konumu iceren il(ler). Sinira yakin noktalar komsu ilde olabilir, o yuzden
+ *  bbox 0.2 derece genisletilir; hicbiri tutmazsa merkeze en yakin 2 il. */
+function ilBul(la, lo, iller) {
+  const P = 0.2;
+  const icinde = iller.filter(x => la >= x.bb[0] - P && la <= x.bb[2] + P &&
+                                   lo >= x.bb[1] - P && lo <= x.bb[3] + P);
+  if (icinde.length) return icinde.slice(0, 3);
+  return [...iller].sort((a, b) =>
+    mesafe(la, lo, a.c[0], a.c[1]) - mesafe(la, lo, b.c[0], b.c[1])).slice(0, 2);
+}
+
 function yakinKur() {
   const btn = $("#yakin"); if (!btn) return;
   btn.addEventListener("click", async () => {
@@ -73,20 +103,57 @@ function yakinKur() {
     navigator.geolocation.getCurrentPosition(async (k) => {
       try {
         durum.textContent = "Otoparklar sıralanıyor…";
-        const [hepsi, m] = await Promise.all([
-          fetch("otoparklar.json").then(r => r.json()),
-          canli().catch(() => new Map()),
-        ]);
         const { latitude: la, longitude: lo } = k.coords;
-        const sirali = hepsi
-          .map(p => ({ p, km: mesafe(la, lo, p.lat, p.lng) }))
-          .sort((a, b) => a.km - b.km).slice(0, 10);
-        $("#yakin-liste").innerHTML = sirali.map(x => kartHTML(x.p, x.km)).join("");
-        $$("#yakin-liste .otopark").forEach(el => {
-          const c = m.get(el.dataset.id); if (c) bosBoya($("[data-bos]", el), c.emptyCapacity, c.capacity);
-        });
+        // ONCE hangi ildeyiz: otoparklar.json yalniz ISPARK (Istanbul) tasiyor,
+        // dogrudan kullanmak Ankara'daki kullaniciya Tuzla'yi gosteriyordu.
+        const ozet = await fetch("/veri/iller.json").then(r => r.json());
+        const adaylar = ilBul(la, lo, ozet.iller);
+
+        if (adaylar.some(x => x.p === 34)) {
+          const [hepsi, m] = await Promise.all([
+            fetch("/otoparklar.json").then(r => r.json()),
+            canli().catch(() => new Map()),
+          ]);
+          const sirali = hepsi
+            .map(p => ({ p, km: mesafe(la, lo, p.lat, p.lng) }))
+            .sort((a, b) => a.km - b.km).slice(0, 10);
+          $("#yakin-liste").innerHTML = sirali.map(x => kartHTML(x.p, x.km)).join("");
+          $$("#yakin-liste .otopark").forEach(el => {
+            const c = m.get(el.dataset.id); if (c) bosBoya($("[data-bos]", el), c.emptyCapacity, c.capacity);
+          });
+          durum.textContent = `${sirali.length} İSPARK otoparkı · en yakını ${sirali[0].km.toFixed(1)} km`;
+        } else {
+          const dosyalar = await Promise.all(adaylar.map(x =>
+            fetch(`/veri/il-${String(x.p).padStart(2, "0")}.json`).then(r => r.json())
+              .then(d => ({ d, ad: x.ad })).catch(() => null)));
+          const nokta = [];
+          for (const f of dosyalar) {
+            if (!f) continue;
+            const kd = f.d.k, b = f.d.b || {};
+            for (let i = 0; i < kd.length; i += 2) {
+              const bi = b[String(i / 2)] || {};
+              nokta.push({ ad: bi.a || "Otopark", lat: kd[i], lng: kd[i + 1],
+                           kapasite: bi.k, tip: bi.t, saat: bi.s,
+                           ucretli: bi.u == null ? null : !!bi.u, il: f.ad });
+            }
+          }
+          if (!nokta.length) throw new Error("bu bölge için nokta bulunamadı");
+          const sirali = nokta.map(p => ({ p, km: mesafe(la, lo, p.lat, p.lng) }))
+            .sort((a, b) => a.km - b.km).slice(0, 10);
+          $("#yakin-liste").innerHTML = sirali.map(x => kartOSM(x.p, x.km, x.p.il)).join("");
+          // Izmir ve Ankara'nin kendi tarife sayfalari var; "yalniz Istanbul"
+          // demek onlar icin yanlis olurdu
+          // Ankara'da tarifesi olan otopark 0 (ANPARK fiyati yalniz JPEG
+          // yayinliyor), o yuzden "tarifeleri" demiyoruz
+          const SEHIR = { 35: ["İzmir tarifeleri", "/izmir/"],
+                          6:  ["Ankara otoparkları", "/ankara/"] };
+          const s = adaylar.map(x => SEHIR[x.p]).find(Boolean);
+          durum.innerHTML = `${adaylar.map(x => x.ad).join(", ")} · ` +
+            `${sirali.length} otopark · en yakını ${sirali[0].km.toFixed(1)} km · ` +
+            `canlı doluluk yalnız İstanbul&#8217;da` +
+            (s ? ` · <a href="${s[1]}">${s[0]}</a>` : " · tarife verisi yok");
+        }
         $("#sonuc").hidden = false;
-        durum.textContent = `${sirali.length} otopark bulundu · en yakını ${sirali[0].km.toFixed(1)} km`;
         $("#sonuc").scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (e) {
         durum.textContent = "Liste alınamadı: " + e.message;
