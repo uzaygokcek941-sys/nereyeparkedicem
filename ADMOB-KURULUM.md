@@ -49,7 +49,7 @@ sayılır ve hesap kapatılır.
 | Test | Sonuç |
 |---|---|
 | `assembleDebug` | başarılı, `app-debug.apk` **6.975.573 bayt** |
-| `bundleRelease` (R8 açık) | `BUILD SUCCESSFUL in 2m 59s`, `app-release.aab` **2.519.551 bayt**, imzasız |
+| `bundleRelease` (R8 açık) | `BUILD SUCCESSFUL in 2m 59s`, `app-release.aab` **4.544.180 bayt**, imzasız |
 | Kurulum + açılış | `Displayed .AnaActivity +23s345ms` (emülatörde ilk soğuk açılış; APK kurulumu sonrası ART derlemesi) |
 | Site yükleniyor mu | evet — canlı doluluk **%55** ekranda |
 | **Banner** | **görüldü:** "This is a 320x50 test ad", alt sekme çubuğunun altında |
