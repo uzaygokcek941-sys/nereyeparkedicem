@@ -59,10 +59,22 @@ MANIFEST = {
     ],
 }
 
+def ico(yol):
+    """Tarayicilar <link rel=icon> olsa bile /favicon.ico istiyor; olculdu: 404.
+    Cok boyutlu ICO tek dosyada."""
+    im = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, 63, 63], radius=14, fill=YESIL)
+    d.text((32, 34), "P", font=yazitipi(40), fill=(255, 255, 255), anchor="mm")
+    d.ellipse([40, 6, 52, 18], fill=VURGU)
+    im.save(yol, "ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+    return os.path.getsize(yol)
+
 def yaz():
     os.makedirs(CIKTI, exist_ok=True)
     open(f"{CIKTI}/simge.svg", "w", encoding="utf-8").write(SVG)
     boy = {b: png(b, f"{CIKTI}/simge-{b}.png") for b in (180, 192, 512)}
+    boy["ico"] = ico(f"{CIKTI}/favicon.ico")
     json.dump(MANIFEST, open(f"{CIKTI}/manifest.json", "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     return boy
@@ -70,5 +82,7 @@ def yaz():
 if __name__ == "__main__":
     b = yaz()
     print("simge.svg", len(SVG), "bayt")
-    for k, v in b.items(): print(f"simge-{k}.png {v:,} bayt")
+    for k, v in b.items():
+        ad = "favicon.ico" if k == "ico" else f"simge-{k}.png"
+        print(f"{ad} {v:,} bayt")
     print("manifest.json", os.path.getsize(f"{CIKTI}/manifest.json"), "bayt")

@@ -99,6 +99,7 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0b3d2e">
 <link rel="icon" href="/simge.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="/simge-180.png">
 <link rel="manifest" href="/manifest.json">
 <link rel="stylesheet" href="{kok}stil.css">
