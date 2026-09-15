@@ -7,7 +7,10 @@ from uret import CIKTI, URL, sayfa
 KAYNAK = (
  '<p>Harita verisi: <a href="https://www.openstreetmap.org/copyright" target="_blank" '
  'rel="noopener">OpenStreetMap</a> katkıcıları, lisans ODbL. Fayanslar OpenStreetMap '
- 'Vakfı sunucularından gelir.</p>'
+ 'Vakfı sunucularından gelir. Adres arama <a href="https://nominatim.org/" '
+ 'target="_blank" rel="noopener">Nominatim</a>, yol tarifi <a '
+ 'href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> demo '
+ 'sunucusuyla yapılır; ikisi de OpenStreetMap verisidir.</p>'
  '<p><strong>Bağımsız uygulamadır.</strong> Noktalar OSM topluluğunun girdiği verilerdir; '
  'OSM otoparkların <strong>%99,8&#8217;inde fiyat, %99,3&#8217;ünde çalışma saati '
  'taşımıyor</strong> — bu yüzden ücret ve saat çoğu noktada boştur. İstanbul, İzmir ve '
@@ -26,16 +29,34 @@ def yaz():
 <section class="kahraman dar">
  <h1>Türkiye otopark haritası — {il} il</h1>
  <p class="alt-baslik"><b id="harita-toplam">{n:,}</b> otopark noktası haritada.
- İl balonuna dokun, yakınlaş, otoparklar yüklensin.</p>
- <div class="harita-arac">
-  <button id="harita-konum" class="birincil">Konumuma git</button>
-  <p id="harita-durum" class="durum" role="status"></p>
- </div>
+ Adres yaz, o adresin çevresindeki otoparklar sıralansın; birini seç, yol tarifi
+ uygulamanın içinde çıksın.</p>
+ <form id="adres-form" class="harita-arac" role="search">
+  <label for="adres">Adres</label>
+  <input id="adres" type="search" name="adres" inputmode="search" autocomplete="off"
+   placeholder="Kadıköy İstanbul · Atatürk Cad. 12 Bursa" aria-describedby="harita-durum">
+  <button class="birincil" type="submit">Ara</button>
+  <button id="harita-konum" class="ikincil" type="button">Konumum</button>
+ </form>
+ <p id="harita-durum" class="durum" role="status"></p>
+ <div id="adres-secenek" class="adres-secenek" hidden></div>
  <p id="harita-filtre" class="durum" hidden><strong>Filtre açık:</strong> yalnızca
   OpenStreetMap&#8217;te ücretsiz işaretli otoparklar gösteriliyor ·
   <a href="?">filtreyi kaldır</a></p>
 </section>
 <div id="harita" role="application" aria-label="Türkiye otopark haritası"></div>
+<section id="adres-yakin-kutu" class="metin" hidden>
+ <h2 id="adres-yakin-baslik">En yakın otoparklar</h2>
+ <ul id="adres-yakin" class="yakin-liste"></ul>
+</section>
+<section id="yol" class="metin" hidden>
+ <h2>Yol tarifi</h2>
+ <p id="yol-ozet" class="durum" role="status"></p>
+ <ol id="yol-adim" class="yol-adim"></ol>
+ <p class="yol-not">Rota <a href="https://project-osrm.org/" target="_blank"
+  rel="noopener">OSRM</a> demo sunucusundan, OpenStreetMap yol verisiyle hesaplanır.
+  <strong>Anlık trafik içermez</strong>; süre serbest akış tahminidir.</p>
+</section>
 <section class="metin">
  <h2>{il} ilin tamamı — otopark sayısına göre</h2>
  <p class="il-ara-satir">
@@ -61,7 +82,8 @@ def yaz():
     open(f"{CIKTI}/harita/index.html", "w", encoding="utf-8").write(sayfa(
         f"Türkiye Otopark Haritası — {il} İl, {n:,} Nokta".replace(",", "."),
         f"Türkiye genelinde {n:,} otopark noktası tek haritada. ".replace(",", ".") +
-        f"{il} il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.",
+        f"{il} il, OpenStreetMap verisiyle. Adres yaz, çevresindeki otoparkları "
+        "gör, yol tarifini uygulama içinde al.",
         govde, kok="../", kaynak_html=KAYNAK, js=False, sekme="harita",
         ek_head=ek_head, ek_js=ek_js, canonical=f"{URL}/harita/"))
     print(f"uretildi: {CIKTI}/harita/ · {il} il · {n:,} nokta")

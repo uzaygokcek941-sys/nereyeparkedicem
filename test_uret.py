@@ -204,7 +204,7 @@ es("dolu-cubuk basta gizli", 'class="dolu-cubuk" hidden' in _i, True)
 # service worker yeni varliklari onden onbellege alsin
 es("sw oturum.js onden", '"/oturum.js"' in _sw, True)
 es("sw auth.json onden", '"/veri/auth.json"' in _sw, True)
-es("sw surum yukseldi", "np-v2" in _sw, True)
+es("sw surum yukseldi", "np-v3" in _sw, True)
 
 # CSP: supabase eklenmis, joker yalniz supabase.co'da
 es("CSP supabase connect-src", "https://*.supabase.co" in _vj, True)
@@ -222,6 +222,31 @@ _hj = open("site/harita.js", encoding="utf-8").read()
 _ix = open("site/index.html", encoding="utf-8").read()
 es("schema SearchAction ?q= ilan ediyor", "?q={search_term_string}" in _ix, True)
 es("harita.js ?q= okuyor", 'SORGU.get("q")' in _hj, True)
+# --- adres arama + uygulama ici yol tarifi ---
+# Sayfa alanlari ile harita.js'in aradigi id'ler AYNI olmali: biri degisip
+# digeri kalirsa ozellik sessizce olur (kart basilmaz, dugme hic calismaz).
+_hm = open("site/harita/index.html", encoding="utf-8").read()
+for _id in ["adres-form", "adres", "adres-secenek", "adres-yakin",
+            "adres-yakin-kutu", "adres-yakin-baslik", "yol", "yol-ozet", "yol-adim"]:
+    es(f"harita sayfasi #{_id}", f'id="{_id}"' in _hm, True)
+    es(f"harita.js #{_id} okuyor", f'"#{_id}"' in _hj, True)
+es("adres formu gonderimde arar", 'addEventListener("submit"' in _hj, True)
+es("nominatim cagrisi", "nominatim.openstreetmap.org/search" in _hj, True)
+es("osrm rota cagrisi", "router.project-osrm.org/route/v1/driving" in _hj, True)
+es("rota adimlari isteniyor", "steps=true" in _hj, True)
+es("balonda uygulama ici tarif", "balon-yol" in _hj, True)
+es("yakin arama yaricapi 25 km", "u <= 25" in _hj, True)
+# Beyan edilen yetenek gercekten cagrilabilir olmali: CSP bu iki konagi
+# kapatirsa istek tarayicida sessizce dusuyor, JS'te hicbir hata gorunmuyor.
+es("CSP nominatim connect-src", "https://nominatim.openstreetmap.org" in _vj, True)
+es("CSP osrm connect-src", "https://router.project-osrm.org" in _vj, True)
+# Disariya veri giden her yol gizlilik metninde adiyla gecmeli.
+es("gizlilik nominatim'i soyluyor", "nominatim.openstreetmap.org" in _gz, True)
+es("gizlilik osrm'i soyluyor", "router.project-osrm.org" in _gz, True)
+es("gizlilik 'konum hicbir sunucuya gitmez' IDDIASI YOK",
+   "hiçbir sunucuya gönderilmez" in _gz, False)
+for _k in [".yakin-liste", ".balon-yol", ".yol-adim", "#adres{"]:
+    es(f"stil.css {_k}", _k in _cs, True)
 es("oturum.js var", os.path.exists("site/oturum.js"), True)
 es("hesap.js var", os.path.exists("site/hesap.js"), True)
 es("supabase vendor var", os.path.exists("site/vendor/supabase.js"), True)

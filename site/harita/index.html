@@ -2,10 +2,10 @@
 <html lang="tr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Türkiye Otopark Haritası — 81 İl. 24.460 Nokta</title>
-<meta name="description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.">
+<meta name="description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle. Adres yaz, çevresindeki otoparkları gör, yol tarifini uygulama içinde al.">
 <link rel="canonical" href="https://nereyeparkedicem.vercel.app/harita/">
 <meta property="og:title" content="Türkiye Otopark Haritası — 81 İl. 24.460 Nokta">
-<meta property="og:description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.">
+<meta property="og:description" content="Türkiye genelinde 24.460 otopark noktası tek haritada. 81 il, OpenStreetMap verisiyle. Adres yaz, çevresindeki otoparkları gör, yol tarifini uygulama içinde al.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nereyeparkedicem.vercel.app/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -39,16 +39,34 @@
 <section class="kahraman dar">
  <h1>Türkiye otopark haritası — 81 il</h1>
  <p class="alt-baslik"><b id="harita-toplam">24.460</b> otopark noktası haritada.
- İl balonuna dokun, yakınlaş, otoparklar yüklensin.</p>
- <div class="harita-arac">
-  <button id="harita-konum" class="birincil">Konumuma git</button>
-  <p id="harita-durum" class="durum" role="status"></p>
- </div>
+ Adres yaz, o adresin çevresindeki otoparklar sıralansın; birini seç, yol tarifi
+ uygulamanın içinde çıksın.</p>
+ <form id="adres-form" class="harita-arac" role="search">
+  <label for="adres">Adres</label>
+  <input id="adres" type="search" name="adres" inputmode="search" autocomplete="off"
+   placeholder="Kadıköy İstanbul · Atatürk Cad. 12 Bursa" aria-describedby="harita-durum">
+  <button class="birincil" type="submit">Ara</button>
+  <button id="harita-konum" class="ikincil" type="button">Konumum</button>
+ </form>
+ <p id="harita-durum" class="durum" role="status"></p>
+ <div id="adres-secenek" class="adres-secenek" hidden></div>
  <p id="harita-filtre" class="durum" hidden><strong>Filtre açık:</strong> yalnızca
   OpenStreetMap&#8217;te ücretsiz işaretli otoparklar gösteriliyor ·
   <a href="?">filtreyi kaldır</a></p>
 </section>
 <div id="harita" role="application" aria-label="Türkiye otopark haritası"></div>
+<section id="adres-yakin-kutu" class="metin" hidden>
+ <h2 id="adres-yakin-baslik">En yakın otoparklar</h2>
+ <ul id="adres-yakin" class="yakin-liste"></ul>
+</section>
+<section id="yol" class="metin" hidden>
+ <h2>Yol tarifi</h2>
+ <p id="yol-ozet" class="durum" role="status"></p>
+ <ol id="yol-adim" class="yol-adim"></ol>
+ <p class="yol-not">Rota <a href="https://project-osrm.org/" target="_blank"
+  rel="noopener">OSRM</a> demo sunucusundan, OpenStreetMap yol verisiyle hesaplanır.
+  <strong>Anlık trafik içermez</strong>; süre serbest akış tahminidir.</p>
+</section>
 <section class="metin">
  <h2>81 ilin tamamı — otopark sayısına göre</h2>
  <p class="il-ara-satir">
@@ -67,9 +85,9 @@
 </section></main>
 <nav class="alt-sekme" aria-label="Alt gezinme"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg><span>Ana</span></a><a href="/harita/" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6 9 3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg><span>Harita</span></a><a href="/ucretsiz-otopark/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.4V4.5a1 1 0 0 1 1-1h7.9a1 1 0 0 1 .71.29l7.1 7.1a1 1 0 0 1 0 1.42l-7.9 7.9a1 1 0 0 1-1.42 0l-7.1-7.1a1 1 0 0 1-.29-.71z"/><circle cx="7.75" cy="7.75" r="1.15"/></svg><span>Ücretsiz</span></a><a href="/favoriler/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z"/></svg><span>Favoriler</span></a></nav>
 <footer class="alt">
- <p>Harita verisi: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları, lisans ODbL. Fayanslar OpenStreetMap Vakfı sunucularından gelir.</p><p><strong>Bağımsız uygulamadır.</strong> Noktalar OSM topluluğunun girdiği verilerdir; OSM otoparkların <strong>%99,8&#8217;inde fiyat, %99,3&#8217;ünde çalışma saati taşımıyor</strong> — bu yüzden ücret ve saat çoğu noktada boştur. İstanbul, İzmir ve Ankara için belediye açık verisiyle kurulan ayrıntılı sayfalar menüdedir.</p>
+ <p>Harita verisi: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> katkıcıları, lisans ODbL. Fayanslar OpenStreetMap Vakfı sunucularından gelir. Adres arama <a href="https://nominatim.org/" target="_blank" rel="noopener">Nominatim</a>, yol tarifi <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a> demo sunucusuyla yapılır; ikisi de OpenStreetMap verisidir.</p><p><strong>Bağımsız uygulamadır.</strong> Noktalar OSM topluluğunun girdiği verilerdir; OSM otoparkların <strong>%99,8&#8217;inde fiyat, %99,3&#8217;ünde çalışma saati taşımıyor</strong> — bu yüzden ücret ve saat çoğu noktada boştur. İstanbul, İzmir ve Ankara için belediye açık verisiyle kurulan ayrıntılı sayfalar menüdedir.</p>
  <p><a href="../gizlilik/">Gizlilik ve KVKK</a></p>
- <p class="uretim">Sayfa üretimi: 15.09.2026 20:26</p>
+ <p class="uretim">Sayfa üretimi: 15.09.2026 20:58</p>
 </footer>
 <script src="/sw-kur.js" defer></script>
 <script src="/oturum.js" defer></script>

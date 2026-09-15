@@ -384,12 +384,16 @@ temizlediğinizde silinir.</p>
 <h2>Konum bilgisi</h2>
 <p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
 Verilen konum <strong>yalnızca cihazınızın içinde</strong> kullanılır: mesafe hesabı tarayıcıda
-yapılır, sonuç ekranda gösterilir. Konum <strong>hiçbir sunucuya gönderilmez, kaydedilmez,
-üçüncü tarafla paylaşılmaz.</strong> Sayfayı kapattığınızda kaybolur. İzin vermek zorunda
-değilsiniz; ilçe listesinden de gezebilirsiniz.</p>
+yapılır, sonuç ekranda gösterilir. Konum <strong>bize gönderilmez, kaydedilmez.</strong>
+Sayfayı kapattığınızda kaybolur. İzin vermek zorunda değilsiniz; ilçe listesinden de
+gezebilirsiniz.</p>
+<p><strong>Tek istisna, sizin başlattığınız yol tarifi:</strong> haritada &quot;Yol
+tarifi&quot; düğmesine bastığınızda başlangıç ve varış <em>koordinatları</em> rotayı
+hesaplayan OSRM sunucusuna gider — başka türlü rota çizilemez. Düğmeye basmazsanız bu
+istek hiç olmaz, ve giderken kimliğinizle ilgili hiçbir şey taşınmaz.</p>
 
 <h2>Dışarıya giden istekler</h2>
-<p>İki tane var, ikisinde de konumunuz veya kimliğiniz yer almaz:</p>
+<p>Dördü de kimliğinizi taşımaz; ikisi yalnız siz isteyince olur:</p>
 <ul>
 <li><strong>Canlı doluluk</strong> için tarayıcınız doğrudan İstanbul Büyükşehir
 Belediyesi Açık Veri Portalı'na (<code>api.ibb.gov.tr</code>) istek atar; yalnızca
@@ -398,8 +402,16 @@ otopark listesi çekilir.</li>
 (<code>tile.openstreetmap.org</code>) iner. Bu istek hangi bölgeye baktığınızı o
 sunucuya gösterir — OSM'nin kendi gizlilik politikası geçerlidir. Harita sayfasını
 açmazsanız bu istek hiç olmaz.</li>
+<li><strong>Adres arama</strong> için yazdığınız adres metni OpenStreetMap'in
+Nominatim servisine (<code>nominatim.openstreetmap.org</code>) gider ve koordinata
+çevrilir. Yalnız <strong>siz &quot;Ara&quot; düğmesine bastığınızda</strong> gönderilir;
+yazarken harf harf sorgu atılmaz.</li>
+<li><strong>Yol tarifi</strong> için başlangıç ve varış koordinatı OSRM demo
+sunucusuna (<code>router.project-osrm.org</code>) gider. Yalnız &quot;Yol tarifi&quot;
+düğmesine bastığınızda olur. İkisi de OpenStreetMap ekosisteminde çalışır; kendi
+gizlilik politikaları geçerlidir.</li>
 {supabase_madde}</ul>
-<p>İçerik Güvenliği Politikamız (CSP) bu ikisi dışında hiçbir dış adrese bağlantı
+<p>İçerik Güvenliği Politikamız (CSP) bunların dışında hiçbir dış adrese bağlantı
 kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımızdan iner.</p>
 
 <h2>Barındırma kayıtları</h2>
@@ -582,6 +594,9 @@ CEVRIMDISI = """<section class="kahraman dar">
 <li><strong>Daha önce açtığın sayfalar</strong> cihazda saklı, açılır.</li>
 <li><strong>Yol tarifi bağlantıları</strong> çalışır — harita uygulaması kendi
 verisini kullanır.</li>
+<li><strong>Adres arama ve uygulama içi yol tarifi çalışmaz:</strong> ikisi de
+OpenStreetMap sunucularına bağlanmak zorunda. Kayıtlı favorilerin ve daha önce
+açtığın il sayfaları yerinde duruyor.</li>
 <li><strong>Canlı doluluk çalışmaz:</strong> İBB Açık Veri Portalı'na bağlanmak
 gerekiyor. Ekranda gördüğün boş yer sayıları son ölçümdür, şu anki değil.</li>
 <li><strong>Harita fayansları</strong> yalnız daha önce görüntülediğin bölgelerde

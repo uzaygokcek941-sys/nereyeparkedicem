@@ -385,3 +385,38 @@ details>summary:hover{color:var(--metin)}
 .leaflet-control-attribution{font-size:.7rem;
   background:color-mix(in srgb,var(--yuzey) 85%,transparent)}
 .leaflet-control-attribution a{color:var(--sonuk)}
+
+/* adres arama + yakin otopark listesi + yol tarifi */
+.harita-arac label{font-size:.76rem;color:var(--sonuk);text-transform:uppercase;
+  letter-spacing:.06em;font-weight:600}
+#adres{font:inherit;padding:.7rem .95rem;min-height:44px;border:1px solid var(--kenar);
+  border-radius:var(--r);background:var(--yuzey);color:var(--metin);
+  flex:1 1 15rem;max-width:26rem;transition:border-color var(--hiz),box-shadow var(--hiz)}
+#adres:focus{outline:0;border-color:var(--vurgu);box-shadow:0 0 0 3px var(--vurgu-halka)}
+.adres-secenek{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.6rem 0 0}
+.adres-secenek-etiket{font-size:.76rem;color:var(--sonuk)}
+.adres-secenek button{min-height:44px;padding:.45rem .85rem;font:inherit;font-size:.82rem;
+  border:1px solid var(--kenar);border-radius:var(--r-tam);background:var(--yuzey);
+  color:inherit;cursor:pointer;text-align:left}
+.adres-secenek button:hover{border-color:var(--vurgu);background:var(--vurgu-soluk)}
+
+.yakin-liste{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.yakin-liste li{display:grid;gap:.35rem;padding:.9rem 1rem;border:1px solid var(--kenar);
+  border-radius:var(--r);background:var(--yuzey)}
+.yakin-liste strong{font-size:.98rem;letter-spacing:-.02em}
+.yakin-alt{font-size:.83rem;color:var(--sonuk)}
+.yakin-dug{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.25rem}
+.yakin-dug button{flex:1 1 9rem}
+
+.balon-yol{display:block;width:100%;margin-top:.65rem;min-height:44px;padding:.5rem .6rem;
+  font:inherit;font-size:.79rem;border:1px solid var(--vurgu);border-radius:var(--r-sm);
+  background:var(--vurgu-soluk);color:var(--vurgu);cursor:pointer}
+.balon-yol:hover{background:var(--vurgu);color:var(--vurgu-metin)}
+.balon .git{margin-top:.45rem}
+
+.yol-adim{margin:.9rem 0 0;padding-left:1.35rem;display:grid;gap:.5rem}
+.yol-adim li{padding-bottom:.5rem;border-bottom:1px solid var(--kenar)}
+.yol-adim li:last-child{border-bottom:0}
+.yol-adim b{display:block;font-size:.8rem;color:var(--sonuk);font-weight:600;
+  font-variant-numeric:tabular-nums;margin-top:.15rem}
+.yol-not{font-size:.8rem;color:var(--sonuk);margin-top:1rem}
