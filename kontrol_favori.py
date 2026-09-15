@@ -79,6 +79,9 @@ def main():
         p.locator("#favori-liste .yildiz").first.click()
         p.wait_for_timeout(300)
         es("cikarinca bos durum gorunur", p.locator("#favori-bos").is_visible(), True)
+        # "Henuz favori yok" ekranda IKI KEZ cikmasin (sayac + bos kutu)
+        es("bos mesaji tekrarlanmiyor",
+           p.locator("#favori-sayi").inner_text().strip(), "")
         es("localStorage bosaldi",
            p.evaluate("JSON.parse(localStorage.getItem('np.favori')||'[]').length"), 0)
 

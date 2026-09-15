@@ -86,7 +86,9 @@
     const bos = $("#favori-bos");
     if (!l.length) {
       kutu.innerHTML = ""; if (bos) bos.hidden = false;
-      const s = $("#favori-sayi"); if (s) s.textContent = "Henüz favori yok.";
+      // Sayaci BOS birak: bos-durum kutusu zaten "Henuz favori yok" diyor,
+      // ikisi birden yazinca ekranda ayni cumle iki kez cikiyordu.
+      const s = $("#favori-sayi"); if (s) s.textContent = "";
       return;
     }
     if (bos) bos.hidden = true;
