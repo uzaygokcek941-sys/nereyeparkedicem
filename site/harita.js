@@ -159,6 +159,19 @@
       });
       if (sayac) sayac.textContent = q ? n + " il" : "";
     });
+
+    // ?q= ile gelen arama. Ana sayfadaki schema.org SearchAction bu adresi
+    // ILAN EDIYOR; karsiligi olmadan birakmak beyan edilip yapilmayan bir
+    // yetenek olurdu (Google sitelinks arama kutusu bos donerdi).
+    var q0 = (SORGU.get("q") || "").trim();
+    if (q0) {
+      i.value = q0;
+      i.dispatchEvent(new Event("input"));
+      // Tek il kaldiysa dogrudan ona git; birden coksa liste filtreli kalir.
+      var kalan = rozet.filter(function (b) { return !b.hidden; });
+      if (kalan.length === 1) kalan[0].click();
+      else if (sayac && !kalan.length) sayac.textContent = "eşleşme yok";
+    }
   }
 
   function kur() {
@@ -184,7 +197,6 @@
 
     var kb = $("#harita-konum");
     if (kb) kb.addEventListener("click", konumBul);
-    aramaKur();
     if (SADECE_UCRETSIZ) {
       var u = $("#harita-filtre");
       if (u) u.hidden = false;
@@ -196,6 +208,9 @@
         document.getElementById("harita").scrollIntoView({ behavior: "smooth", block: "center" });
       });
     });
+    // SIRA ONEMLI: aramaKur() ?q= icin rozete click() atiyor, dinleyici
+    // bagli olmadan cagirilirsa hicbir sey olmuyordu.
+    aramaKur();
   }
 
   if (document.getElementById("harita")) {

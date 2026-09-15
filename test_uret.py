@@ -215,6 +215,13 @@ es("CSP script-src hâlâ self", "script-src 'self';" in _vj, True)
 for _k in [".alt-sekme", ".yildiz", ".dolu-cubuk", ".hesap-dug", ".giris", "--sekme"]:
     es(f"stil.css {_k}", _k in _cs, True)
 es("stil.css guvenli alan", "safe-area-inset-bottom" in _cs, True)
+
+# Beyan edilen yetenek gercekten var mi: ana sayfa schema.org SearchAction
+# /harita/?q= ilan ediyor; harita.js o parametreyi OKUMALI.
+_hj = open("site/harita.js", encoding="utf-8").read()
+_ix = open("site/index.html", encoding="utf-8").read()
+es("schema SearchAction ?q= ilan ediyor", "?q={search_term_string}" in _ix, True)
+es("harita.js ?q= okuyor", 'SORGU.get("q")' in _hj, True)
 es("oturum.js var", os.path.exists("site/oturum.js"), True)
 es("hesap.js var", os.path.exists("site/hesap.js"), True)
 es("supabase vendor var", os.path.exists("site/vendor/supabase.js"), True)

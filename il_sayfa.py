@@ -96,7 +96,7 @@ def il_yaz(x):
  <p class="alt-baslik">{tl(x["n"])} otopark haritada · {tl(uc)} ücretsiz ·
  {tl(up)} ücretli · {tl(bilinmeyen)} ücret bilgisi yok</p>
  {ay_html}
- <p><a class="ikincil" href="../../harita/?il={x["p"]}">🗺️ {x["ad"]}&#8217;ı haritada aç</a></p>
+ <p><a class="ikincil" href="../../harita/?il={x["p"]}">{x["ad"]}&#8217;ı haritada aç</a></p>
 </section>
 <section class="liste-bolum">
  <h2>Bilgisi olan otoparklar</h2>
@@ -126,7 +126,7 @@ def dizin_yaz(o, sluglar):
 <section class="kahraman dar">
  <h1>{len(sluglar)} ilin otopark listesi</h1>
  <p class="alt-baslik">{tl(o["toplam"])} otopark noktası, otopark sayısına göre sıralı.</p>
- <p><a class="birincil" href="../harita/">🗺️ Haritayı aç</a>
+ <p><a class="birincil" href="../harita/">Haritayı aç</a>
     <a class="ikincil" href="../ucretsiz-otopark/">Ücretsiz otoparklar</a></p>
 </section>
 <section id="iller"><h2>İl listesi</h2>
@@ -161,7 +161,7 @@ def ucretsiz_yaz(o, sluglar):
  <p class="alt-baslik">OpenStreetMap&#8217;te <code>fee=no</code> işaretli, yani
  kaynağında açıkça ücretsiz olduğu yazan otoparklar. {len(sirali)} ilin
  {sum(1 for x in sirali if x.get("uc", 0))} tanesinde kayıt var.</p>
- <p><a class="birincil" href="../harita/?ucretsiz=1">🗺️ Haritada yalnız ücretsizleri göster</a></p>
+ <p><a class="birincil" href="../harita/?ucretsiz=1">Haritada yalnız ücretsizleri göster</a></p>
 </section>
 <section class="metin">
  <h2>Bu sayıyı nasıl okumalı</h2>

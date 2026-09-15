@@ -1,13 +1,24 @@
 # Google Play yayın hazırlığı
 
-Durum: **TWA paketi çalışıyor ve emülatörde doğrulandı.** Kalan adımlar hesap,
-imza ve mağaza formları — hepsi Uzay'ın yapması gereken adımlar.
+Durum: **kod, paket ve mağaza görselleri hazır.** Kalan her şey Play Console
+hesabı ve imza anahtarı — ikisi de Uzay'ın adımı, asistan yapamaz.
 
-## Emülatörde ölçülen (2026-09-15)
+## Hazır olanlar (ölçüldü, 2026-09-15)
 
-Cihaz: AVD `np-test`, Android 16, `google_apis_playstore` x86_64 (Chrome + Play Store içerir).
-APK: `twa/app-release-signed.apk`, 1.028.878 bayt, `app.vercel.nereyeparkedicem`,
-versionName 1.0.0, minSdk 21, targetSdk 36.
+| | Durum |
+|---|---|
+| **AAB derlemesi** | `twa/app/build/outputs/bundle/release/app-release.aab` · **1.103.253 bayt** · `BUILD SUCCESSFUL in 3m 2s` · **imzasız** (imza yayın anahtarıyla atılacak) |
+| AAB içeriği | 476 dosya · `BundleConfig.pb`, `base/dex/classes.dex`, `base/resources.pb` var · paket `app.vercel.nereyeparkedicem` · host `nereyeparkedicem.vercel.app` (`resources.pb` içinde) |
+| İmzalı APK (emülatör testi) | `twa/app-release-signed.apk` 1.028.878 bayt — **yalnız test anahtarıyla**, Play'e gitmez |
+| **Ekran görüntüleri** | `magaza/ekran-0*.png` · **6 adet, 1080×1920** (Play şartı: ≥2 adet, 320–3840 px) — gerçek canlı uygulamadan |
+| **Feature graphic** | `magaza/feature-graphic-1024x500.png` — rakamlar `site/veri/iller.json`'dan, uydurma yok |
+| Uygulama ikonu 512×512 | `site/simge-512.png` |
+| Gizlilik politikası URL | `https://nereyeparkedicem.vercel.app/gizlilik/` (HTTP 200) |
+| `.well-known/assetlinks.json` | canlıda **HTTP 200** — ama parmak izi **TEST anahtarının**, aşağıya bak |
+| Mock / TODO / placeholder | kaynak taraması **temiz**; `console.log` yok, doldurulmamış yer tutucu yok |
+| Otomatik kontroller | `test_uret.py` 133/133 · `kontrol.py` 15 sayfa × 3 genişlik **HATA 0** · `kontrol_favori.py` hepsi geçti |
+
+## Emülatörde ölçülen (AVD `np-test`, Android 16, `google_apis_playstore` x86_64)
 
 | Test | Sonuç |
 |---|---|
@@ -22,58 +33,85 @@ versionName 1.0.0, minSdk 21, targetSdk 36.
 | **Çevrimdışı, önbellekteki sayfa** | ana sayfa tam açıldı, İstanbul doluluk `—` (eski sayı canlı gibi gösterilmiyor) |
 | Çökme / ANR | crash tamponu boş |
 
-## Sende kalan adımlar
+**Not:** bu ölçüm hesap sistemi eklenmeden önceki APK ile yapıldı. Web içeriği
+TWA'ya canlı siteden geldiği için yeni arayüz ve giriş ekranı **yeniden derleme
+gerektirmeden** görünür; yine de yayın APK'sı üretildikten sonra emülatör testi
+tekrarlanmalı.
 
-1. **Play Console hesabı** — 25 $ tek seferlik + kimlik doğrulama.
-2. **Yayın imza anahtarı üret.** Depodaki `twa/test-anahtar.keystore` yalnız
-   emülatör içindir, `.gitignore`'da ve **yayında kullanılmaz**.
+## ⛔ Tek gerçek bloke: imza zinciri
+
+`site/.well-known/assetlinks.json` şu an **test anahtarının** parmak izini taşıyor:
+`C4:B8:90:...:2C:A8`. Yayında bu **geçersiz** olur ve TWA adres çubuklu açılır —
+yani uygulama "tarayıcı görünümüne" düşer.
+
+**Sıralama kaçınılmaz: parmak izini önceden bilmek mümkün değil.**
+
+1. Play Console hesabı aç (**25 $** tek seferlik + kimlik doğrulama).
+2. **Yükleme (upload) anahtarı üret** — parola sende kalır, asistan parola belirleyemez:
    ```
    keytool -genkeypair -v -keystore yayin.keystore -alias yayin \
      -keyalg RSA -keysize 2048 -validity 10000
    ```
-   Bu dosyayı ve parolasını kaybedersen uygulamayı bir daha güncelleyemezsin.
-3. **`assetlinks.json`'u değiştir.** `site/.well-known/assetlinks.json` şu an
-   TEST anahtarının parmak izini taşıyor. Play App Signing kullanacaksan
-   Play Console → Uygulama bütünlüğü → SHA-256 parmak izini oradan al ve yaz.
-   Birden çok parmak izi aynı dosyada listelenebilir.
-4. **AAB üret** (Play, APK değil AAB ister):
+   **Bu dosyayı ve parolasını kaybedersen uygulamayı bir daha güncelleyemezsin.**
+3. AAB'yi bu anahtarla imzala (`twa-manifest.json` → `signingKey` yayın anahtarına):
    ```
-   cd twa && bubblewrap build
+   cd twa
+   bubblewrap update --skipVersionUpgrade --appVersionName=1.0.0
+   ./gradlew.bat bundleRelease            # bubblewrap'in kendi cagrisi gradlew'u bulamiyor
+   jarsigner -keystore yayin.keystore \
+     app/build/outputs/bundle/release/app-release.aab yayin
    ```
-   `twa-manifest.json` içindeki `signingKey` alanını yayın anahtarına çevir.
-5. **Kapalı test:** yeni kişisel geliştirici hesaplarında **12 test kullanıcısı,
-   14 gün** sürekli kullanım şartı var. Yayın tarihini belirleyen madde budur.
-6. **Mağaza formları:** Data safety (veri güvenliği), içerik derecelendirme,
-   hedef kitle, gizlilik politikası URL'i (`https://nereyeparkedicem.vercel.app/gizlilik/`).
-   **Data safety hesap özelliğine bağlı:** giriş `site/veri/auth.json` yer tutucu
-   iken uygulama hiçbir kişisel veri toplamaz. `SUPABASE-KURULUM.md` adımları
-   uygulanıp giriş açılırsa formda **E-posta adresi** ve **Uygulama içi etkinlik**
-   (favori listesi) beyan edilmeli, "veri şifreli aktarılıyor" ve "kullanıcı silme
-   talep edebilir" işaretlenmeli. Formu yanlış doldurmak Play'de askıya alma sebebi.
-7. **Görseller:** 512×512 uygulama ikonu (`site/simge-512.png` kullanılabilir),
-   1024×500 feature graphic, en az 2 telefon ekran görüntüsü.
+4. AAB'yi Play Console'a yükle. **Play App Signing** açıksa Google kendi imza
+   anahtarını üretir.
+5. **Play Console → Uygulama bütünlüğü → App signing key certificate → SHA-256**
+   değerini al, `site/.well-known/assetlinks.json` içindeki test parmak izinin
+   yerine yaz. Aynı dosyada birden çok parmak izi listelenebilir — upload
+   anahtarınınkini de eklersen yerel derlemen de doğrulanmaya devam eder.
+6. `git push` → Vercel deploy → **sonra** uygulamayı test et. Assetlinks canlıda
+   güncellenmeden TWA doğrulaması geçmez.
+
+## Data safety formu — giriş AÇILDI, buna göre doldur
+
+Hesap sistemi **canlı**: `site/veri/auth.json` gerçek Supabase projesi taşıyor,
+`public.favoriler` tablosu kurulu, RLS ölçülerek doğrulandı (anon INSERT → 401).
+Artık "veri toplamıyor" beyanı **yanlış** olur. Formda:
+
+- **Kişisel bilgiler → E-posta adresleri**: toplanıyor, hesap yönetimi amaçlı,
+  **isteğe bağlı** (giriş yapmadan uygulama tam çalışır).
+- **Uygulama etkinliği → Uygulama içi etkinlik**: favori otopark listesi,
+  uygulama işlevselliği amaçlı, isteğe bağlı.
+- **Konum**: *toplanmıyor.* Konum yalnız cihaz içinde mesafe hesabı için
+  kullanılır, hiçbir sunucuya gönderilmez — gizlilik sayfasında da böyle yazılı.
+- "Veri aktarımda şifreleniyor" → **evet** (HTTPS + Supabase).
+- "Kullanıcı silme talep edebilir" → **evet** (tablo `on delete cascade`).
+
+Formu yanlış doldurmak Play'de askıya alma sebebi; gizlilik sayfasıyla birebir
+tutarlı olmalı.
+
+## Kalan mağaza adımları
+
+- İçerik derecelendirme anketi, hedef kitle ve içerik beyanı.
+- **Kapalı test: 12 test kullanıcısı × 14 gün** kesintisiz. Yeni kişisel
+  geliştirici hesaplarında zorunlu — **yayın tarihini belirleyen madde budur**,
+  kodla kısaltılamaz.
+- Mağaza açıklaması (kısa 80 karakter + tam 4000 karakter).
 
 ## Dürüst risk: Politika 4.3 (Minimum Functionality)
 
-Play, yalnızca bir siteyi saran paketleri reddediyor. Bizim lehimize olanlar:
-konum tabanlı en yakın otopark, 81 il haritası, çevrimdışı çalışma, ücretsiz
-otopark filtresi. Yine de red gelirse ilk bakılacak yer burasıdır; red sonrası
-bekleme süresi yok, düzeltip hemen yeniden gönderilebilir.
+Play, yalnızca bir siteyi saran paketleri reddediyor. Lehimize olanlar: konum
+tabanlı en yakın otopark, 81 il haritası, çevrimdışı çalışma, ücretsiz filtre,
+favori sistemi ve hesap senkronu. Yine de garanti değil; red gelirse ilk
+bakılacak yer burasıdır. Red sonrası bekleme süresi yok, düzeltip hemen
+yeniden gönderilebilir.
 
-## Yeniden derleme
+## Araç yolları
 
-```
-cd twa
-bubblewrap update --skipVersionUpgrade --appVersionName=1.0.0
-./gradlew.bat assembleRelease            # bubblewrap'in kendi cagrisi gradlew'u bulamiyor
-zipalign -p -f 4 app/build/outputs/apk/release/app-release-unsigned.apk app-release-signed.apk
-apksigner sign --ks <anahtar> --ks-key-alias <alias> app-release-signed.apk
-```
-
-Araç yolları: JDK 17 `C:\Program Files\Microsoft\jdk-17.0.19.10-hotspot`,
-Android SDK `D:\dev\android-sdk`, Bubblewrap `D:\apps\bubblewrap\bubblewrap.cmd`,
+JDK 17 `C:\Program Files\Microsoft\jdk-17.0.19.10-hotspot` ·
+Android SDK `D:\dev\android-sdk` · Bubblewrap `D:\apps\bubblewrap\bubblewrap.cmd` ·
 AVD `D:\dev\avd`.
 
-**Not:** Bubblewrap SDK kökünde `bin/` klasörü arıyor (eski düzen);
-`D:\dev\android-sdk\bin` bir junction olarak `cmdline-tools\latest\bin`'e bağlandı.
-Ayrıca build-tools **36.1.0** şart (36.0.0 yetmiyor).
+**Bubblewrap tuzakları:** SDK kökünde `bin/` klasörü arıyor (eski düzen),
+`D:\dev\android-sdk\bin` junction olarak `cmdline-tools\latest\bin`'e bağlandı.
+build-tools **36.1.0** şart (36.0.0 yetmiyor). `twa-manifest.json` kısayol alanı
+`shortName` olmalı, `short_name` değil. `bubblewrap build` kendi `gradlew.bat`
+çağrısını bulamıyor — doğrudan `./gradlew.bat` çalıştır.

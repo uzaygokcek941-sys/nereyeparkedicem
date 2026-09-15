@@ -28,7 +28,7 @@ def yaz():
  <p class="alt-baslik"><b id="harita-toplam">{n:,}</b> otopark noktası haritada.
  İl balonuna dokun, yakınlaş, otoparklar yüklensin.</p>
  <div class="harita-arac">
-  <button id="harita-konum" class="birincil">📍 Konumuma git</button>
+  <button id="harita-konum" class="birincil">Konumuma git</button>
   <p id="harita-durum" class="durum" role="status"></p>
  </div>
  <p id="harita-filtre" class="durum" hidden><strong>Filtre açık:</strong> yalnızca
