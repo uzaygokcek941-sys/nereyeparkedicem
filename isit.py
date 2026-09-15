@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Deploy sonrasi edge cache isitma. Ilk ziyaretci soguk iskaya denk gelmesin.
 Olculdu: soguk MISS 7.479 ms, isinmis HIT ~200 ms."""
-import re, ssl, sys, time, urllib.request
+import os, re, ssl, sys, time, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 import truststore
 
@@ -18,7 +18,12 @@ def al(u):
 sm = al(f"{TABAN}/sitemap.xml")
 with urllib.request.urlopen(f"{TABAN}/sitemap.xml", timeout=45, context=CTX) as x:
     urller = re.findall(r"<loc>([^<]+)</loc>", x.read().decode())
-urller += [f"{TABAN}/otoparklar.json", f"{TABAN}/stil.css", f"{TABAN}/uygulama.js"]
+urller += [f"{TABAN}/otoparklar.json", f"{TABAN}/stil.css", f"{TABAN}/uygulama.js",
+           f"{TABAN}/harita.js", f"{TABAN}/vendor/leaflet.js", f"{TABAN}/vendor/leaflet.css"]
+# harita il dosyalari: adlar yerel ciktidan okunur, icerigi degil
+if os.path.isdir("site/veri"):
+    urller += [f"{TABAN}/veri/{a}" for a in sorted(os.listdir("site/veri"))
+               if a.endswith(".json")]
 
 t0 = time.time(); miss = 0; hata = 0
 with ThreadPoolExecutor(max_workers=6) as ex:
