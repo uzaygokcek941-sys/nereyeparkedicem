@@ -214,6 +214,9 @@
     // adresi veya daha once giris yapilmis olmasi.
     const gerek = girisIzi || location.pathname.startsWith("/giris") ||
       location.pathname.startsWith("/favoriler") ||
+      // hesap silme sayfasi oturumu BILMEK zorunda: giris izi silinmis bir
+      // tarayicida "once giris yap" demek yanlis olurdu.
+      location.pathname.startsWith("/hesap-sil") ||
       location.hash.includes("access_token") || location.search.includes("code=");
     if (!gerek) { hesapCiz(); return null; }
     const c = await istemciAl(); if (!c) return null;

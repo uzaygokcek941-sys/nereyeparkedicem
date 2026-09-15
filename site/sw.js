@@ -6,7 +6,7 @@
    yanit arka planda tazelenir; boylece deploy sonrasi eski CSS yapismaz.
    ISTISNA: IBB canli doluluk API'si ve olcum betigi ASLA onbellege girmez -
    eski doluluk sayisi canli sanilirsa kullaniciya yanlis bilgi verir. */
-const ONBELLEK = "np-v3";
+const ONBELLEK = "np-v4";
 const CEVRIMDISI = "/cevrimdisi/";
 
 const ONDEN = [

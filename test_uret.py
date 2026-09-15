@@ -204,7 +204,7 @@ es("dolu-cubuk basta gizli", 'class="dolu-cubuk" hidden' in _i, True)
 # service worker yeni varliklari onden onbellege alsin
 es("sw oturum.js onden", '"/oturum.js"' in _sw, True)
 es("sw auth.json onden", '"/veri/auth.json"' in _sw, True)
-es("sw surum yukseldi", "np-v3" in _sw, True)
+es("sw surum yukseldi", "np-v4" in _sw, True)
 
 # CSP: supabase eklenmis, joker yalniz supabase.co'da
 es("CSP supabase connect-src", "https://*.supabase.co" in _vj, True)
@@ -274,6 +274,8 @@ es("gizlilik reklam kimligini soyluyor", "reklam kimliği" in _gz.lower(), True)
 _ad = json.load(open("site/veri/admob.json", encoding="utf-8"))
 es("app-ads.txt yalniz kimlik varsa var",
    os.path.exists("site/app-ads.txt"), _ad.get("publisherId", "").startswith("pub-"))
+es("oturum.js hesap-sil'de supabase yukluyor",
+   'startsWith("/hesap-sil")' in open("site/oturum.js", encoding="utf-8").read(), True)
 es("oturum.js var", os.path.exists("site/oturum.js"), True)
 es("hesap.js var", os.path.exists("site/hesap.js"), True)
 es("supabase vendor var", os.path.exists("site/vendor/supabase.js"), True)
