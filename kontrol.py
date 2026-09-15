@@ -55,6 +55,12 @@ def main():
         for w, h, ad in GENISLIK:
             sf = b.new_page(viewport={"width": w, "height": h})
             konsol, dis = [], []
+            # /_vercel/insights/ betigini Vercel calisma aninda servis eder; yerel
+            # statik sunucuda 404 verir. Yerelde yanlis pozitif, canlida 200 olmali
+            # (isit.py ve canli kontrol dogruluyor).
+            vercel404 = []
+            sf.on("response", lambda r: vercel404.append(r.url)
+                  if "/_vercel/" in r.url and r.status == 404 else None)
             sf.on("console", lambda m: konsol.append(f"{m.type}: {m.text[:90]}") if m.type in ("error","warning") else None)
             sf.on("pageerror", lambda e: konsol.append(f"pageerror: {str(e)[:90]}"))
             # Dis servis arizasi bizim kusurumuz degil: ayri topla, HATA sayma.
@@ -75,6 +81,9 @@ def main():
             if dis:
                 uyari.append(f"{ad}: DIS SERVIS 5xx (bizim kusurumuz degil) -> {sorted(set(dis))[:2]}")
                 konsol = [k for k in konsol if "Failed to load resource" not in k]
+            if vercel404:
+                konsol = [k for k in konsol if "Failed to load resource" not in k]
+                uyari.append(f"{ad}: /_vercel/ 404 (yerelde beklenen, canlida kontrol et)")
             if konsol: hata.append(f"{ad}: konsol -> {konsol[:3]}")
             sf.close()
         b.close()

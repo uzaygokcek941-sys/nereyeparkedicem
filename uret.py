@@ -91,6 +91,9 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
 <link rel="stylesheet" href="{kok}stil.css">
 {ek_head}
 </head><body>
+<!-- Vercel Web Analytics: ayni kokenden servis edilir, CSP 'self' yeterli.
+     Cerez yok; engellenirse sayfa aynen calisir. -->
+<script defer src="/_vercel/insights/script.js"></script>
 <a class="atla" href="#icerik">İçeriğe atla</a>
 <header class="ust">
  <a class="marka" href="{kok}index.html">nereye<b>parkedicem</b></a>
@@ -220,8 +223,14 @@ GIZLILIK = """<section class="kahraman dar">
 </section>
 <section class="metin">
 <h2>Hangi veriyi topluyoruz</h2>
-<p><strong>Hiçbirini.</strong> Bu site statik dosyalardan oluşur. Kayıt, giriş, çerez veya
-izleme betiği yoktur. Sunucu tarafı kodu çalışmaz, veritabanı bulunmaz.</p>
+<p><strong>Kişisel veri toplamıyoruz.</strong> Bu site statik dosyalardan oluşur: kayıt,
+giriş, hesap, sunucu tarafı kodu ve veritabanı yoktur.</p>
+<p>Tek istisna <strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
+sayar. <strong>Çerez kullanmaz, parmak izi çıkarmaz, ziyaretçiyi sayfalar arasında
+takip etmez;</strong> IP adresi kimliğe dönüştürülmeden anonim bir sayfa görüntüleme
+sayısına indirgenir. Betik sitemizin kendi alan adından servis edilir
+(<code>/_vercel/insights/</code>), ölçüm de oraya gider — reklam ağına veri gitmez.
+Tarayıcınızın izleme engelleyicisi bu betiği kapatırsa site aynen çalışır.</p>
 
 <h2>Konum bilgisi</h2>
 <p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
@@ -230,11 +239,19 @@ yapılır, sonuç ekranda gösterilir. Konum <strong>hiçbir sunucuya gönderilm
 üçüncü tarafla paylaşılmaz.</strong> Sayfayı kapattığınızda kaybolur. İzin vermek zorunda
 değilsiniz; ilçe listesinden de gezebilirsiniz.</p>
 
-<h2>Dışarıya giden tek istek</h2>
-<p>Canlı doluluk için tarayıcınız doğrudan İstanbul Büyükşehir Belediyesi Açık Veri
-Portalı'na (<code>api.ibb.gov.tr</code>) istek atar. Bu istekte konumunuz veya kimliğiniz yer
-almaz; yalnızca otopark listesi çekilir. İçerik Güvenliği Politikamız (CSP) başka hiçbir
-dış adrese bağlantı kurulmasına izin vermez.</p>
+<h2>Dışarıya giden istekler</h2>
+<p>İki tane var, ikisinde de konumunuz veya kimliğiniz yer almaz:</p>
+<ul>
+<li><strong>Canlı doluluk</strong> için tarayıcınız doğrudan İstanbul Büyükşehir
+Belediyesi Açık Veri Portalı'na (<code>api.ibb.gov.tr</code>) istek atar; yalnızca
+otopark listesi çekilir.</li>
+<li><strong>Harita fayansları</strong> OpenStreetMap sunucusundan
+(<code>tile.openstreetmap.org</code>) iner. Bu istek hangi bölgeye baktığınızı o
+sunucuya gösterir — OSM'nin kendi gizlilik politikası geçerlidir. Harita sayfasını
+açmazsanız bu istek hiç olmaz.</li>
+</ul>
+<p>İçerik Güvenliği Politikamız (CSP) bu ikisi dışında hiçbir dış adrese bağlantı
+kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımızdan iner.</p>
 
 <h2>Barındırma kayıtları</h2>
 <p>Site Vercel üzerinde barındırılır. Her web sunucusu gibi Vercel de teknik erişim kaydı
