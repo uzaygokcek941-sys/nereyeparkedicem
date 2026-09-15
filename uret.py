@@ -119,6 +119,7 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
  <p><a href="{kok}gizlilik/">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
+<script src="/sw-kur.js" defer></script>
 {js_etiket}{ek_js}
 </body></html>'''
 
@@ -269,7 +270,7 @@ def uret():
             gv, kok="../../", canonical=f"{URL}/ilce/{s}/"))
 
     import ikon_uret; ikon_uret.yaz()
-    yaz_gizlilik(); yaz_404(); yaz_endeks(d, g)
+    yaz_gizlilik(); yaz_404(); yaz_cevrimdisi(); yaz_endeks(d, g)
     harita_var = os.path.exists(f"{CIKTI}/veri/iller.json")
     il_sluglari = {}
     if harita_var:
@@ -372,6 +373,34 @@ def yaz_gizlilik():
         "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
         "Toplanan kişisel veri bulunmuyor.", GIZLILIK, kok="/",
         canonical=f"{URL}/gizlilik/"))
+
+CEVRIMDISI = """<section class="kahraman dar">
+<h1>Bağlantı yok</h1>
+<p class="alt-baslik">İnternete erişilemiyor. Daha önce açtığın sayfalar
+çalışmaya devam eder; yeni veri gelemez.</p>
+</section>
+<section class="metin">
+<h2>Şu an ne çalışıyor</h2>
+<ul>
+<li><strong>Daha önce açtığın sayfalar</strong> cihazda saklı, açılır.</li>
+<li><strong>Yol tarifi bağlantıları</strong> çalışır — harita uygulaması kendi
+verisini kullanır.</li>
+<li><strong>Canlı doluluk çalışmaz:</strong> İBB Açık Veri Portalı'na bağlanmak
+gerekiyor. Ekranda gördüğün boş yer sayıları son ölçümdür, şu anki değil.</li>
+<li><strong>Harita fayansları</strong> yalnız daha önce görüntülediğin bölgelerde
+görünür.</li>
+</ul>
+<h2>Ne yapmalı</h2>
+<p>Bağlantı gelince sayfayı yenile; veriler kendiliğinden tazelenir.</p>
+<p><a class="birincil" href="/">Ana sayfaya dön</a></p>
+</section>"""
+
+def yaz_cevrimdisi():
+    os.makedirs(f"{CIKTI}/cevrimdisi", exist_ok=True)
+    open(f"{CIKTI}/cevrimdisi/index.html", "w", encoding="utf-8").write(sayfa(
+        "Bağlantı yok — nereyeparkedicem",
+        "İnternet bağlantısı olmadığında gösterilen sayfa.", CEVRIMDISI, kok="/",
+        ek_head='<meta name="robots" content="noindex">', js=False))
 
 def yaz_404():
     open(f"{CIKTI}/404.html", "w", encoding="utf-8").write(sayfa(

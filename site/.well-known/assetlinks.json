@@ -1,0 +1,14 @@
+[
+ {
+  "relation": [
+   "delegate_permission/common.handle_all_urls"
+  ],
+  "target": {
+   "namespace": "android_app",
+   "package_name": "app.vercel.nereyeparkedicem",
+   "sha256_cert_fingerprints": [
+    "C4:B8:90:44:37:26:B1:9C:5E:95:6B:60:A1:DB:E2:28:E1:61:D1:B8:82:E5:99:9A:26:E0:0F:BD:2D:3A:2C:A8"
+   ]
+  }
+ }
+]

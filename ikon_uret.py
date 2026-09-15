@@ -50,7 +50,9 @@ MANIFEST = {
     "icons": [
         {"src": "/simge-192.png", "sizes": "192x192", "type": "image/png"},
         {"src": "/simge-512.png", "sizes": "512x512", "type": "image/png",
-         "purpose": "any maskable"},
+         "purpose": "any"},
+        {"src": "/simge-maskable-512.png", "sizes": "512x512", "type": "image/png",
+         "purpose": "maskable"},
         {"src": "/simge.svg", "sizes": "any", "type": "image/svg+xml"},
     ],
     "shortcuts": [
@@ -70,11 +72,25 @@ def ico(yol):
     im.save(yol, "ICO", sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
     return os.path.getsize(yol)
 
+def maskable(boy, yol):
+    """Maskable ikon KENARDAN KENARA dolu olmali. Olculdu: simge-512.png
+    koselerinin alfasi 0 oldugu hâlde manifest 'any maskable' diyordu ->
+    Android maskeleyince ikon kirpiliyordu. Guvenli alan %80 (ic daire)."""
+    im = Image.new("RGBA", (boy, boy), YESIL + (255,))
+    d = ImageDraw.Draw(im)
+    d.text((boy * 0.5, boy * 0.53), "P", font=yazitipi(int(boy * 0.44)),
+           fill=(255, 255, 255), anchor="mm")
+    n = int(boy * 0.07)
+    d.ellipse([boy * 0.65 - n, boy * 0.33 - n, boy * 0.65 + n, boy * 0.33 + n], fill=VURGU)
+    im.save(yol, "PNG", optimize=True)
+    return os.path.getsize(yol)
+
 def yaz():
     os.makedirs(CIKTI, exist_ok=True)
     open(f"{CIKTI}/simge.svg", "w", encoding="utf-8").write(SVG)
     boy = {b: png(b, f"{CIKTI}/simge-{b}.png") for b in (180, 192, 512)}
     boy["ico"] = ico(f"{CIKTI}/favicon.ico")
+    boy["maskable"] = maskable(512, f"{CIKTI}/simge-maskable-512.png")
     json.dump(MANIFEST, open(f"{CIKTI}/manifest.json", "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
     return boy
@@ -83,6 +99,6 @@ if __name__ == "__main__":
     b = yaz()
     print("simge.svg", len(SVG), "bayt")
     for k, v in b.items():
-        ad = "favicon.ico" if k == "ico" else f"simge-{k}.png"
+        ad = {"ico": "favicon.ico", "maskable": "simge-maskable-512.png"}.get(k, f"simge-{k}.png")
         print(f"{ad} {v:,} bayt")
     print("manifest.json", os.path.getsize(f"{CIKTI}/manifest.json"), "bayt")

@@ -1,0 +1,50 @@
+{
+  "packageId": "app.vercel.nereyeparkedicem",
+  "host": "nereyeparkedicem.vercel.app",
+  "name": "nereyeparkedicem — Türkiye otopark haritası",
+  "launcherName": "parkedicem",
+  "display": "standalone",
+  "orientation": "default",
+  "themeColor": "#0b3d2e",
+  "themeColorDark": "#0b3d2e",
+  "navigationColor": "#0b3d2e",
+  "navigationColorDark": "#0b3d2e",
+  "navigationDividerColor": "#0b3d2e",
+  "navigationDividerColorDark": "#0b3d2e",
+  "backgroundColor": "#ffffff",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://nereyeparkedicem.vercel.app/simge-512.png",
+  "maskableIconUrl": "https://nereyeparkedicem.vercel.app/simge-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./test-anahtar.keystore",
+    "alias": "test"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Harita",
+      "url": "/harita/",
+      "chosenIconUrl": "https://nereyeparkedicem.vercel.app/simge-192.png",
+      "shortName": "Harita"
+    },
+    {
+      "name": "Ücretsiz otoparklar",
+      "url": "/ucretsiz-otopark/",
+      "chosenIconUrl": "https://nereyeparkedicem.vercel.app/simge-192.png",
+      "shortName": "Ücretsiz"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://nereyeparkedicem.vercel.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://nereyeparkedicem.vercel.app/",
+  "minSdkVersion": 21,
+  "appVersion": "1.0.0"
+}

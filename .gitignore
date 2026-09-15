@@ -26,3 +26,12 @@ osm_turkiye.json
 .env*
 og_sablon.html
 push.log
+
+# TWA: test imza anahtari ve derleme ciktilari (yayin anahtari DEGIL)
+twa/*.keystore
+twa/*.apk
+twa/*.aab
+twa/app/
+twa/.gradle/
+twa/build/
+twa/store_icon.png
