@@ -5,6 +5,7 @@ ekran/
 istpark.txt
 # OSM il onbellegi: yeniden uretilebilir, ~2 MB
 veri/il*.json
+veri/koord/
 veri/_iller.json
 veri/İ*.json
 veri/Istanbul.json

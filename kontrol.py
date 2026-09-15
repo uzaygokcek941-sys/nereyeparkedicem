@@ -7,7 +7,8 @@ from playwright.sync_api import sync_playwright
 PORT = 8731
 GENISLIK = [(375, 812, "mobil"), (768, 1024, "tablet"), (1440, 900, "masaustu")]
 SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
-         "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/"]
+         "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/",
+         "/harita/"]
 
 def sunucu():
     h = functools.partial(http.server.SimpleHTTPRequestHandler, directory="site")
@@ -32,7 +33,9 @@ OLCUM = """() => {
       .filter(e=>{const b=e.getBoundingClientRect();
         if(!(b.width>0 && b.height>0 && b.height<44)) return false;
         if(e.classList.contains('atla')) return false;
-        return !e.closest('p, li, .iz');})
+        // leaflet atif kutusu div ama icerigi akan metin ("Leaflet | (c) OSM
+        // katkicilari"), satir ici muafiyeti oraya da gecer
+        return !e.closest('p, li, .iz, .leaflet-control-attribution');})
       .map(e=>e.textContent.trim().slice(0,28));
   r.yer_tutucu = (document.body.innerText.match(/\{[a-z_]+\}/g)||[]).length;
   // ust uste binme: kahraman ile ilk bolum

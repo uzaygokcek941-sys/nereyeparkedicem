@@ -63,7 +63,8 @@ def kart(k):
  </div>
 </article>'''
 
-def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=True):
+def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=True,
+          ek_head="", ek_js=""):
     simdi = datetime.now(timezone(timedelta(hours=3))).strftime("%d.%m.%Y %H:%M")
     js_etiket = f'<script src="{kok}uygulama.js" defer></script>' if js else ""
     if kaynak_html is None:
@@ -88,11 +89,12 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="{kok}stil.css">
+{ek_head}
 </head><body>
 <a class="atla" href="#icerik">İçeriğe atla</a>
 <header class="ust">
  <a class="marka" href="{kok}index.html">nereye<b>parkedicem</b></a>
- <nav aria-label="Ana"><a href="{kok}index.html">Harita</a><a href="{kok}index.html#ilceler">İlçeler</a></nav>
+ <nav aria-label="Ana"><a href="{kok}harita/">Harita</a><a href="{kok}index.html#ilceler">İlçeler</a><a href="{kok}fiyat-endeksi/">Fiyat</a></nav>
 </header>
 <main id="icerik">{govde}</main>
 <footer class="alt">
@@ -100,7 +102,7 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
  <p><a href="{kok}gizlilik/">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
-{js_etiket}
+{js_etiket}{ek_js}
 </body></html>'''
 
 def sss_schema(ilce, n, medyan):
@@ -186,6 +188,11 @@ def uret():
             gv, kok="../../"))
 
     yaz_gizlilik(); yaz_404(); yaz_endeks(d, g)
+    harita_var = os.path.exists(f"{CIKTI}/veri/iller.json")
+    if harita_var:
+        import harita_sayfa; harita_sayfa.yaz()
+    else:
+        print("harita atlandi: site/veri/iller.json yok (once koord_cek.py + harita_veri.py)")
 
     # sitemap + robots
     url = "https://nereyeparkedicem.vercel.app"
@@ -193,6 +200,8 @@ def uret():
     for kod, gg in sg.items():
         sm += f"<url><loc>{url}/{kod}/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>"
         sm += "".join(f"<url><loc>{url}/{kod}/ilce/{x}/</loc><changefreq>weekly</changefreq></url>" for x in gg)
+    if harita_var:
+        sm += f"<url><loc>{url}/harita/</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>"
     open(f"{CIKTI}/sitemap.xml","w",encoding="utf-8").write(
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
