@@ -49,6 +49,39 @@ create policy "kendi satirini siler" on public.favoriler
 `on delete cascade` önemli: hesap silinince favori kaydı da silinir — KVKK
 m.11 silme talebini tek işlemle karşılar.
 
+## 2b · Hesap silme fonksiyonu — **SENDE, ZORUNLU (Play şartı)**
+
+Google Play User Data politikası: hesap açılabilen uygulamada kullanıcı hesabını
+**hem uygulama içinden hem web üzerinden** silebilmeli. Sayfa hazır
+(`/hesap-sil/`), düğme hazır — ama silmeyi sunucu yapmak zorunda: `anon` anahtar
+`auth.users` tablosuna yazamaz (yazabilseydi herkes herkesin hesabını silerdi).
+
+SQL Editor'de çalıştır:
+
+```sql
+create or replace function public.hesabimi_sil()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- auth.uid() JWT'den gelir: kullanici yalnizca KENDI satirini silebilir.
+  delete from auth.users where id = auth.uid();
+end;
+$$;
+
+revoke all on function public.hesabimi_sil() from public, anon;
+grant execute on function public.hesabimi_sil() to authenticated;
+```
+
+`public.favoriler` tablosu `on delete cascade` taşıdığı için favori kaydı aynı
+işlemde siliniyor; ayrıca silmene gerek yok.
+
+Bunu çalıştırmazsan `/hesap-sil/` düğmesi hata mesajı gösterir (sessizce
+başarılı görünmez) — ama **Play incelemesi uygulamayı reddeder**, çünkü silme
+yolu fiilen çalışmıyor olur.
+
 ## 3 · Dönüş adreslerini tanımla — **SENDE, ZORUNLU**
 
 **Authentication → URL Configuration**:

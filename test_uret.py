@@ -247,6 +247,33 @@ es("gizlilik 'konum hicbir sunucuya gitmez' IDDIASI YOK",
    "hiçbir sunucuya gönderilmez" in _gz, False)
 for _k in [".yakin-liste", ".balon-yol", ".yol-adim", "#adres{"]:
     es(f"stil.css {_k}", _k in _cs, True)
+# --- Play User Data: hesap silme yolu ---
+# Hesap acilabilen uygulamada silme HEM uygulama icinde HEM web'de olmali.
+# Sayfa var ama dugmeyi kimse baglamadiysa ozellik sessizce yok demektir.
+_hs = open("site/hesap-sil/index.html", encoding="utf-8").read()
+_hj2 = open("site/hesap.js", encoding="utf-8").read()
+_fv = open("site/favoriler/index.html", encoding="utf-8").read()
+es("hesap-sil sayfasi uretildi", os.path.exists("site/hesap-sil/index.html"), True)
+es("hesap-sil dugmesi var", 'id="hesap-sil"' in _hs, True)
+es("hesap.js silme dugmesini bagliyor", '"#hesap-sil"' in _hj2, True)
+es("silme sunucu fonksiyonunu cagiriyor", 'rpc("hesabimi_sil")' in _hj2, True)
+es("silmeden once onay soruluyor", "window.confirm" in _hj2, True)
+es("uygulama ici yol: favorilerde baglanti", 'id="sil-baglanti"' in _fv, True)
+es("sitemap hesap-sil'i listeliyor",
+   "/hesap-sil/" in open("site/sitemap.xml", encoding="utf-8").read(), True)
+es("SUPABASE-KURULUM silme SQL'ini tasiyor",
+   "hesabimi_sil" in open("SUPABASE-KURULUM.md", encoding="utf-8").read(), True)
+
+# --- reklam: gizlilik metni ile kod tutarli olmali ---
+_wv = open("wv/app/src/main/res/values/admob.xml", encoding="utf-8").read()
+es("wv AdMob kimligi tanimli", "admob_banner_id" in _wv, True)
+es("gizlilik AdMob'u soyluyor", "AdMob" in _gz, True)
+es("gizlilik reklam kimligini soyluyor", "reklam kimliği" in _gz.lower(), True)
+# app-ads.txt YALNIZ gercek yayinci kimligiyle yazilir; bos dosya
+# "yetkili satici yok" demektir ve geliri dusurur.
+_ad = json.load(open("site/veri/admob.json", encoding="utf-8"))
+es("app-ads.txt yalniz kimlik varsa var",
+   os.path.exists("site/app-ads.txt"), _ad.get("publisherId", "").startswith("pub-"))
 es("oturum.js var", os.path.exists("site/oturum.js"), True)
 es("hesap.js var", os.path.exists("site/hesap.js"), True)
 es("supabase vendor var", os.path.exists("site/vendor/supabase.js"), True)

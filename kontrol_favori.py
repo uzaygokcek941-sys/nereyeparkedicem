@@ -105,6 +105,21 @@ def main():
             es("google dugmesi saglayiciyla tutarli",
                p.locator("#google-giris").is_visible(), sag.get("google") is True)
 
+        # 6b) hesap silme sayfasi (Play User Data sarti): giris yokken
+        # dugme GORUNMEMELI, yerine giris baglantisi cikmali.
+        p.goto(f"{T}/hesap-sil/", wait_until="networkidle")
+        p.wait_for_timeout(600)
+        es("hesap-sil: dugme giris yokken gizli",
+           p.locator("#hesap-sil").is_visible(), False)
+        if acik:
+            es("hesap-sil: giris baglantisi gorunur",
+               p.locator("#sil-giris").is_visible(), True)
+            es("hesap-sil: sebep yazili",
+               "giriş yapman" in p.locator("#sil-durum").inner_text(), True)
+        else:
+            es("hesap-sil: auth kapali sebebi yazili",
+               "kapalı" in p.locator("#sil-durum").inner_text(), True)
+
         # 7) mobil kabuk
         es("alt sekme mobilde gorunur", p.locator(".alt-sekme").is_visible(), True)
         es("ust nav mobilde gizli", p.locator(".ust nav").is_visible(), False)

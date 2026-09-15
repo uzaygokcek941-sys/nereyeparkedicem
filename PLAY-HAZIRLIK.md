@@ -6,8 +6,12 @@
 > de aynı: `app.vercel.nereyeparkedicem` — Play'e **yalnız biri** yüklenir.
 > Ayrıntı ve AdMob adımları: `ADMOB-KURULUM.md`.
 
-Durum: **kod, paket ve mağaza görselleri hazır.** Kalan her şey Play Console
-hesabı ve imza anahtarı — ikisi de Uzay'ın adımı, asistan yapamaz.
+> **Adım adım ne yapılacağı ve bütün Play Console form cevapları
+> `PLAY-FORM.md` dosyasında.** Burası teknik durum tablosu.
+
+Durum: **kod, paket, mağaza metinleri ve görselleri hazır.** Kalanlar: iki
+Supabase SQL'i, AdMob kimlikleri, imza anahtarı ve 12 tester — hepsi Uzay'ın
+adımı; asistan hesap açamaz, parola belirleyemez.
 
 ## Hazır olanlar (ölçüldü, 2026-09-15)
 

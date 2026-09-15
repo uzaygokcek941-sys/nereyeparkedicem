@@ -145,7 +145,68 @@
     });
   }
 
-  const basla = () => { girisKur(); favoriKur(); };
+  /* ---------- /hesap-sil/ ---------- */
+  /* Play User Data politikasi hem uygulama ici hem WEB uzerinden hesap silme
+     istiyor. Site zaten uygulamanin kendisi oldugu icin tek akis ikisini de
+     karsiliyor: kullanici giris yapar, dugmeye basar, kayit silinir. */
+  function silKur() {
+    const dug = $("#hesap-sil"); if (!dug) return;
+    const durum = $("#sil-durum"), giris = $("#sil-giris");
+
+    const ciz = async () => {
+      const a = await NP.ayarOku(), k = NP.kullanici();
+      if (!a) {
+        durum.textContent = "Hesap sistemi bu kurulumda kapalı — silinecek bir " +
+          "hesabın yok. Favorilerin yalnız bu cihazda.";
+        dug.hidden = true; if (giris) giris.hidden = true;
+        return;
+      }
+      if (k) {
+        durum.innerHTML = `<strong>${(k.email || "Hesabın").replace(/</g, "&lt;")}</strong> ` +
+          "ile giriş yapıldı. Aşağıdaki düğme hesabını ve sunucudaki favori " +
+          "listeni kalıcı olarak siler.";
+        dug.hidden = false; dug.disabled = false;
+        if (giris) giris.hidden = true;
+      } else {
+        durum.textContent = "Silme işlemi için önce giriş yapman gerekiyor — " +
+          "aksi halde kimin hesabını sileceğimizi bilemeyiz.";
+        dug.hidden = true; if (giris) giris.hidden = false;
+      }
+    };
+    ciz();
+    document.addEventListener("np:oturum", ciz);
+
+    dug.addEventListener("click", async () => {
+      if (!window.confirm("Hesabın ve sunucudaki favori listen kalıcı olarak " +
+        "silinecek. Bu işlem geri alınamaz. Devam edilsin mi?")) return;
+      dug.disabled = true; durum.textContent = "Siliniyor…";
+      try {
+        const c = await NP.istemciAl();
+        if (!c) throw new Error("hesap sunucusu yapılandırılmadı");
+        // Silmeyi sunucudaki security-definer fonksiyon yapiyor: anon anahtar
+        // auth.users'a yazamaz - yazabilseydi zaten guvenlik acigi olurdu.
+        const { error } = await c.rpc("hesabimi_sil");
+        if (error) throw error;
+        await NP.cikis();
+        dug.hidden = true;
+        durum.textContent = "Hesabın silindi. Bu cihazdaki favori listen " +
+          "duruyor ve uygulama giriş yapmadan çalışmaya devam ediyor.";
+      } catch (h) {
+        durum.textContent = "Silinemedi: " + (h.message || h) + " — tekrar dene.";
+        dug.disabled = false;
+      }
+    });
+  }
+
+  /* /favoriler/ sayfasindaki "Hesabımı sil" baglantisi yalniz giris varken */
+  function silBaglantisi() {
+    const b = $("#sil-baglanti"); if (!b) return;
+    const ciz = () => { b.hidden = !NP.kullanici(); };
+    ciz();
+    document.addEventListener("np:oturum", ciz);
+  }
+
+  const basla = () => { girisKur(); favoriKur(); silKur(); silBaglantisi(); };
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", basla);
   else basla();

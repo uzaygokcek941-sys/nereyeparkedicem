@@ -324,8 +324,10 @@ def uret():
     # auth.json ONCE: yaz_gizlilik() metni hesap ozelliginin acik olup
     # olmamasina gore degistirdigi icin dosyanin var olmasi gerekiyor.
     yaz_auth_ayar()
+    print("app-ads.txt: " + ("yazildi" if yaz_app_ads()
+          else "atlandi (site/veri/admob.json icinde publisherId bos)"))
     yaz_gizlilik(); yaz_404(); yaz_cevrimdisi(); yaz_endeks(d, g)
-    yaz_giris(); yaz_favoriler()
+    yaz_giris(); yaz_favoriler(); yaz_hesap_sil()
     harita_var = os.path.exists(f"{CIKTI}/veri/iller.json")
     il_sluglari = {}
     if harita_var:
@@ -350,7 +352,8 @@ def uret():
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f'<url><loc>{url}/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>'
         f'{sm}<url><loc>{url}/fiyat-endeksi/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>'
-        f'<url><loc>{url}/gizlilik/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
+        f'<url><loc>{url}/gizlilik/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url>'
+        f'<url><loc>{url}/hesap-sil/</loc><changefreq>yearly</changefreq><priority>0.1</priority></url></urlset>')
     open(f"{CIKTI}/robots.txt","w",encoding="utf-8").write(f"User-agent: *\nAllow: /\nSitemap: {url}/sitemap.xml\n")
     json.dump([{k: r[k] for k in ("id","ad","lat","lng","ilce","kapasite","ilk_saat_tl","saat","tip")} for r in d],
               open(f"{CIKTI}/otoparklar.json","w",encoding="utf-8"), ensure_ascii=False)
@@ -413,6 +416,23 @@ gizlilik politikaları geçerlidir.</li>
 {supabase_madde}</ul>
 <p>İçerik Güvenliği Politikamız (CSP) bunların dışında hiçbir dış adrese bağlantı
 kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımızdan iner.</p>
+
+<h2>Android uygulamasındaki reklamlar</h2>
+<p><strong>Bu web sitesinde reklam yoktur.</strong> Google Play&#8217;deki Android
+uygulamasının alt kısmında <strong>Google AdMob</strong> banner reklamı gösterilir;
+uygulamayı ücretsiz tutmanın karşılığı budur.</p>
+<p>Reklam gösterildiğinde Google, cihazınızın <strong>reklam kimliğini</strong>
+(Android Advertising ID) ve reklamın görüntülendiği cihaz bilgisini kendi reklam
+sistemi için işler. Bu veriyi <strong>biz görmeyiz</strong>; bize yalnız toplam
+gösterim ve kazanç sayısı gelir. Google&#8217;ın iş ortağı gizlilik açıklaması:
+<a href="https://policies.google.com/technologies/partner-sites" target="_blank"
+rel="noopener">policies.google.com/technologies/partner-sites</a>.</p>
+<p><strong>Kontrol sizde:</strong> Android&#8217;de <em>Ayarlar → Gizlilik → Reklamlar</em>
+bölümünden reklam kimliğinizi sıfırlayabilir veya tamamen silebilirsiniz; sildiğinizde
+reklamlar kişiselleştirilmez. Avrupa Ekonomik Alanı ve Birleşik Krallık&#8217;ta
+uygulama ilk açılışta Google&#8217;ın onay formunu (UMP) gösterir ve seçiminize uyar.</p>
+<p>Reklam ağı <strong>konumunuzu bizden almaz</strong>; yukarıda yazdığımız gibi konum
+cihazdan yalnız yol tarifi için ve yalnız siz isteyince çıkar.</p>
 
 <h2>Barındırma kayıtları</h2>
 <p>Site Vercel üzerinde barındırılır. Her web sunucusu gibi Vercel de teknik erişim kaydı
@@ -538,7 +558,10 @@ GIRIS = """<section class="giris-sar">
 FAVORILER = """<section class="kahraman dar">
 <h1>Favori otoparkların</h1>
 <p class="durum" id="hesap-durum" role="status"></p>
-<p class="dugmeler"><button class="ikincil" id="cikis" type="button" hidden>Çıkış yap</button></p>
+<p class="dugmeler"><button class="ikincil" id="cikis" type="button" hidden>Çıkış yap</button>
+<!-- Play User Data politikasi: hesap silme yolu uygulama icinde de
+     KOLAY BULUNUR olmali. Giris yapilmadan gosterilmiyor. -->
+<a class="ikincil" id="sil-baglanti" href="/hesap-sil/" hidden>Hesabımı sil</a></p>
 </section>
 <section class="liste-bolum">
  <p class="alt-baslik" id="favori-sayi"></p>
@@ -572,6 +595,54 @@ def yaz_favoriler():
         ek_head='<meta name="robots" content="noindex">',
         ek_js='<script src="/hesap.js" defer></script>'))
 
+HESAP_SIL = """<nav class="iz"><a href="/">Ana sayfa</a> › <span>Hesabı sil</span></nav>
+<section class="kahraman dar">
+<h1>Hesabını ve verilerini sil</h1>
+<p class="alt-baslik">Uygulamayı yeniden kurmana gerek yok. Bu sayfadan giriş yap,
+tek düğmeyle hesabın ve hesabına bağlı her şey kalıcı olarak silinsin.</p>
+</section>
+<section class="metin">
+<div class="giris-kart">
+ <p id="sil-durum" class="durum" role="status">Yükleniyor…</p>
+ <button id="hesap-sil" class="birincil" type="button" hidden>Hesabımı kalıcı olarak sil</button>
+ <p><a id="sil-giris" class="ikincil" href="/giris/" hidden>Önce giriş yap</a></p>
+</div>
+<h2>Silinen veriler</h2>
+<ul>
+<li><strong>Hesabın</strong> (e-posta adresin ve oturum kayıtların).</li>
+<li><strong>Sunucudaki favori otopark listen.</strong> Hesap silinince veritabanı
+kaydı da aynı işlemde siliniyor; ayrı bir talep gerekmiyor.</li>
+</ul>
+<h2>Silinmeyenler</h2>
+<ul>
+<li><strong>Telefonundaki favori listesi.</strong> O liste cihazının içinde duruyor,
+bizde değil; uygulamada yıldıza tekrar basarak ya da tarayıcı verilerini
+temizleyerek kaldırabilirsin. Hesabını silmek onu bozmaz — uygulama girişsiz de
+çalışmaya devam eder.</li>
+<li><strong>Barındırma sunucusunun erişim kayıtları.</strong> IP ve tarayıcı bilgisi
+içeren teknik kayıtlar kısa süre saklanıp kendiliğinden siliniyor; kimliğinle
+eşleştirilmiyor.</li>
+</ul>
+<h2>Ne kadar sürer</h2>
+<p><strong>Anında.</strong> Düğmeye bastığın anda kayıt veritabanından siliniyor,
+işlem geri alınamıyor. Yedeklerden tamamen düşmesi en geç 30 gün sürer.</p>
+<h2>Konum bilgisi</h2>
+<p>Konumun zaten hiçbir zaman hesabına bağlanmıyor ve sunucumuzda tutulmuyor —
+silinecek bir konum kaydı yok. Ayrıntı: <a href="/gizlilik/">gizlilik politikası</a>.</p>
+</section>"""
+
+def yaz_hesap_sil():
+    """Play User Data politikasi: hesap acilabilen uygulamada silme YOLU
+    hem uygulama icinde hem WEB'de olmak zorunda. Bu sayfa web ayagi; ayni
+    dugme /favoriler/ icinde de duruyor (uygulama ici ayak)."""
+    os.makedirs(f"{CIKTI}/hesap-sil", exist_ok=True)
+    open(f"{CIKTI}/hesap-sil/index.html", "w", encoding="utf-8").write(sayfa(
+        "Hesabını sil — nereyeparkedicem",
+        "Hesabını ve hesabına bağlı favori listeni kalıcı olarak sil. "
+        "Uygulamayı yeniden kurman gerekmez.",
+        HESAP_SIL, kok="/", canonical=f"{URL}/hesap-sil/", js=False,
+        ek_js='<script src="/hesap.js" defer></script>'))
+
 def yaz_auth_ayar():
     """Supabase yapilandirmasi. anon anahtar TASARIM GEREGI acik metindir
     (istemcide calisir, korumayi RLS saglar) - o yuzden depoda durabilir.
@@ -582,6 +653,28 @@ def yaz_auth_ayar():
         return
     json.dump({"url": "YAPILANDIRILMADI", "anonKey": "YAPILANDIRILMADI"},
               open(yol, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+def yaz_app_ads():
+    """site/app-ads.txt — AdMob envanterini dogrular.
+
+    Dosya YALNIZ gercek yayinci kimligi girilince yazilir. Bos ya da yalniz
+    yorum satiri iceren bir app-ads.txt "yetkili satici YOK" demektir ve
+    reklam gelirini dusurur; hic olmamasi bundan iyidir. Kimlik
+    site/veri/admob.json icinde: {"publisherId": "pub-0000000000000000"}."""
+    yol = f"{CIKTI}/veri/admob.json"
+    os.makedirs(f"{CIKTI}/veri", exist_ok=True)
+    if not os.path.exists(yol):
+        json.dump({"publisherId": ""}, open(yol, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    p = json.load(open(yol, encoding="utf-8")).get("publisherId", "").strip()
+    hedef = f"{CIKTI}/app-ads.txt"
+    if not p.startswith("pub-"):
+        if os.path.exists(hedef):
+            os.remove(hedef)
+        return False
+    open(hedef, "w", encoding="utf-8", newline="\n").write(
+        f"google.com, {p}, DIRECT, f08c47fec0942fa0\n")
+    return True
 
 CEVRIMDISI = """<section class="kahraman dar">
 <h1>Bağlantı yok</h1>
