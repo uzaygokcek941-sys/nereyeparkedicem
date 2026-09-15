@@ -12,6 +12,9 @@ SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
 # Bu yollar Vercel cleanUrls / 404 yonlendirmesi gerektiriyor; yerel
 # SimpleHTTPRequestHandler saglamaz, yalniz canli modda olculur.
 CANLI_YOL = {"/gizlilik/", "/boyle-bir-sayfa-yok/"}
+# 404 sayfasini olcmek icin bilerek var olmayan yol isteniyor; o istegin
+# kendi 404'u BEKLENEN, konsol hatasi sayilmaz.
+YOK_YOL = "/boyle-bir-sayfa-yok/"
 TABANAD = ""
 
 def sunucu():
@@ -85,6 +88,7 @@ def main():
             for yol in SAYFA:
                 if yol in CANLI_YOL and TABANAD.startswith("http://127."):
                     continue
+                onceki = len(konsol)
                 sf.goto(f"{TABANAD}{yol}", wait_until="networkidle")
                 r = sf.evaluate(OLCUM)
                 print(f"\n--- {ad} {w}x{h} · {yol}")
@@ -99,6 +103,8 @@ def main():
                 if r["yer_tutucu"]: hata.append(f"{ad}{yol}: {r['yer_tutucu']} doldurulmamis yer tutucu")
                 if r.get("bosluk_px", 1) < 0: hata.append(f"{ad}{yol}: ust uste binme {r['bosluk_px']}px")
                 if r["kucuk_dokunma"]: uyari.append(f"{ad}{yol}: <44px dokunma -> {r['kucuk_dokunma']}")
+                if yol == YOK_YOL:
+                    del konsol[onceki:]   # beklenen 404, kusur degil
             if dis:
                 uyari.append(f"{ad}: DIS SERVIS 5xx (bizim kusurumuz degil) -> {sorted(set(dis))[:2]}")
                 konsol = [k for k in konsol if "Failed to load resource" not in k]
