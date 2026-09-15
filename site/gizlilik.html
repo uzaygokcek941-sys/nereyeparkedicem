@@ -24,8 +24,16 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <a class="atla" href="#icerik">İçeriğe atla</a>
 <header class="ust">
- <a class="marka" href="/index.html">nereye<b>parkedicem</b></a>
- <nav aria-label="Ana"><a href="/harita/">Harita</a><a href="/index.html#ilceler">İlçeler</a><a href="/fiyat-endeksi/">Fiyat</a></nav>
+ <div class="ust-ic">
+  <a class="marka" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/><path d="M10 14V8h2.4a2.3 2.3 0 0 1 0 4.6H10"/></svg>nereye<b>parkedicem</b></a>
+  <nav aria-label="Ana">
+   <a href="/harita/">Harita</a>
+   <a href="/il/">81 il</a>
+   <a href="/ucretsiz-otopark/">Ücretsiz</a>
+   <a href="/fiyat-endeksi/">Fiyat</a>
+  </nav>
+  <a class="hesap-dug" data-hesap href="/giris/"><span>Giriş</span></a>
+ </div>
 </header>
 <main id="icerik"><section class="kahraman dar">
 <h1>Gizlilik ve KVKK</h1>
@@ -33,15 +41,22 @@
 </section>
 <section class="metin">
 <h2>Hangi veriyi topluyoruz</h2>
-<p><strong>Kişisel veri toplamıyoruz.</strong> Bu site statik dosyalardan oluşur: kayıt,
-giriş, hesap, sunucu tarafı kodu ve veritabanı yoktur.</p>
-<p>Tek istisna <strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
+<p><strong>Kişisel veri toplamıyoruz.</strong> Hesap özelliği bu sürümde <strong>kapalıdır</strong>: giriş sayfası açılsa da kayıt oluşturulamaz, hiçbir e-posta adresi tarafımıza ulaşmaz.</p>
+<p>Site statik dosyalardan oluşur; sayfaları üreten bir sunucu kodumuz ve
+otoparkları tutan bir veritabanımız yoktur.</p>
+<p><strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
 sayar. <strong>Çerez kullanmaz, parmak izi çıkarmaz, ziyaretçiyi sayfalar arasında
 takip etmez;</strong> IP adresi kimliğe dönüştürülmeden anonim bir sayfa görüntüleme
 sayısına indirgenir. Betik sitemizin kendi alan adından servis edilir
 (<code>/_vercel/insights/</code>), ölçüm de oraya gider — reklam ağına veri gitmez.
 Tarayıcınızın izleme engelleyicisi bu betiği kapatırsa site aynen çalışır.</p>
 
+<h2>Favoriler</h2>
+<p>Bir otopark kartındaki yıldıza dokunduğunuzda o otoparkın adı, ilçesi ve koordinatı
+<strong>tarayıcınızın kendi deposuna</strong> (<code>localStorage</code>) yazılır.
+Giriş yapmadıysanız bu liste <strong>cihazınızdan hiç çıkmaz</strong>; tarayıcı verisini
+temizlediğinizde silinir.</p>
+<p>Hesap özelliği kapalı olduğu için favori listeniz <strong>hiçbir sunucuya gönderilmez</strong>; yalnız bu cihazda kalır.</p>
 <h2>Konum bilgisi</h2>
 <p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
 Verilen konum <strong>yalnızca cihazınızın içinde</strong> kullanılır: mesafe hesabı tarayıcıda
@@ -69,9 +84,7 @@ kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımı
 ve tarafımızca okunmaz veya işlenmez.</p>
 
 <h2>KVKK</h2>
-<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca <strong>işlenen
-kişisel veri yoktur</strong>; bu nedenle veri sorumlusu sıfatıyla tutulan bir kayıt ortamı
-bulunmamaktadır. Yine de sorunuz olursa GitHub deposundan issue açabilirsiniz.</p>
+<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca <strong>işlenen kişisel veri yoktur</strong>; bu nedenle veri sorumlusu sıfatıyla tutulan bir kayıt ortamı bulunmamaktadır. Yine de sorunuz olursa GitHub deposundan issue açabilirsiniz.</p>
 
 <h2>Verinin kaynağı ve doğruluğu</h2>
 <p>Otopark, doluluk ve tarife verisi İBB Açık Veri Portalı'ndan CC BY 4.0 lisansıyla gelir.
@@ -79,11 +92,13 @@ Güncellik İBB'nin yenileme aralığına bağlıdır; aksama olursa veri birka�
 kalabilir. <strong>Bu site bağımsızdır</strong>; İBB, İSPARK A.Ş. veya İSTMOP ile resmî
 bağlantısı yoktur. Gösterilen fiyatlar bilgilendirme amaçlıdır, bağlayıcı değildir.</p>
 </section></main>
+<nav class="alt-sekme" aria-label="Alt gezinme"><a href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg><span>Ana</span></a><a href="/harita/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6 9 3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg><span>Harita</span></a><a href="/ucretsiz-otopark/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.4V4.5a1 1 0 0 1 1-1h7.9a1 1 0 0 1 .71.29l7.1 7.1a1 1 0 0 1 0 1.42l-7.9 7.9a1 1 0 0 1-1.42 0l-7.1-7.1a1 1 0 0 1-.29-.71z"/><circle cx="7.75" cy="7.75" r="1.15"/></svg><span>Ücretsiz</span></a><a href="/favoriler/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z"/></svg><span>Favoriler</span></a></nav>
 <footer class="alt">
  <p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> — İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p><p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
  <p><a href="/gizlilik/">Gizlilik ve KVKK</a></p>
- <p class="uretim">Sayfa üretimi: 15.09.2026 18:17</p>
+ <p class="uretim">Sayfa üretimi: 15.09.2026 19:42</p>
 </footer>
 <script src="/sw-kur.js" defer></script>
+<script src="/oturum.js" defer></script>
 <script src="/uygulama.js" defer></script>
 </body></html>

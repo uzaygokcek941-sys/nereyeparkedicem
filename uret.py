@@ -52,7 +52,8 @@ def kart(k):
     tarife = "".join(
         f'<li><span>{html.escape(t["aralik"])}</span><b>{tl(t["tl"])} ₺</b></li>'
         for t in k["tarife"][:6])
-    return f'''<article class="otopark" data-id="{k['id']}" data-lat="{k['lat']}" data-lng="{k['lng']}">
+    return f'''<article class="otopark" data-id="{k['id']}" data-lat="{k['lat']}" data-lng="{k['lng']}"
+ data-ad="{html.escape(k['ad_tr'], quote=True)}" data-ilce="{html.escape(tr_baslik(k['ilce']), quote=True)}">
  <header>
   <h3>{html.escape(k['ad_tr'])}</h3>
   <p class="adres">{html.escape(tr_baslik(k['adres'] or ''))}</p>
@@ -63,6 +64,7 @@ def kart(k):
   <div><dt>İlk saat</dt><dd>{tl(k['ilk_saat_tl'])} ₺</dd></div>
   <div><dt>Ücretsiz</dt><dd>{k['ucretsiz_dk'] or 0} dk</dd></div>
  </dl>
+ <p class="dolu-cubuk" hidden><i></i></p>
  <p class="saat">{html.escape(k['saat'] or '')} · {html.escape(tr_baslik(k['tip'] or ''))}</p>
  <details><summary>Tam tarife{f" · aylık {tl(k['aylik_tl'])} ₺" if k['aylik_tl'] else ""}</summary>
   <ul class="tarife">{tarife}</ul></details>
@@ -72,8 +74,40 @@ def kart(k):
  </div>
 </article>'''
 
+SIMGE_SVG = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+             'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" '
+             'aria-hidden="true">')
+
+# Alt sekme cubugu. Tek yerde durur: her sayfa ayni isareti kullansin.
+SEKMELER = [
+    ("ana", "/", "Ana",
+     '<path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/>'),
+    ("harita", "/harita/", "Harita",
+     '<path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6 9 3z"/><path d="M9 3v15"/>'
+     '<path d="M15 6v15"/>'),
+    # Etiket ikonu, para isareti DEGIL: "$" ucretsiz sekmesinde tersini
+    # cagristiriyordu (ekran goruntusunde olculdu).
+    ("bedava", "/ucretsiz-otopark/", "Ücretsiz",
+     '<path d="M3.5 12.4V4.5a1 1 0 0 1 1-1h7.9a1 1 0 0 1 .71.29l7.1 7.1a1 1 0 0 1 '
+     '0 1.42l-7.9 7.9a1 1 0 0 1-1.42 0l-7.1-7.1a1 1 0 0 1-.29-.71z"/>'
+     '<circle cx="7.75" cy="7.75" r="1.15"/>'),
+    ("hesap", "/favoriler/", "Favoriler",
+     '<path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 '
+     '1-5.85L3.5 9.65l5.9-.85L12 3.5z"/>'),
+]
+
+def alt_sekme(aktif):
+    """Mobil alt sekme cubugu. Yollar MUTLAK: Vercel cleanUrls sayfayi bir
+    dizin asagida servis ettigi icin goreli yol kayiyor (olculdu: /gizlilik/
+    altinda menu oluyordu)."""
+    p = []
+    for k, yol, ad, d in SEKMELER:
+        simdiki = ' aria-current="page"' if k == aktif else ""
+        p.append(f'<a href="{yol}"{simdiki}>{SIMGE_SVG}{d}</svg><span>{ad}</span></a>')
+    return '<nav class="alt-sekme" aria-label="Alt gezinme">' + "".join(p) + "</nav>"
+
 def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=True,
-          ek_head="", ek_js=""):
+          ek_head="", ek_js="", sekme=""):
     simdi = datetime.now(timezone(timedelta(hours=3))).strftime("%d.%m.%Y %H:%M")
     js_etiket = f'<script src="{kok}uygulama.js" defer></script>' if js else ""
     if kaynak_html is None:
@@ -110,16 +144,26 @@ def sayfa(baslik, aciklama, govde, kok="", canonical="", kaynak_html=None, js=Tr
 <script defer src="/_vercel/insights/script.js"></script>
 <a class="atla" href="#icerik">İçeriğe atla</a>
 <header class="ust">
- <a class="marka" href="{kok}index.html">nereye<b>parkedicem</b></a>
- <nav aria-label="Ana"><a href="{kok}harita/">Harita</a><a href="{kok}index.html#ilceler">İlçeler</a><a href="{kok}fiyat-endeksi/">Fiyat</a></nav>
+ <div class="ust-ic">
+  <a class="marka" href="/">{SIMGE_SVG}<path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/><path d="M10 14V8h2.4a2.3 2.3 0 0 1 0 4.6H10"/></svg>nereye<b>parkedicem</b></a>
+  <nav aria-label="Ana">
+   <a href="/harita/"{' aria-current="page"' if sekme == "harita" else ""}>Harita</a>
+   <a href="/il/">81 il</a>
+   <a href="/ucretsiz-otopark/"{' aria-current="page"' if sekme == "bedava" else ""}>Ücretsiz</a>
+   <a href="/fiyat-endeksi/">Fiyat</a>
+  </nav>
+  <a class="hesap-dug" data-hesap href="/giris/"><span>Giriş</span></a>
+ </div>
 </header>
 <main id="icerik">{govde}</main>
+{alt_sekme(sekme)}
 <footer class="alt">
  {kaynak_html}
  <p><a href="{kok}gizlilik/">Gizlilik ve KVKK</a></p>
  <p class="uretim">Sayfa üretimi: {simdi}</p>
 </footer>
 <script src="/sw-kur.js" defer></script>
+<script src="/oturum.js" defer></script>
 {js_etiket}{ek_js}
 </body></html>'''
 
@@ -206,6 +250,7 @@ def uret():
         for x in o["iller"][:12])
 
     govde = f'''<section class="kahraman">
+ <p><span class="rozet canli">Canlı doluluk</span></p>
  <h1>En yakın otoparkı <em>saniyede</em> bul</h1>
  <p class="alt-baslik">{il_s} ilde {tl(il_n)} otopark haritada. İstanbul&#8217;da canlı doluluk
  ve tam tarife, İzmir&#8217;de tarife. Uygulama indirmene gerek yok.</p>
@@ -215,14 +260,20 @@ def uret():
   <div><b>{tl(uc_n)}</b><span>ücretsiz</span></div>
   <div><b data-doluluk>—</b><span>İstanbul doluluk</span></div>
  </div>
- <button id="yakin" class="birincil">📍 En yakın otoparkları göster</button>
+ <div class="dugmeler">
+  <button id="yakin" class="birincil">En yakın otoparkları göster</button>
+  <a class="ikincil" href="harita/">Haritayı aç</a>
+ </div>
  <p id="konum-durum" class="durum" role="status"></p>
 </section>
 <section id="sonuc" hidden><h2>Sana en yakın otoparklar</h2><div class="liste" id="yakin-liste"></div></section>
 <section id="turkiye"><h2>Türkiye haritası — {il_s} il</h2>
  <p class="alt-baslik">Otoparkların tamamı tek haritada. İl balonuna dokun, yakınlaş.</p>
- <p><a class="birincil" href="harita/">🗺️ Haritayı aç</a>
-    <a class="ikincil" href="ucretsiz-otopark/">Ücretsiz otoparklar ({tl(uc_n)})</a></p>
+ <div class="dugmeler">
+  <a class="birincil" href="harita/">Haritayı aç</a>
+  <a class="ikincil" href="ucretsiz-otopark/">Ücretsiz otoparklar ({tl(uc_n)})</a>
+  <a class="ikincil" href="favoriler/">Favorilerim</a>
+ </div>
  <div class="ilce-izgara">{il_kart}</div>
  <p><a href="il/">{il_s} ilin tamamı →</a></p>
 </section>
@@ -244,7 +295,7 @@ def uret():
         "Türkiye Otopark Haritası — 81 İlde En Yakın Otopark",
         f"{il_s} ilde {tl(il_n)} otopark, {tl(uc_n)} tanesi ücretsiz. İstanbul'da {len(d)} İSPARK "
         f"otoparkının canlı doluluğu ve tam tarifesi. En yakınını bul, yol tarifi al.",
-        govde, canonical=f"{URL}/", ek_head=ana_schema(il_s, il_n)))
+        govde, canonical=f"{URL}/", ek_head=ana_schema(il_s, il_n), sekme="ana"))
 
     for s, v in g.items():
         os.makedirs(f"{CIKTI}/ilce/{s}", exist_ok=True)
@@ -270,7 +321,11 @@ def uret():
             gv, kok="../../", canonical=f"{URL}/ilce/{s}/"))
 
     import ikon_uret; ikon_uret.yaz()
+    # auth.json ONCE: yaz_gizlilik() metni hesap ozelliginin acik olup
+    # olmamasina gore degistirdigi icin dosyanin var olmasi gerekiyor.
+    yaz_auth_ayar()
     yaz_gizlilik(); yaz_404(); yaz_cevrimdisi(); yaz_endeks(d, g)
+    yaz_giris(); yaz_favoriler()
     harita_var = os.path.exists(f"{CIKTI}/veri/iller.json")
     il_sluglari = {}
     if harita_var:
@@ -304,21 +359,28 @@ def uret():
           f"{ss} sehir-ilce + {len(il_sluglari)} il sayfasi + sitemap")
 
 
-GIZLILIK = """<section class="kahraman dar">
+GIZLILIK_BAS = """<section class="kahraman dar">
 <h1>Gizlilik ve KVKK</h1>
-<p class="alt-baslik">Kısa versiyon: sunucumuz yok, hesabınız yok, konumunuz bize gelmiyor.</p>
+<p class="alt-baslik">{ozet}</p>
 </section>
 <section class="metin">
 <h2>Hangi veriyi topluyoruz</h2>
-<p><strong>Kişisel veri toplamıyoruz.</strong> Bu site statik dosyalardan oluşur: kayıt,
-giriş, hesap, sunucu tarafı kodu ve veritabanı yoktur.</p>
-<p>Tek istisna <strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
+{giris_blok}
+<p>Site statik dosyalardan oluşur; sayfaları üreten bir sunucu kodumuz ve
+otoparkları tutan bir veritabanımız yoktur.</p>
+<p><strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
 sayar. <strong>Çerez kullanmaz, parmak izi çıkarmaz, ziyaretçiyi sayfalar arasında
 takip etmez;</strong> IP adresi kimliğe dönüştürülmeden anonim bir sayfa görüntüleme
 sayısına indirgenir. Betik sitemizin kendi alan adından servis edilir
 (<code>/_vercel/insights/</code>), ölçüm de oraya gider — reklam ağına veri gitmez.
 Tarayıcınızın izleme engelleyicisi bu betiği kapatırsa site aynen çalışır.</p>
 
+<h2>Favoriler</h2>
+<p>Bir otopark kartındaki yıldıza dokunduğunuzda o otoparkın adı, ilçesi ve koordinatı
+<strong>tarayıcınızın kendi deposuna</strong> (<code>localStorage</code>) yazılır.
+Giriş yapmadıysanız bu liste <strong>cihazınızdan hiç çıkmaz</strong>; tarayıcı verisini
+temizlediğinizde silinir.</p>
+{favori_blok}
 <h2>Konum bilgisi</h2>
 <p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
 Verilen konum <strong>yalnızca cihazınızın içinde</strong> kullanılır: mesafe hesabı tarayıcıda
@@ -336,7 +398,7 @@ otopark listesi çekilir.</li>
 (<code>tile.openstreetmap.org</code>) iner. Bu istek hangi bölgeye baktığınızı o
 sunucuya gösterir — OSM'nin kendi gizlilik politikası geçerlidir. Harita sayfasını
 açmazsanız bu istek hiç olmaz.</li>
-</ul>
+{supabase_madde}</ul>
 <p>İçerik Güvenliği Politikamız (CSP) bu ikisi dışında hiçbir dış adrese bağlantı
 kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımızdan iner.</p>
 
@@ -346,9 +408,7 @@ kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımı
 ve tarafımızca okunmaz veya işlenmez.</p>
 
 <h2>KVKK</h2>
-<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca <strong>işlenen
-kişisel veri yoktur</strong>; bu nedenle veri sorumlusu sıfatıyla tutulan bir kayıt ortamı
-bulunmamaktadır. Yine de sorunuz olursa GitHub deposundan issue açabilirsiniz.</p>
+{kvkk_blok}
 
 <h2>Verinin kaynağı ve doğruluğu</h2>
 <p>Otopark, doluluk ve tarife verisi İBB Açık Veri Portalı'ndan CC BY 4.0 lisansıyla gelir.
@@ -367,12 +427,149 @@ DORTYUZDORT = """<section class="kahraman dar">
 # ediyor, 404.html'i de her derinlikte. Goreli yol bir dizin kayiyor ve
 # OLCULDU: /gizlilik/stil.css 404, /gizlilik/harita/ 404 - sayfa stilsiz,
 # menusu olu kaliyordu.
+def auth_acik():
+    """site/veri/auth.json doldurulmus mu. Gizlilik metni buna gore degisir:
+    hesap ozelligi KAPALIYKEN 'e-postanizi isliyoruz' demek de yanlis olur,
+    ACIKKEN 'hicbir kisisel veri yok' demek de. Iki hâli de dogru yazilir."""
+    try:
+        a = json.load(open(f"{CIKTI}/veri/auth.json", encoding="utf-8"))
+        return bool(a.get("url")) and "YAPILANDIRILMADI" not in f"{a.get('url')}{a.get('anonKey')}"
+    except (OSError, ValueError, AttributeError):
+        return False
+
 def yaz_gizlilik():
+    acik = auth_acik()
+    if acik:
+        ozet = ("Kısa versiyon: konumunuz bize hiç gelmiyor. Hesap açmak isteğe bağlı; "
+                "açarsanız yalnız e-posta adresiniz ve favori listeniz saklanır.")
+        giris_blok = (
+            "<p><strong>Hesap açmazsanız kişisel veri toplamıyoruz.</strong> "
+            "Sitenin tamamı — harita, arama, favoriler, yol tarifi — giriş yapmadan "
+            "çalışır.</p>"
+            "<p>Giriş yapmayı seçerseniz işlenen veri şudur: <strong>e-posta adresiniz</strong> "
+            "(Google ile girdiyseniz Google'ın paylaştığı e-posta ve hesap kimliği) ve "
+            "<strong>favori otopark listeniz</strong>. Parola tutmuyoruz — giriş e-posta "
+            "bağlantısı veya Google ile yapılır.</p>")
+        favori_blok = (
+            "<p>Giriş yaparsanız aynı liste hesabınıza bağlı olarak <strong>Supabase</strong> "
+            "üzerinde de tutulur ki diğer cihazlarınızda görünsün. Veritabanı satır düzeyi "
+            "güvenlik (RLS) ile korunur: <strong>bir kullanıcı yalnız kendi satırını "
+            "okuyabilir ve yazabilir.</strong> Favori listesi kimseyle paylaşılmaz, "
+            "reklam amacıyla kullanılmaz.</p>")
+        supabase_madde = (
+            "<li><strong>Hesap ve favori eşitlemesi</strong> için giriş yaptıysanız "
+            "tarayıcınız <code>*.supabase.co</code> adresine istek atar. Bu istek "
+            "yalnız hesap oturumunuzu ve favori listenizi taşır; konumunuzu taşımaz. "
+            "Giriş yapmazsanız bu istek hiç olmaz.</li>")
+        kvkk_blok = (
+            "<p>6698 sayılı Kanun anlamında veri sorumlusu bu sitenin işletmecisidir. "
+            "<strong>Hukuki sebep:</strong> talebiniz üzerine hesap hizmetinin sunulması "
+            "(açık rızanız ve sözleşmenin ifası). <strong>Amaç:</strong> yalnızca favori "
+            "listenizi cihazlarınız arasında eşitlemek. <strong>Saklama süresi:</strong> "
+            "hesabınız açık kaldığı sürece.</p>"
+            "<p><strong>Yurt dışına aktarım:</strong> Supabase ve Vercel yurt dışında "
+            "barındırma yapar; hesap açtığınızda e-postanız ve favori listeniz bu "
+            "sunucularda saklanır. Bunu kabul etmek istemiyorsanız hesap açmayın — "
+            "site giriş yapmadan tam olarak çalışır.</p>"
+            "<p><strong>Haklarınız</strong> (m.11): verilerinizin silinmesini, düzeltilmesini "
+            "veya bir kopyasını isteyebilirsiniz. Talebinizi GitHub deposundan issue açarak "
+            "iletebilirsiniz; hesap silme talebinde e-posta adresiniz ve favori kaydınız "
+            "tamamen kaldırılır.</p>")
+    else:
+        ozet = ("Kısa versiyon: sunucumuz yok, hesabınız yok, konumunuz bize gelmiyor.")
+        giris_blok = (
+            "<p><strong>Kişisel veri toplamıyoruz.</strong> Hesap özelliği bu sürümde "
+            "<strong>kapalıdır</strong>: giriş sayfası açılsa da kayıt oluşturulamaz, "
+            "hiçbir e-posta adresi tarafımıza ulaşmaz.</p>")
+        favori_blok = (
+            "<p>Hesap özelliği kapalı olduğu için favori listeniz <strong>hiçbir sunucuya "
+            "gönderilmez</strong>; yalnız bu cihazda kalır.</p>")
+        supabase_madde = ""
+        kvkk_blok = (
+            "<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca "
+            "<strong>işlenen kişisel veri yoktur</strong>; bu nedenle veri sorumlusu "
+            "sıfatıyla tutulan bir kayıt ortamı bulunmamaktadır. Yine de sorunuz olursa "
+            "GitHub deposundan issue açabilirsiniz.</p>")
+    govde = GIZLILIK_BAS.format(ozet=ozet, giris_blok=giris_blok, favori_blok=favori_blok,
+                                supabase_madde=supabase_madde, kvkk_blok=kvkk_blok)
     open(f"{CIKTI}/gizlilik.html", "w", encoding="utf-8").write(sayfa(
         "Gizlilik ve KVKK | nereyeparkedicem",
-        "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
-        "Toplanan kişisel veri bulunmuyor.", GIZLILIK, kok="/",
-        canonical=f"{URL}/gizlilik/"))
+        ("Konumunuz cihazınızdan çıkmıyor. Hesap isteğe bağlı; açarsanız yalnız "
+         "e-posta ve favori listesi saklanır." if acik else
+         "Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. "
+         "Toplanan kişisel veri bulunmuyor."),
+        govde, kok="/", canonical=f"{URL}/gizlilik/"))
+
+GIRIS = """<section class="giris-sar">
+<div class="giris">
+ <h1>Giriş yap</h1>
+ <p class="alt-baslik">Favori otoparkların bütün cihazlarında görünsün.
+ Parola yok — e-postana gelen bağlantıya dokunman yeterli.</p>
+
+ <form id="giris-form" novalidate>
+  <label class="etiket" for="eposta">E-posta adresin</label>
+  <input class="alan" type="email" id="eposta" name="eposta" required
+         autocomplete="email" inputmode="email" placeholder="ornek@eposta.com">
+  <button class="birincil" id="giris-dug" type="submit">Giriş bağlantısı gönder</button>
+ </form>
+
+ <div class="ayirac">veya</div>
+ <button class="ikincil" id="google-giris" type="button">Google ile devam et</button>
+
+ <p class="durum" id="giris-durum" role="status"></p>
+ <p class="giris-not">Hesap açmak <strong>zorunlu değil</strong>. Favorilerin giriş
+ yapmadan da bu cihazda saklanır; hesap yalnızca cihazlar arasında eşitleme içindir.
+ Ne topladığımız <a href="/gizlilik/">Gizlilik ve KVKK</a> sayfasında yazılı.</p>
+</div>
+</section>"""
+
+FAVORILER = """<section class="kahraman dar">
+<h1>Favori otoparkların</h1>
+<p class="durum" id="hesap-durum" role="status"></p>
+<p class="dugmeler"><button class="ikincil" id="cikis" type="button" hidden>Çıkış yap</button></p>
+</section>
+<section class="liste-bolum">
+ <p class="alt-baslik" id="favori-sayi"></p>
+ <div class="liste" id="favori-liste"></div>
+ <div class="bos-durum" id="favori-bos" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round"
+   stroke-linejoin="round" d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12
+   16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z"/></svg>
+  <p>Henüz favori yok. Herhangi bir otopark kartındaki yıldıza dokun,
+  burada birikirler.</p>
+  <a class="birincil" href="/harita/">Haritayı aç</a>
+ </div>
+</section>"""
+
+def yaz_giris():
+    os.makedirs(f"{CIKTI}/giris", exist_ok=True)
+    open(f"{CIKTI}/giris/index.html", "w", encoding="utf-8").write(sayfa(
+        "Giriş yap — nereyeparkedicem",
+        "Favori otoparklarını bütün cihazlarında görmek için giriş yap. "
+        "Parola yok, e-posta bağlantısı yeterli.", GIRIS, kok="/",
+        canonical=f"{URL}/giris/", js=False, sekme="hesap",
+        ek_head='<meta name="robots" content="noindex">',
+        ek_js='<script src="/hesap.js" defer></script>'))
+
+def yaz_favoriler():
+    os.makedirs(f"{CIKTI}/favoriler", exist_ok=True)
+    open(f"{CIKTI}/favoriler/index.html", "w", encoding="utf-8").write(sayfa(
+        "Favori otoparkların — nereyeparkedicem",
+        "Yıldızladığın otoparklar. Giriş yaparsan bütün cihazlarında görünür.",
+        FAVORILER, kok="/", canonical=f"{URL}/favoriler/", js=False, sekme="hesap",
+        ek_head='<meta name="robots" content="noindex">',
+        ek_js='<script src="/hesap.js" defer></script>'))
+
+def yaz_auth_ayar():
+    """Supabase yapilandirmasi. anon anahtar TASARIM GEREGI acik metindir
+    (istemcide calisir, korumayi RLS saglar) - o yuzden depoda durabilir.
+    Dosya YOKSA ustune yazma: kullanicinin girdigi degerleri silmeyelim."""
+    yol = f"{CIKTI}/veri/auth.json"
+    os.makedirs(f"{CIKTI}/veri", exist_ok=True)
+    if os.path.exists(yol):
+        return
+    json.dump({"url": "YAPILANDIRILMADI", "anonKey": "YAPILANDIRILMADI"},
+              open(yol, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 CEVRIMDISI = """<section class="kahraman dar">
 <h1>Bağlantı yok</h1>

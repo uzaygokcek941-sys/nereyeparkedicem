@@ -9,7 +9,7 @@ GENISLIK = [(375, 812, "mobil"), (768, 1024, "tablet"), (1440, 900, "masaustu")]
 SAYFA = ["/", "/ilce/fatih/", "/ilce/besiktas/", "/fiyat-endeksi/",
          "/izmir/", "/izmir/ilce/konak/", "/ankara/", "/ankara/ilce/cankaya/",
          "/harita/", "/il/", "/il/ankara/", "/il/bayburt/", "/ucretsiz-otopark/",
-         "/gizlilik/", "/boyle-bir-sayfa-yok/"]
+         "/gizlilik/", "/giris/", "/favoriler/", "/boyle-bir-sayfa-yok/"]
 # Bu yollar Vercel cleanUrls / 404 yonlendirmesi gerektiriyor; yerel
 # SimpleHTTPRequestHandler saglamaz, yalniz canli modda olculur.
 CANLI_YOL = {"/gizlilik/", "/boyle-bir-sayfa-yok/"}
@@ -122,7 +122,10 @@ def main():
                 print(f"\n--- {ad} {w}x{h} · {yol}")
                 for k, v in r.items(): print(f"    {k:<16} {v}")
                 if r["tasma"] > 0: hata.append(f"{ad}{yol}: yatay tasma {r['tasma']}px")
-                if r["kahr_pt"] in ("0px", None): hata.append(f"{ad}{yol}: .kahraman padding-top 0px -> CSS dusmus")
+                # None = sayfada .kahraman YOK (orn. /giris/ .giris-sar kullanir);
+                # bu bir CSS dususu degil. Gercek dusus "0px" ile gelir. O sayfalar
+                # zaten css_kural>0 ve h1 varsayilan-degil testleriyle korunuyor.
+                if r["kahr_pt"] == "0px": hata.append(f"{ad}{yol}: .kahraman padding-top 0px -> CSS dusmus")
                 if r["main_pl"] in ("0px", None): hata.append(f"{ad}{yol}: main yan bosluk 0px")
                 if r["h1_font"] in ("32px", None): hata.append(f"{ad}{yol}: h1 {r['h1_font']} = tarayici varsayilani -> CSS dusmus")
                 if r["css_kural"] == 0:

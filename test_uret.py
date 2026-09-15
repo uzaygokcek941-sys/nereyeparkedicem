@@ -144,5 +144,64 @@ if os.path.exists(_f34):
     es("ilce sayfasi olcum tarihi", "<time datetime=" in _h, True)
     es("ilce sayfasi h2 var (h1->h3 atlamasi yok)", "<h2>" in _h, True)
     es("ilce canonical", 'rel="canonical"' in _h, True)
+
+# --- hesap / favori katmani (2026-09-15) ---
+_g  = open("site/giris/index.html", encoding="utf-8").read()
+_f  = open("site/favoriler/index.html", encoding="utf-8").read()
+_a  = json.load(open("site/veri/auth.json", encoding="utf-8"))
+_sw = open("site/sw.js", encoding="utf-8").read()
+_cs = open("site/stil.css", encoding="utf-8").read()
+_vj = open("vercel.json", encoding="utf-8").read()
+_gz = open("site/gizlilik.html", encoding="utf-8").read()
+
+es("giris sayfasi e-posta alani", 'id="eposta"' in _g, True)
+es("giris sayfasi Google dugmesi", 'id="google-giris"' in _g, True)
+es("giris sayfasi noindex", 'name="robots" content="noindex"' in _g, True)
+es("giris sayfasi hesap.js", "/hesap.js" in _g, True)
+es("favoriler listesi", 'id="favori-liste"' in _f, True)
+es("favoriler bos durumu", 'id="favori-bos"' in _f, True)
+es("favoriler cikis dugmesi", 'id="cikis"' in _f, True)
+es("auth.json iki alan", sorted(_a), ["anonKey", "url"])
+es("auth varsayilan KAPALI", uret.auth_acik(), False)
+
+# auth kapaliyken gizlilik metni hesabi ACIK gibi anlatmamali
+es("gizlilik hesap kapali diyor", "kapalıdır" in _gz, True)
+es("gizlilik supabase demiyor (auth kapali)", "supabase.co" in _gz, False)
+
+# yeni kabuk: her sayfada alt sekme + oturum.js
+for _ad, _y in [("ana", "site/index.html"), ("harita", "site/harita/index.html"),
+                ("ucretsiz", "site/ucretsiz-otopark/index.html"),
+                ("ilce", "site/ilce/fatih/index.html"),
+                ("gizlilik", "site/gizlilik.html"), ("404", "site/404.html")]:
+    _s = open(_y, encoding="utf-8").read()
+    es(f"{_ad}: alt sekme", _s.count('class="alt-sekme"'), 1)
+    es(f"{_ad}: oturum.js", "/oturum.js" in _s, True)
+    es(f"{_ad}: hesap dugmesi", "data-hesap" in _s, True)
+
+# kart: favori icin gereken nitelikler + doluluk cubugu
+_i = open("site/ilce/fatih/index.html", encoding="utf-8").read()
+es("kartta data-ad", 'data-ad="' in _i, True)
+es("kartta data-ilce", 'data-ilce="' in _i, True)
+es("kartta doluluk cubugu", 'class="dolu-cubuk"' in _i, True)
+es("dolu-cubuk basta gizli", 'class="dolu-cubuk" hidden' in _i, True)
+
+# service worker yeni varliklari onden onbellege alsin
+es("sw oturum.js onden", '"/oturum.js"' in _sw, True)
+es("sw auth.json onden", '"/veri/auth.json"' in _sw, True)
+es("sw surum yukseldi", "np-v2" in _sw, True)
+
+# CSP: supabase eklenmis, joker yalniz supabase.co'da
+es("CSP supabase connect-src", "https://*.supabase.co" in _vj, True)
+es("CSP form-action", "form-action 'self'" in _vj, True)
+es("CSP script-src hâlâ self", "script-src 'self';" in _vj, True)
+
+# tasarim sistemi
+for _k in [".alt-sekme", ".yildiz", ".dolu-cubuk", ".hesap-dug", ".giris", "--sekme"]:
+    es(f"stil.css {_k}", _k in _cs, True)
+es("stil.css guvenli alan", "safe-area-inset-bottom" in _cs, True)
+es("oturum.js var", os.path.exists("site/oturum.js"), True)
+es("hesap.js var", os.path.exists("site/hesap.js"), True)
+es("supabase vendor var", os.path.exists("site/vendor/supabase.js"), True)
+
 print(f"\n{gecti} gecti, {basarisiz} basarisiz")
 sys.exit(1 if basarisiz else 0)

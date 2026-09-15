@@ -24,10 +24,19 @@
 <script defer src="/_vercel/insights/script.js"></script>
 <a class="atla" href="#icerik">İçeriğe atla</a>
 <header class="ust">
- <a class="marka" href="index.html">nereye<b>parkedicem</b></a>
- <nav aria-label="Ana"><a href="harita/">Harita</a><a href="index.html#ilceler">İlçeler</a><a href="fiyat-endeksi/">Fiyat</a></nav>
+ <div class="ust-ic">
+  <a class="marka" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11z"/><path d="M10 14V8h2.4a2.3 2.3 0 0 1 0 4.6H10"/></svg>nereye<b>parkedicem</b></a>
+  <nav aria-label="Ana">
+   <a href="/harita/">Harita</a>
+   <a href="/il/">81 il</a>
+   <a href="/ucretsiz-otopark/">Ücretsiz</a>
+   <a href="/fiyat-endeksi/">Fiyat</a>
+  </nav>
+  <a class="hesap-dug" data-hesap href="/giris/"><span>Giriş</span></a>
+ </div>
 </header>
 <main id="icerik"><section class="kahraman">
+ <p><span class="rozet canli">Canlı doluluk</span></p>
  <h1>En yakın otoparkı <em>saniyede</em> bul</h1>
  <p class="alt-baslik">81 ilde 24.460 otopark haritada. İstanbul&#8217;da canlı doluluk
  ve tam tarife, İzmir&#8217;de tarife. Uygulama indirmene gerek yok.</p>
@@ -37,14 +46,20 @@
   <div><b>1.857</b><span>ücretsiz</span></div>
   <div><b data-doluluk>—</b><span>İstanbul doluluk</span></div>
  </div>
- <button id="yakin" class="birincil">📍 En yakın otoparkları göster</button>
+ <div class="dugmeler">
+  <button id="yakin" class="birincil">En yakın otoparkları göster</button>
+  <a class="ikincil" href="harita/">Haritayı aç</a>
+ </div>
  <p id="konum-durum" class="durum" role="status"></p>
 </section>
 <section id="sonuc" hidden><h2>Sana en yakın otoparklar</h2><div class="liste" id="yakin-liste"></div></section>
 <section id="turkiye"><h2>Türkiye haritası — 81 il</h2>
  <p class="alt-baslik">Otoparkların tamamı tek haritada. İl balonuna dokun, yakınlaş.</p>
- <p><a class="birincil" href="harita/">🗺️ Haritayı aç</a>
-    <a class="ikincil" href="ucretsiz-otopark/">Ücretsiz otoparklar (1.857)</a></p>
+ <div class="dugmeler">
+  <a class="birincil" href="harita/">Haritayı aç</a>
+  <a class="ikincil" href="ucretsiz-otopark/">Ücretsiz otoparklar (1.857)</a>
+  <a class="ikincil" href="favoriler/">Favorilerim</a>
+ </div>
  <div class="ilce-izgara"><a class="ilce" href="il/istanbul/"><b>İstanbul</b><span>5.121 otopark</span><span class="fiyat">301 ücretsiz</span></a><a class="ilce" href="il/ankara/"><b>Ankara</b><span>2.986 otopark</span><span class="fiyat">300 ücretsiz</span></a><a class="ilce" href="il/izmir/"><b>İzmir</b><span>1.630 otopark</span><span class="fiyat">173 ücretsiz</span></a><a class="ilce" href="il/antalya/"><b>Antalya</b><span>1.351 otopark</span><span class="fiyat">197 ücretsiz</span></a><a class="ilce" href="il/kocaeli/"><b>Kocaeli</b><span>1.315 otopark</span><span class="fiyat">143 ücretsiz</span></a><a class="ilce" href="il/balikesir/"><b>Balıkesir</b><span>1.106 otopark</span><span class="fiyat">13 ücretsiz</span></a><a class="ilce" href="il/adana/"><b>Adana</b><span>785 otopark</span><span class="fiyat">60 ücretsiz</span></a><a class="ilce" href="il/konya/"><b>Konya</b><span>722 otopark</span><span class="fiyat">24 ücretsiz</span></a><a class="ilce" href="il/mugla/"><b>Muğla</b><span>669 otopark</span><span class="fiyat">48 ücretsiz</span></a><a class="ilce" href="il/bursa/"><b>Bursa</b><span>579 otopark</span><span class="fiyat">46 ücretsiz</span></a><a class="ilce" href="il/tekirdag/"><b>Tekirdağ</b><span>506 otopark</span><span class="fiyat">74 ücretsiz</span></a><a class="ilce" href="il/isparta/"><b>Isparta</b><span>363 otopark</span><span class="fiyat">2 ücretsiz</span></a></div>
  <p><a href="il/">81 ilin tamamı →</a></p>
 </section>
@@ -61,11 +76,13 @@
  <p class="alt-baslik">247 İSPARK noktası · 80.177 yer · ilk saat medyan 140 ₺
  · doluluk İBB Açık Veri Portalı&#8217;ndan canlı</p>
  <div class="ilce-izgara"><a class="ilce" href="ilce/fatih/"><b>Fatih</b><span>28 otopark · 7.622 yer</span><span class="fiyat">ilk saat medyan 200 ₺</span></a><a class="ilce" href="ilce/besiktas/"><b>Beşiktaş</b><span>24 otopark · 2.056 yer</span><span class="fiyat">ilk saat medyan 170 ₺</span></a><a class="ilce" href="ilce/beyoglu/"><b>Beyoğlu</b><span>18 otopark · 2.396 yer</span><span class="fiyat">ilk saat medyan 200 ₺</span></a><a class="ilce" href="ilce/sisli/"><b>Şişli</b><span>14 otopark · 2.301 yer</span><span class="fiyat">ilk saat medyan 170 ₺</span></a><a class="ilce" href="ilce/kadikoy/"><b>Kadıköy</b><span>14 otopark · 3.863 yer</span><span class="fiyat">ilk saat medyan 140 ₺</span></a><a class="ilce" href="ilce/bakirkoy/"><b>Bakırköy</b><span>12 otopark · 2.939 yer</span><span class="fiyat">ilk saat medyan 120 ₺</span></a><a class="ilce" href="ilce/bagcilar/"><b>Bağcılar</b><span>11 otopark · 4.706 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/bayrampasa/"><b>Bayrampaşa</b><span>10 otopark · 3.358 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/eyup/"><b>Eyüp</b><span>9 otopark · 6.214 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/uskudar/"><b>Üsküdar</b><span>9 otopark · 3.046 yer</span><span class="fiyat">ilk saat medyan 150 ₺</span></a><a class="ilce" href="ilce/sariyer/"><b>Sarıyer</b><span>9 otopark · 1.477 yer</span><span class="fiyat">ilk saat medyan 150 ₺</span></a><a class="ilce" href="ilce/bahcelievler/"><b>Bahçelievler</b><span>8 otopark · 3.127 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/pendik/"><b>Pendik</b><span>8 otopark · 2.961 yer</span><span class="fiyat">ilk saat medyan 180 ₺</span></a><a class="ilce" href="ilce/kagithane/"><b>Kağıthane</b><span>7 otopark · 4.169 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/kartal/"><b>Kartal</b><span>7 otopark · 2.313 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/esenler/"><b>Esenler</b><span>6 otopark · 1.810 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/gungoren/"><b>Güngören</b><span>6 otopark · 2.879 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/zeytinburnu/"><b>Zeytinburnu</b><span>6 otopark · 3.238 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/umraniye/"><b>Ümraniye</b><span>5 otopark · 2.097 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/maltepe/"><b>Maltepe</b><span>5 otopark · 5.415 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/gaziosmanpasa/"><b>Gaziosmanpaşa</b><span>4 otopark · 791 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/avcilar/"><b>Avcılar</b><span>3 otopark · 550 yer</span><span class="fiyat">ilk saat medyan 200 ₺</span></a><a class="ilce" href="ilce/beykoz/"><b>Beykoz</b><span>3 otopark · 328 yer</span><span class="fiyat">ilk saat medyan 240 ₺</span></a><a class="ilce" href="ilce/atasehir/"><b>Ataşehir</b><span>3 otopark · 2.255 yer</span><span class="fiyat">ilk saat medyan 120 ₺</span></a><a class="ilce" href="ilce/beylikduzu/"><b>Beylikdüzü</b><span>3 otopark · 2.850 yer</span><span class="fiyat">ilk saat medyan 160 ₺</span></a><a class="ilce" href="ilce/kucukcekmece/"><b>Küçükçekmece</b><span>3 otopark · 1.803 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/tuzla/"><b>Tuzla</b><span>3 otopark · 1.129 yer</span><span class="fiyat">ilk saat medyan 110 ₺</span></a><a class="ilce" href="ilce/buyukcekmece/"><b>Büyükçekmece</b><span>2 otopark · 508 yer</span><span class="fiyat">ilk saat medyan 160 ₺</span></a><a class="ilce" href="ilce/sultanbeyli/"><b>Sultanbeyli</b><span>2 otopark · 430 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/arnavutkoy/"><b>Arnavutköy</b><span>1 otopark · 700 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/basaksehir/"><b>Başakşehir</b><span>1 otopark · 200 yer</span><span class="fiyat">ilk saat medyan 200 ₺</span></a><a class="ilce" href="ilce/cekmekoy/"><b>Çekmeköy</b><span>1 otopark · 175 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/esenyurt/"><b>Esenyurt</b><span>1 otopark · 367 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a><a class="ilce" href="ilce/sultangazi/"><b>Sultangazi</b><span>1 otopark · 104 yer</span><span class="fiyat">ilk saat medyan 80 ₺</span></a></div></section></main>
+<nav class="alt-sekme" aria-label="Alt gezinme"><a href="/" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg><span>Ana</span></a><a href="/harita/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3 3 5.5v15L9 18l6 3 6-2.5v-15L15 6 9 3z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg><span>Harita</span></a><a href="/ucretsiz-otopark/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 12.4V4.5a1 1 0 0 1 1-1h7.9a1 1 0 0 1 .71.29l7.1 7.1a1 1 0 0 1 0 1.42l-7.9 7.9a1 1 0 0 1-1.42 0l-7.1-7.1a1 1 0 0 1-.29-.71z"/><circle cx="7.75" cy="7.75" r="1.15"/></svg><span>Ücretsiz</span></a><a href="/favoriler/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.85-4.25 4.15 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.65l5.9-.85L12 3.5z"/></svg><span>Favoriler</span></a></nav>
 <footer class="alt">
  <p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> — İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p><p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
  <p><a href="gizlilik/">Gizlilik ve KVKK</a></p>
- <p class="uretim">Sayfa üretimi: 15.09.2026 18:17</p>
+ <p class="uretim">Sayfa üretimi: 15.09.2026 19:42</p>
 </footer>
 <script src="/sw-kur.js" defer></script>
+<script src="/oturum.js" defer></script>
 <script src="uygulama.js" defer></script>
 </body></html>

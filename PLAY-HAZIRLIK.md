@@ -45,6 +45,11 @@ versionName 1.0.0, minSdk 21, targetSdk 36.
    14 gün** sürekli kullanım şartı var. Yayın tarihini belirleyen madde budur.
 6. **Mağaza formları:** Data safety (veri güvenliği), içerik derecelendirme,
    hedef kitle, gizlilik politikası URL'i (`https://nereyeparkedicem.vercel.app/gizlilik/`).
+   **Data safety hesap özelliğine bağlı:** giriş `site/veri/auth.json` yer tutucu
+   iken uygulama hiçbir kişisel veri toplamaz. `SUPABASE-KURULUM.md` adımları
+   uygulanıp giriş açılırsa formda **E-posta adresi** ve **Uygulama içi etkinlik**
+   (favori listesi) beyan edilmeli, "veri şifreli aktarılıyor" ve "kullanıcı silme
+   talep edebilir" işaretlenmeli. Formu yanlış doldurmak Play'de askıya alma sebebi.
 7. **Görseller:** 512×512 uygulama ikonu (`site/simge-512.png` kullanılabilir),
    1024×500 feature graphic, en az 2 telefon ekran görüntüsü.
 

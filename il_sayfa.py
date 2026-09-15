@@ -187,7 +187,7 @@ def ucretsiz_yaz(o, sluglar):
         f"Ücretsiz Otopark — {tl(top_uc)} Nokta, İl İl Liste",
         f"Türkiye'de OpenStreetMap'te ücretsiz olarak işaretli {tl(top_uc)} otopark. "
         f"İl il liste, haritada ücretsiz filtresi, tek dokunuşla yol tarifi.",
-        govde, kok="../", kaynak_html=KAYNAK, js=False,
+        govde, kok="../", kaynak_html=KAYNAK, js=False, sekme="bedava",
         canonical=f"{URL}/ucretsiz-otopark/"))
     return top_uc
 

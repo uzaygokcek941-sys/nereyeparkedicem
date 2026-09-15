@@ -30,6 +30,7 @@ push.log
 # TWA: test imza anahtari ve derleme ciktilari (yayin anahtari DEGIL)
 twa/*.keystore
 twa/*.apk
+twa/*.idsig
 twa/*.aab
 twa/app/
 twa/.gradle/

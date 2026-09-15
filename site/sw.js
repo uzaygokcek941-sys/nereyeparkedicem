@@ -6,15 +6,15 @@
    yanit arka planda tazelenir; boylece deploy sonrasi eski CSS yapismaz.
    ISTISNA: IBB canli doluluk API'si ve olcum betigi ASLA onbellege girmez -
    eski doluluk sayisi canli sanilirsa kullaniciya yanlis bilgi verir. */
-const ONBELLEK = "np-v1";
+const ONBELLEK = "np-v2";
 const CEVRIMDISI = "/cevrimdisi/";
 
 const ONDEN = [
   "/", "/harita/", "/il/", "/ucretsiz-otopark/", CEVRIMDISI,
-  "/stil.css", "/uygulama.js", "/harita.js", "/sw-kur.js",
+  "/stil.css", "/uygulama.js", "/harita.js", "/sw-kur.js", "/oturum.js",
   "/simge.svg", "/manifest.json",
   "/vendor/leaflet.js", "/vendor/leaflet.css",
-  "/veri/iller.json",
+  "/veri/iller.json", "/veri/auth.json",
 ];
 
 self.addEventListener("install", (e) => {

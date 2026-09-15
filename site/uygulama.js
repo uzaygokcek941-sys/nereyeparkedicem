@@ -2,6 +2,10 @@
 const API = "https://api.ibb.gov.tr/ispark/Park";
 const $ = (s, k = document) => k.querySelector(s);
 const $$ = (s, k = document) => [...k.querySelectorAll(s)];
+// data-* niteligine gomulen ad OSM'den geliyor, tirnak tasiyabilir
+const nitelik = (x) => String(x ?? "").replace(/"/g, "&quot;");
+// oturum.js yuklu degilse (cevrimdisi sayfa gibi) sessizce atla
+const np = (ad, ...a) => { if (window.NP && NP[ad]) NP[ad](...a); };
 
 async function canli() {
   const c = await fetch(API, { cache: "no-store" });
@@ -27,6 +31,7 @@ async function doluluguYaz() {
   $$(".otopark").forEach(k => {
     const p = m.get(k.dataset.id); if (!p) return;
     bosBoya($("[data-bos]", k), p.emptyCapacity, p.capacity);
+    np("cubukYaz", k, p.emptyCapacity, p.capacity);
     kap += p.capacity || 0; bos += p.emptyCapacity || 0;
   });
   const oran = kap ? Math.round((1 - bos / kap) * 100) : null;
@@ -49,7 +54,8 @@ const mesafe = (a, b, c, d) => {
 
 function kartHTML(p, km) {
   const t = p.ilk_saat_tl ? `${p.ilk_saat_tl.toLocaleString("tr")} ₺` : "—";
-  return `<article class="otopark" data-id="${p.id}">
+  return `<article class="otopark" data-id="${p.id}" data-lat="${p.lat}" data-lng="${p.lng}"
+   data-ad="${nitelik(p.ad)}" data-ilce="${nitelik(p.ilce)}">
    <header><h3>${p.ad}</h3><p class="adres">${p.ilce} · ${km.toFixed(1)} km</p></header>
    <dl class="ozet">
     <div><dt>Kapasite</dt><dd>${p.kapasite ?? "—"}</dd></div>
@@ -57,6 +63,7 @@ function kartHTML(p, km) {
     <div><dt>İlk saat</dt><dd>${t}</dd></div>
     <div><dt>Mesafe</dt><dd>${km.toFixed(1)}<small> km</small></dd></div>
    </dl>
+   <p class="dolu-cubuk" hidden><i></i></p>
    <p class="saat">${p.saat || ""} · ${(p.tip || "").toLowerCase()}</p>
    <div class="git">
     <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">Google Maps</a>
@@ -69,7 +76,8 @@ function kartHTML(p, km) {
 function kartOSM(p, km, il) {
   const ek = [p.kapasite ? `${p.kapasite} kapasite` : "", p.tip || "", p.saat || ""]
     .filter(Boolean).join(" · ");
-  return `<article class="otopark">
+  return `<article class="otopark" data-lat="${p.lat}" data-lng="${p.lng}"
+   data-ad="${nitelik(p.ad)}" data-ilce="${nitelik(il)}">
    <header><h3>${p.ad}</h3><p class="adres">${il} · ${km.toFixed(1)} km</p></header>
    <dl class="ozet">
     <div><dt>Mesafe</dt><dd>${km.toFixed(1)}<small> km</small></dd></div>
@@ -119,8 +127,11 @@ function yakinKur() {
             .sort((a, b) => a.km - b.km).slice(0, 10);
           $("#yakin-liste").innerHTML = sirali.map(x => kartHTML(x.p, x.km)).join("");
           $$("#yakin-liste .otopark").forEach(el => {
-            const c = m.get(el.dataset.id); if (c) bosBoya($("[data-bos]", el), c.emptyCapacity, c.capacity);
+            const c = m.get(el.dataset.id);
+            if (c) { bosBoya($("[data-bos]", el), c.emptyCapacity, c.capacity);
+                     np("cubukYaz", el, c.emptyCapacity, c.capacity); }
           });
+          np("yildizlariBas", $("#yakin-liste"));
           durum.textContent = `${sirali.length} İSPARK otoparkı · en yakını ${sirali[0].km.toFixed(1)} km`;
         } else {
           const dosyalar = await Promise.all(adaylar.map(x =>
@@ -141,6 +152,7 @@ function yakinKur() {
           const sirali = nokta.map(p => ({ p, km: mesafe(la, lo, p.lat, p.lng) }))
             .sort((a, b) => a.km - b.km).slice(0, 10);
           $("#yakin-liste").innerHTML = sirali.map(x => kartOSM(x.p, x.km, x.p.il)).join("");
+          np("yildizlariBas", $("#yakin-liste"));
           // Izmir ve Ankara'nin kendi tarife sayfalari var; "yalniz Istanbul"
           // demek onlar icin yanlis olurdu
           // Ankara'da tarifesi olan otopark 0 (ANPARK fiyati yalniz JPEG

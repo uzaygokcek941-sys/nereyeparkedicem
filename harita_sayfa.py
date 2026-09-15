@@ -62,7 +62,7 @@ def yaz():
         f"Türkiye Otopark Haritası — {il} İl, {n:,} Nokta".replace(",", "."),
         f"Türkiye genelinde {n:,} otopark noktası tek haritada. ".replace(",", ".") +
         f"{il} il, OpenStreetMap verisiyle; konumuna en yakın otoparkı haritadan bul.",
-        govde, kok="../", kaynak_html=KAYNAK, js=False,
+        govde, kok="../", kaynak_html=KAYNAK, js=False, sekme="harita",
         ek_head=ek_head, ek_js=ek_js, canonical=f"{URL}/harita/"))
     print(f"uretildi: {CIKTI}/harita/ · {il} il · {n:,} nokta")
     return o
