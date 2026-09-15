@@ -192,7 +192,7 @@ def uret():
     if harita_var:
         import harita_sayfa; harita_sayfa.yaz()
     else:
-        print("harita atlandi: site/veri/iller.json yok (once koord_tek.py + harita_veri.py)")
+        print("harita atlandi: site/veri/iller.json yok (once koord_cek.py + harita_veri.py)")
 
     # sitemap + robots
     url = "https://nereyeparkedicem.vercel.app"

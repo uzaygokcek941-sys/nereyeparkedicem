@@ -1,9 +1,10 @@
-"""Butun Turkiye'nin otopark koordinatini TEK Overpass sorgusuyla ceker.
+"""Butun Turkiye'nin otopark koordinatini TEK Overpass sorgusuyla ceker (14 sn).
 
-81 ayri il sorgusu aynanin hiz sinirina (2 slot) carpiyor ve 429/504 veriyor.
-Il uyeligi zaten elimizde: veri/il*.json her ilin eleman kimliklerini tasiyor
-(onceki 'out tags' olcumunden). O yuzden burada yalniz (tip,id) -> koordinat
-tablosu cekilir, il eslesmesi yerelde yapilir.
+BIRINCIL CEKICI DEGIL - koord_cek.py kullan (il basina sorgu, 51 dk, veri/koord/).
+
+Buradaki yol il uyeligini veri/il*.json'daki eleman kimliklerinden turetir; o
+liste eskidigi icin OLCULDU: 24.460 yerine 23.677 nokta, 783 yeni otopark duser.
+Hizli tazeleme gerektiginde ve kimlik listesi yeniyse ise yarar.
 """
 import json, os, urllib.parse, urllib.request
 

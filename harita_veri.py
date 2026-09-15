@@ -32,30 +32,28 @@ def slug_tip(t):
             "rooftop":"çatı","carports":"sundurma","garage_boxes":"garaj",
             "street_side":"yol kenarı","lane":"şerit"}.get(t, t)
 
-def koord_tablosu():
-    """koord_tum.json tek bbox sorgusuyla cekildi; 'out skel center' oldugu icin
-    etiket tasimiyor. Il uyeligi ve etiketler onceki olcumden (veri/il{NN}.json,
-    'out tags') geliyor. Iki kaynak (tip,id) ile eslesir."""
-    d = json.load(open("veri/koord_tum.json", encoding="utf-8"))
-    t = {}
-    for e in d["elements"]:
-        p = konum(e)
-        if p: t[(e["type"], e["id"])] = p
-    return t
-
-KOORD = {}
+def etiketler(kod):
+    """veri/koord/*.json 'out skel center' ile cekildi, etiket tasimiyor.
+    Etiketler onceki olcumden (veri/il{NN}.json, 'out tags') geliyor; (tip,id)
+    ile eslesir. Eslesmeyen nokta etiketsiz cizilir - koordinat kaynagi
+    guncel, etiket kaynagi eski; birlestirme koordinati DUSURMEZ."""
+    yol = f"veri/il{kod:02d}.json"
+    if not os.path.exists(yol): return {}
+    return {(e["type"], e["id"]): e.get("tags", {})
+            for e in json.load(open(yol, encoding="utf-8"))["elements"]}
 
 def il_uret(kod):
-    yol = f"veri/il{kod:02d}.json"
+    yol = f"veri/koord/il{kod:02d}.json"
     if not os.path.exists(yol): return None
     el = json.load(open(yol, encoding="utf-8"))["elements"]
+    et = etiketler(kod)
     k, bilgi = [], {}
     for e in el:
-        p = KOORD.get((e["type"], e["id"]))
+        p = konum(e)
         if not p: continue
         i = len(k) // 2
         k += [round(p[0], 5), round(p[1], 5)]
-        t = e.get("tags", {})
+        t = e.get("tags") or et.get((e["type"], e["id"]), {})
         b = {}
         if t.get("name"): b["a"] = t["name"][:60]
         if t.get("fee") == "yes": b["u"] = 1
@@ -77,8 +75,6 @@ def il_uret(kod):
 
 if __name__ == "__main__":
     os.makedirs(CIKTI, exist_ok=True)
-    KOORD.update(koord_tablosu())
-    print(f"koord tablosu: {len(KOORD):,} eleman\n")
     ozet, top, boy = [], 0, 0
     for kod in range(1, 82):
         d = il_uret(kod)
