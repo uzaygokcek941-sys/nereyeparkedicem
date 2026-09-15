@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ŞU AN GOOGLE'IN RESMİ TEST KİMLİKLERİ. Test reklamı gösterir, PARA
+         KAZANDIRMAZ - ama kendi kimliğin yokken gerçek kimlik koymak da
+         yasak (kendi reklamına tıklama sayılır, hesap kapanır).
+
+         Gerçek gelir için AdMob panelinde uygulama + banner birimi oluştur,
+         aşağıdaki iki değeri onlarla değiştir. Hesap açmak ödeme profili ve
+         Google girişi istiyor: KULLANICI ADIMI.
+         Kaynak: https://developers.google.com/admob/android/test-ads -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_banner_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppCompat yok: platform temasi yetiyor, tek Activity var. -->
+    <style name="AppTema" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/vurgu</item>
+        <item name="android:navigationBarColor">@color/yuzey</item>
+        <item name="android:windowBackground">@color/yuzey</item>
+    </style>
+</resources>

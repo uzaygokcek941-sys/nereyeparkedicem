@@ -39,3 +39,11 @@ twa/store_icon.png
 
 # Play AAB derleme ciktisi (yeniden uretilebilir, ~1.1 MB)
 twa/app/build/
+
+# WebView+AdMob sarmalayici: derleme ciktilari (yeniden uretilebilir)
+wv/app/build/
+wv/.gradle/
+wv/build/
+wv/*.apk
+wv/*.aab
+wv/*.keystore

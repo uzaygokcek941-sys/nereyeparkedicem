@@ -1,0 +1,23 @@
+// Kok derleme dosyasi. twa/build.gradle'in sadelestirilmis hali:
+// jcenter() KALDIRILDI (2021'de salt-okunur, 2022'de kapandi), yerine
+// mavenCentral(). Google Mobile Ads SDK google() deposundan gelir.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.9.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

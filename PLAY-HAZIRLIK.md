@@ -1,5 +1,11 @@
 # Google Play yayın hazırlığı
 
+> **İki sarmalayıcı var, birini seçeceksin.** `twa/` = Trusted Web Activity
+> (reklamsız, hızlı, `assetlinks.json` şart). `wv/` = WebView + AdMob banner
+> (reklam gelirinin tek yolu, Politika 4.3 riski daha yüksek). Paket adı ikisinde
+> de aynı: `app.vercel.nereyeparkedicem` — Play'e **yalnız biri** yüklenir.
+> Ayrıntı ve AdMob adımları: `ADMOB-KURULUM.md`.
+
 Durum: **kod, paket ve mağaza görselleri hazır.** Kalan her şey Play Console
 hesabı ve imza anahtarı — ikisi de Uzay'ın adımı, asistan yapamaz.
 

@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace "app.vercel.nereyeparkedicem"
+    compileSdk 36
+
+    defaultConfig {
+        // TWA surumuyle AYNI paket: Play'de tek liste olacak, ikisi ayni
+        // uygulamanin iki sarmalayicisi.
+        applicationId "app.vercel.nereyeparkedicem"
+        minSdk 24            // play-services-ads 25.x minimum 24 istiyor
+        targetSdk 36
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    // Reklam icin TEK bagimlilik. AppCompat/Material eklenmedi: tek ekran,
+    // tek WebView, platform temasi yetiyor - APK'yi sisirmenin anlami yok.
+    implementation 'com.google.android.gms:play-services-ads:25.4.0'
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">parkedicem</string>
+    <string name="baslangic_url" translatable="false">https://nereyeparkedicem.vercel.app/</string>
+    <string name="konak" translatable="false">nereyeparkedicem.vercel.app</string>
+    <string name="cevrimdisi">Bağlantı yok. İnternet gelince tekrar dene.</string>
+    <string name="reklam_alani">Reklam</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reklam WebView'in USTUNE degil ALTINA konur: TWA'da imkansiz olan sey
+     tam buydu. WebView weight=1 ile kalan alani doldurur, banner sabit
+     yukseklikte altta durur - site icerigini hicbir zaman ortmez. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:background="@color/yuzey">
+
+    <WebView
+        android:id="@+id/web"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <FrameLayout
+        android:id="@+id/reklam_kap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/reklam_alani" />
+</LinearLayout>
