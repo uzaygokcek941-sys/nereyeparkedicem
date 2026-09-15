@@ -126,13 +126,37 @@
     return istemci;
   }
 
+  /** Supabase'de acik olan giris saglayicilari. Google panelde kapaliysa
+   *  dugmeyi hic gostermemeliyiz - basinca "provider is not enabled" hatasi
+   *  veriyor ve kullanici sebebini anlamiyor. */
+  let saglayici = null;
+  async function saglayicilar() {
+    if (saglayici) return saglayici;
+    const a = await ayarOku(); if (!a) return {};
+    try {
+      const d = await fetch(`${a.url}/auth/v1/settings`, { headers: { apikey: a.anonKey } })
+        .then(r => r.json());
+      saglayici = d.external || {};
+    } catch { saglayici = {}; }
+    return saglayici;
+  }
+
+  // Tablo yoksa/RLS engelliyorsa senkron sessizce dusuyordu. Sebebi tasiyalim.
+  let senkronHata = "";
+
   async function uzagaYaz(liste) {
     if (!kullanici || !istemci) return;
     try {
-      await istemci.from("favoriler")
+      const { error } = await istemci.from("favoriler")
         .upsert({ kullanici: kullanici.id, veri: liste, guncelleme: new Date().toISOString() },
                 { onConflict: "kullanici" });
-    } catch { /* cevrimdisi olabilir; yerel liste zaten yazildi */ }
+      if (error) throw error;
+      senkronHata = "";
+    } catch (h) {
+      // cevrimdisi olabilir; yerel liste zaten yazildi
+      senkronHata = h && h.message ? h.message : String(h);
+      document.dispatchEvent(new CustomEvent("np:senkron-hata"));
+    }
   }
 
   /** Yerel ve uzak listeyi BIRLESTIRIR. Kesisim degil birlesim: kullanici
@@ -141,10 +165,16 @@
     if (!kullanici || !istemci) return;
     let uzak = [];
     try {
-      const { data } = await istemci.from("favoriler").select("veri")
+      const { data, error } = await istemci.from("favoriler").select("veri")
         .eq("kullanici", kullanici.id).maybeSingle();
+      if (error) throw error;
       uzak = (data && Array.isArray(data.veri)) ? data.veri : [];
-    } catch { return; }
+      senkronHata = "";
+    } catch (h) {
+      senkronHata = h && h.message ? h.message : String(h);
+      document.dispatchEvent(new CustomEvent("np:senkron-hata"));
+      return;
+    }
     const harita = new Map();
     [...uzak, ...oku()].forEach(f => { if (f && f.lat != null) harita.set(anahtarla(f), f); });
     const birlesik = [...harita.values()];
@@ -206,8 +236,9 @@
   /* ---------- disari acilan yuzey ---------- */
   window.NP = {
     favoriler: oku, favoriMi, degistir, yildizlariBas, cubukYaz, yildizTazele,
-    istemciAl, ayarOku, senkron,
+    istemciAl, ayarOku, senkron, saglayicilar,
     kullanici: () => kullanici,
+    senkronHatasi: () => senkronHata,
     cikis: async () => {
       const c = await istemciAl(); if (c) await c.auth.signOut();
       try { localStorage.setItem(GIRDI_IZI, "0"); } catch { /* yok say */ }

@@ -2,10 +2,10 @@
 <html lang="tr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gizlilik ve KVKK | nereyeparkedicem</title>
-<meta name="description" content="Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. Toplanan kişisel veri bulunmuyor.">
+<meta name="description" content="Konumunuz cihazınızdan çıkmıyor. Hesap isteğe bağlı; açarsanız yalnız e-posta ve favori listesi saklanır.">
 <link rel="canonical" href="https://nereyeparkedicem.vercel.app/gizlilik/">
 <meta property="og:title" content="Gizlilik ve KVKK | nereyeparkedicem">
-<meta property="og:description" content="Sunucumuz yok, hesabınız yok, konumunuz cihazınızdan çıkmıyor. Toplanan kişisel veri bulunmuyor.">
+<meta property="og:description" content="Konumunuz cihazınızdan çıkmıyor. Hesap isteğe bağlı; açarsanız yalnız e-posta ve favori listesi saklanır.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://nereyeparkedicem.vercel.app/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -37,11 +37,11 @@
 </header>
 <main id="icerik"><section class="kahraman dar">
 <h1>Gizlilik ve KVKK</h1>
-<p class="alt-baslik">Kısa versiyon: sunucumuz yok, hesabınız yok, konumunuz bize gelmiyor.</p>
+<p class="alt-baslik">Kısa versiyon: konumunuz bize hiç gelmiyor. Hesap açmak isteğe bağlı; açarsanız yalnız e-posta adresiniz ve favori listeniz saklanır.</p>
 </section>
 <section class="metin">
 <h2>Hangi veriyi topluyoruz</h2>
-<p><strong>Kişisel veri toplamıyoruz.</strong> Hesap özelliği bu sürümde <strong>kapalıdır</strong>: giriş sayfası açılsa da kayıt oluşturulamaz, hiçbir e-posta adresi tarafımıza ulaşmaz.</p>
+<p><strong>Hesap açmazsanız kişisel veri toplamıyoruz.</strong> Sitenin tamamı — harita, arama, favoriler, yol tarifi — giriş yapmadan çalışır.</p><p>Giriş yapmayı seçerseniz işlenen veri şudur: <strong>e-posta adresiniz</strong> (Google ile girdiyseniz Google'ın paylaştığı e-posta ve hesap kimliği) ve <strong>favori otopark listeniz</strong>. Parola tutmuyoruz — giriş e-posta bağlantısı veya Google ile yapılır.</p>
 <p>Site statik dosyalardan oluşur; sayfaları üreten bir sunucu kodumuz ve
 otoparkları tutan bir veritabanımız yoktur.</p>
 <p><strong>Vercel Web Analytics</strong>: kaç kez hangi sayfanın açıldığını
@@ -56,7 +56,7 @@ Tarayıcınızın izleme engelleyicisi bu betiği kapatırsa site aynen çalış
 <strong>tarayıcınızın kendi deposuna</strong> (<code>localStorage</code>) yazılır.
 Giriş yapmadıysanız bu liste <strong>cihazınızdan hiç çıkmaz</strong>; tarayıcı verisini
 temizlediğinizde silinir.</p>
-<p>Hesap özelliği kapalı olduğu için favori listeniz <strong>hiçbir sunucuya gönderilmez</strong>; yalnız bu cihazda kalır.</p>
+<p>Giriş yaparsanız aynı liste hesabınıza bağlı olarak <strong>Supabase</strong> üzerinde de tutulur ki diğer cihazlarınızda görünsün. Veritabanı satır düzeyi güvenlik (RLS) ile korunur: <strong>bir kullanıcı yalnız kendi satırını okuyabilir ve yazabilir.</strong> Favori listesi kimseyle paylaşılmaz, reklam amacıyla kullanılmaz.</p>
 <h2>Konum bilgisi</h2>
 <p>&quot;En yakın otoparkları göster&quot; düğmesine bastığınızda tarayıcınız konum izni ister.
 Verilen konum <strong>yalnızca cihazınızın içinde</strong> kullanılır: mesafe hesabı tarayıcıda
@@ -74,7 +74,7 @@ otopark listesi çekilir.</li>
 (<code>tile.openstreetmap.org</code>) iner. Bu istek hangi bölgeye baktığınızı o
 sunucuya gösterir — OSM'nin kendi gizlilik politikası geçerlidir. Harita sayfasını
 açmazsanız bu istek hiç olmaz.</li>
-</ul>
+<li><strong>Hesap ve favori eşitlemesi</strong> için giriş yaptıysanız tarayıcınız <code>*.supabase.co</code> adresine istek atar. Bu istek yalnız hesap oturumunuzu ve favori listenizi taşır; konumunuzu taşımaz. Giriş yapmazsanız bu istek hiç olmaz.</li></ul>
 <p>İçerik Güvenliği Politikamız (CSP) bu ikisi dışında hiçbir dış adrese bağlantı
 kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımızdan iner.</p>
 
@@ -84,7 +84,7 @@ kurulmasına izin vermez. Otopark koordinatları ve tarifeler kendi alan adımı
 ve tarafımızca okunmaz veya işlenmez.</p>
 
 <h2>KVKK</h2>
-<p>6698 sayılı Kişisel Verilerin Korunması Kanunu anlamında tarafımızca <strong>işlenen kişisel veri yoktur</strong>; bu nedenle veri sorumlusu sıfatıyla tutulan bir kayıt ortamı bulunmamaktadır. Yine de sorunuz olursa GitHub deposundan issue açabilirsiniz.</p>
+<p>6698 sayılı Kanun anlamında veri sorumlusu bu sitenin işletmecisidir. <strong>Hukuki sebep:</strong> talebiniz üzerine hesap hizmetinin sunulması (açık rızanız ve sözleşmenin ifası). <strong>Amaç:</strong> yalnızca favori listenizi cihazlarınız arasında eşitlemek. <strong>Saklama süresi:</strong> hesabınız açık kaldığı sürece.</p><p><strong>Yurt dışına aktarım:</strong> Supabase ve Vercel yurt dışında barındırma yapar; hesap açtığınızda e-postanız ve favori listeniz bu sunucularda saklanır. Bunu kabul etmek istemiyorsanız hesap açmayın — site giriş yapmadan tam olarak çalışır.</p><p><strong>Haklarınız</strong> (m.11): verilerinizin silinmesini, düzeltilmesini veya bir kopyasını isteyebilirsiniz. Talebinizi GitHub deposundan issue açarak iletebilirsiniz; hesap silme talebinde e-posta adresiniz ve favori kaydınız tamamen kaldırılır.</p>
 
 <h2>Verinin kaynağı ve doğruluğu</h2>
 <p>Otopark, doluluk ve tarife verisi İBB Açık Veri Portalı'ndan CC BY 4.0 lisansıyla gelir.
@@ -96,7 +96,7 @@ bağlantısı yoktur. Gösterilen fiyatlar bilgilendirme amaçlıdır, bağlayı
 <footer class="alt">
  <p>Veri: <a href="https://data.ibb.gov.tr/" target="_blank" rel="noopener">İBB Açık Veri Portalı</a> — İSPARK otopark servisi, lisans <a href="https://creativecommons.org/licenses/by/4.0/deed.tr" target="_blank" rel="noopener">CC BY 4.0</a>.</p><p><strong>Bağımsız uygulamadır.</strong> İstanbul Büyükşehir Belediyesi, İSPARK A.Ş. veya İSTMOP ile resmî bağlantısı yoktur. Doluluk verisi İBB'nin güncelleme aralığına bağlıdır; aksama olursa birkaç dakika geride kalabilir.</p>
  <p><a href="/gizlilik/">Gizlilik ve KVKK</a></p>
- <p class="uretim">Sayfa üretimi: 15.09.2026 19:42</p>
+ <p class="uretim">Sayfa üretimi: 15.09.2026 20:01</p>
 </footer>
 <script src="/sw-kur.js" defer></script>
 <script src="/oturum.js" defer></script>

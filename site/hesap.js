@@ -10,13 +10,23 @@
     const form = $("#giris-form"); if (!form) return;
     const durum = $("#giris-durum"), google = $("#google-giris");
 
-    NP.ayarOku().then(a => {
-      if (a) return;
-      // Yapilandirma yoksa YALAN SOYLEME: dugmeyi devre disi birak ve sebebi yaz.
-      form.querySelectorAll("input,button").forEach(x => { x.disabled = true; });
-      if (google) google.disabled = true;
-      durum.textContent = "Giriş henüz açık değil — hesap sunucusu yapılandırılmadı. " +
-        "Favorilerin bu cihazda kayıtlı, giriş olmadan da çalışıyor.";
+    NP.ayarOku().then(async a => {
+      if (!a) {
+        // Yapilandirma yoksa YALAN SOYLEME: dugmeyi devre disi birak ve sebebi yaz.
+        form.querySelectorAll("input,button").forEach(x => { x.disabled = true; });
+        if (google) google.disabled = true;
+        durum.textContent = "Giriş henüz açık değil — hesap sunucusu yapılandırılmadı. " +
+          "Favorilerin bu cihazda kayıtlı, giriş olmadan da çalışıyor.";
+        return;
+      }
+      // Supabase panelinde Google kapaliysa dugmeyi HIC gosterme: basinca
+      // "Unsupported provider" hatasi veriyor, kullanici sebebini anlamiyor.
+      const s = await NP.saglayicilar();
+      if (google && s.google !== true) {
+        google.hidden = true;
+        const ay = document.querySelector(".ayirac");
+        if (ay) ay.hidden = true;
+      }
     });
 
     form.addEventListener("submit", async (e) => {
@@ -107,8 +117,14 @@
         return;
       }
       if (k) {
-        durum.innerHTML = `<strong>${k.email || "Hesabın"}</strong> ile giriş yapıldı — ` +
-          "favoriler cihazlar arasında eşitleniyor.";
+        const h = NP.senkronHatasi();
+        // Tablo yoksa veya RLS engelliyorsa "esitleniyor" demek YANLIS olur.
+        durum.innerHTML = h
+          ? `<strong>${k.email || "Hesabın"}</strong> ile giriş yapıldı, ama eşitleme ` +
+            `çalışmıyor: <code>${h.replace(/</g, "&lt;")}</code>. Favorilerin yine de ` +
+            "bu cihazda güvende."
+          : `<strong>${k.email || "Hesabın"}</strong> ile giriş yapıldı — ` +
+            "favoriler cihazlar arasında eşitleniyor.";
         if (cikis) cikis.hidden = false;
       } else {
         durum.innerHTML = 'Favoriler yalnız bu cihazda saklı. ' +
@@ -118,6 +134,7 @@
     };
     ciz();
     document.addEventListener("np:oturum", ciz);
+    document.addEventListener("np:senkron-hata", ciz);
     if (cikis) cikis.addEventListener("click", async () => {
       cikis.disabled = true;
       await NP.cikis();

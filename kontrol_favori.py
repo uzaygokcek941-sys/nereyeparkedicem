@@ -96,6 +96,11 @@ def main():
             es("auth acik: e-posta alani kullanilabilir",
                p.locator("#eposta").is_disabled(), False)
             es("auth acik: supabase.js yuklendi", p.evaluate("!!window.supabase"), True)
+            # Google dugmesi YALNIZ saglayici panelde acikken gorunmeli:
+            # kapaliyken basinca "Unsupported provider" hatasi veriyor.
+            sag = p.evaluate("NP.saglayicilar()")
+            es("google dugmesi saglayiciyla tutarli",
+               p.locator("#google-giris").is_visible(), sag.get("google") is True)
 
         # 7) mobil kabuk
         es("alt sekme mobilde gorunur", p.locator(".alt-sekme").is_visible(), True)

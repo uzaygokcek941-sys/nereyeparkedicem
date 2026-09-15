@@ -162,11 +162,27 @@ es("favoriler listesi", 'id="favori-liste"' in _f, True)
 es("favoriler bos durumu", 'id="favori-bos"' in _f, True)
 es("favoriler cikis dugmesi", 'id="cikis"' in _f, True)
 es("auth.json iki alan", sorted(_a), ["anonKey", "url"])
-es("auth varsayilan KAPALI", uret.auth_acik(), False)
 
-# auth kapaliyken gizlilik metni hesabi ACIK gibi anlatmamali
-es("gizlilik hesap kapali diyor", "kapalıdır" in _gz, True)
-es("gizlilik supabase demiyor (auth kapali)", "supabase.co" in _gz, False)
+# ASIL DEGISMEZ: gizlilik metni auth DURUMUYLA TUTARLI olmali. Sabit "kapali"
+# beklemek, giris acilinca testi kirar ve asil tehlikeyi (acikken hâlâ
+# "kisisel veri yok" demesi) kacirir.
+_acik = uret.auth_acik()
+if _acik:
+    es("auth acik: anon anahtar (service_role DEGIL)",
+       json.loads(__import__("base64").urlsafe_b64decode(
+           _a["anonKey"].split(".")[1] + "==").decode())["role"], "anon")
+    es("auth acik: anahtar url ile ayni proje",
+       json.loads(__import__("base64").urlsafe_b64decode(
+           _a["anonKey"].split(".")[1] + "==").decode())["ref"],
+       _a["url"].split("//")[1].split(".")[0])
+    es("auth acik: gizlilik KVKK aydinlatmasi", "yurt dışına aktarım" in _gz.lower()
+       or "Yurt dışına aktarım" in _gz, True)
+    es("auth acik: gizlilik supabase'i soyluyor", "supabase.co" in _gz, True)
+    es("auth acik: 'kisisel veri yoktur' IDDIASI YOK",
+       "işlenen kişisel veri yoktur" in _gz, False)
+else:
+    es("auth kapali: gizlilik kapali diyor", "kapalıdır" in _gz, True)
+    es("auth kapali: gizlilik supabase demiyor", "supabase.co" in _gz, False)
 
 # yeni kabuk: her sayfada alt sekme + oturum.js
 for _ad, _y in [("ana", "site/index.html"), ("harita", "site/harita/index.html"),
