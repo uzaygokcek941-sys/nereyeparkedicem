@@ -80,8 +80,13 @@ Artık "veri toplamıyor" beyanı **yanlış** olur. Formda:
   **isteğe bağlı** (giriş yapmadan uygulama tam çalışır).
 - **Uygulama etkinliği → Uygulama içi etkinlik**: favori otopark listesi,
   uygulama işlevselliği amaçlı, isteğe bağlı.
-- **Konum**: *toplanmıyor.* Konum yalnız cihaz içinde mesafe hesabı için
-  kullanılır, hiçbir sunucuya gönderilmez — gizlilik sayfasında da böyle yazılı.
+- **Konum**: *toplanmıyor* — ama **paylaşılıyor** işaretlenmeli. Mesafe hesabı
+  cihazda yapılıyor ve konum bize hiç gelmiyor; **fakat kullanıcı "Yol tarifi"ne
+  bastığında başlangıç/varış koordinatı OSRM sunucusuna (üçüncü taraf) gidiyor.**
+  Formda: Konum → *Yaklaşık konum* → **paylaşılıyor**, amaç *Uygulama
+  işlevselliği*, **isteğe bağlı** (düğmeye basılmazsa hiç gönderilmez).
+  Aynı şekilde adres arama kutusuna yazılan metin Nominatim'e gider — bu kişisel
+  veri kategorisi değil ama gizlilik sayfasında adıyla yazılı.
 - "Veri aktarımda şifreleniyor" → **evet** (HTTPS + Supabase).
 - "Kullanıcı silme talep edebilir" → **evet** (tablo `on delete cascade`).
 
